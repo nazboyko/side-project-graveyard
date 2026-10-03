@@ -12,7 +12,7 @@ I gave one kickoff prompt; the per-phase prompts were written in advance in my l
 | 0. Setup + skills | 12:10 | 12:27 | 2 | 0 | kickoff + Phase 0; four wrong assumptions caught before they failed |
 | A. Schema + Studio | 12:21 | 12:31 | 1 | 0 | Studio desk not seen by the model: it stops at the login screen |
 | B. Seed content | 12:32 | 12:40 | 1 | 0 | one of the six real repos is private and was skipped |
-| C. Astro + queries | | | | | |
+| C. Astro + queries | 12:33 | 12:46 | 1 | 3 | peer dependencies, TypeScript 7, `process` types |
 | D. Pages + UI | | | | | |
 | E. Deploy + webhook | | | | | |
 | F. Polish | | | | | |
@@ -249,6 +249,70 @@ Validate the NDJSON (one JSON object per line, all _ref targets exist, all _key 
   the shortest life in the graveyard. That is what the data says — kept.
 - "Lost interest" was given three fictional graves so the most-common-cause number has a clear winner — kept.
 - 18 graves, the top of the 16–18 range — kept.
+
+### Commands I ran by hand
+
+- None.
+
+## Phase C — Astro scaffold + queries (2026-10-03, 12:33–12:46 CDT, about 13 min)
+
+Carried over from Phase B: its pull request went green on the first CI run and was merged. The scaffold commands
+below were started while that run was in progress; the stats helpers were drafted during earlier CI waits.
+
+### Prompt
+
+```
+Create the Astro site in web/: `npm create astro@latest web -- --template minimal --no-git --install --no-ai` (create-astro has no --typescript flag any more; the minimal template already ships a strict tsconfig — verify and switch to `astro/tsconfigs/strict` if not), then inside web/: `npx astro add @sanity/astro` (no React adapter — we do not embed the Studio) and `npm i -D @astrojs/check typescript` so that `npx astro check` works. Configure astro.config.mjs: output static, site = the SITE_URL from .env (fallback http://localhost:4321), sanity({ projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID, dataset: import.meta.env.PUBLIC_SANITY_DATASET, useCdn: false, apiVersion: "2026-09-01" }). Load env from web/.env (move the repo-root web.env.tmp to web/.env first; web/.env is gitignored).
+Add astro-portabletext for rich text.
+Add Vitest (`npm i -D vitest`, `"test": "vitest run"` in package.json, config via getViteConfig from astro/config). Create src/lib/stats.ts with pure, tested functions: lifespanDays(bornAt, diedAt), averageLifespan(projects), mostCommonCause(projects), shortestLived(projects), longestLived(projects), slugTilt(slug) (deterministic ±0.6deg from a hash) — src/lib/stats.test.ts covers each, including the undead (no diedAt) case.
+Create src/lib/sanity.ts with typed GROQ queries and TS interfaces: getSettings(), getProjects() (with cause and stack dereferenced), getProject(slug), getCauses() (with project count), getTechs() (with project count), getStats() built on stats.ts: total buried, total retired, average lifespan in days, most common cause (title + count), shortest-lived project (name + days), longest-lived project.
+Create a placeholder src/pages/index.astro that renders the stats and a plain list of projects. Run `npm run build` and show me the output and any TypeScript errors. Append the Phase C entry to docs/BUILD_LOG.md, including any command that did not work as expected.
+```
+
+### What came out
+
+- `web/`: Astro 7 from the minimal template (it already extends `astro/tsconfigs/strict`), `@sanity/astro`,
+  `astro-portabletext`, Vitest, `@astrojs/check`.
+- `astro.config.mjs`: static output, the Sanity integration with `useCdn: false` and `apiVersion: "2026-09-01"`.
+  It fails with a clear message when the two public env vars are missing.
+- `src/lib/stats.ts`: `lifespanDays`, `averageLifespan`, `mostCommonCause`, `shortestLived`, `longestLived`,
+  `formatLifespan`, `slugTilt`. `src/lib/stats.test.ts`: 21 tests, covering the undead, a death on the day of
+  birth, the leap day, ties, and an empty graveyard.
+- `src/lib/sanity.ts`: five typed GROQ queries (`getSettings`, `getProjects`, `getProject`, `getCauses`,
+  `getTechs`) and `getStats`, which is plain maths on top of `stats.ts`.
+- A placeholder index page: the stats and a plain list of graves.
+- Verification: `npx astro check` 0 errors in 8 files; `npm test` 21 passed; `npm run build` built 1 page. The built
+  HTML carries numbers only the dataset could produce: 14 buried, 3 retired, average lifespan 355 days, most
+  common cause "Lost interest (5)", shortest life "PDF Viewer SDK, less than a day", longest "Lantern CMS, 1,421 days".
+
+### What failed or needed a second try
+
+- `npx astro add @sanity/astro` added `react`, `react-dom`, `react-is`, `sanity` and `styled-components` as direct
+  dependencies. They are the integration's peers, for an embedded Studio this site does not have. The model
+  removed them from `package.json`, then tried to keep them off disk too with `legacy-peer-deps=true`. That broke
+  something unrelated: the next install pruned `@emnapi/runtime`, another package's peer, and `astro check` died
+  with a misleading "install @astrojs/check" prompt. The model found the real error by importing the package
+  directly, removed the setting and let npm install the peers. They are in the lockfile, nothing imports them.
+- `npm i -D @astrojs/check typescript` installed TypeScript 7. `astro check` refuses it ("install TypeScript 6
+  instead"). Pinned `typescript@^6`.
+- `astro check` then flagged `process` in `astro.config.mjs`. Fixed with `@types/node` and a
+  `/// <reference types="node" />` line; the `// @ts-check` comment stayed.
+- The prompt's `import.meta.env.PUBLIC_SANITY_PROJECT_ID` inside `astro.config.mjs` cannot work: `.env` files are
+  not loaded into `import.meta.env` in the config file. The model used Vite's `loadEnv` from the start.
+- `create-astro` needed `--yes --skip-houston` added, or it waits for answers nobody is there to give.
+
+### Decisions the model made on its own
+
+- `getStats(projects)` takes the list that the page already fetched instead of fetching again — kept.
+- Added `formatLifespan`: a real grave has a lifespan of 0 days and "lived 0 days" reads wrong, so 0 becomes
+  "less than a day" — kept.
+- Ties are broken by name (shortest, longest) and by title (most common cause), so the stats never depend on the
+  order the API returns — kept.
+- `getProjects` puts the undead first, then orders by date of death, newest first — kept.
+- The Portable Text type comes from `astro-portabletext/types`, not from a second direct dependency — kept.
+- Replaced the template favicon with a small tombstone SVG and dropped `favicon.ico`; the template README and
+  editor folder stay out of the repo — kept.
+- The package is named `side-project-graveyard-web` and marked private — kept.
 
 ### Commands I ran by hand
 
