@@ -1,0 +1,57 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    env:
+      # Project ID and dataset are public; the fallbacks match studio/sanity.config.ts.
+      PUBLIC_SANITY_PROJECT_ID: ${{ vars.PUBLIC_SANITY_PROJECT_ID || '20pcz8by' }}
+      PUBLIC_SANITY_DATASET: ${{ vars.PUBLIC_SANITY_DATASET || 'production' }}
+    steps:
+      - uses: actions/checkout@v7
+      # hashFiles() is not available in a job-level `if`, so every step skips while web/ does not exist.
+      - uses: actions/setup-node@v7
+        if: hashFiles('web/package.json') != ''
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        if: hashFiles('web/package.json') != ''
+      - run: npx astro check
+        if: hashFiles('web/package.json') != ''
+      - run: npm test
+        if: hashFiles('web/package.json') != ''
+      - run: npm run build
+        if: hashFiles('web/package.json') != ''
+
+  studio:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: studio
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        if: hashFiles('studio/package.json') != ''
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: studio/package-lock.json
+      - run: npm ci
+        if: hashFiles('studio/package.json') != ''
+      - run: npx tsc --noEmit
+        if: hashFiles('studio/package.json') != ''
+      - run: npx sanity schema validate
+        if: hashFiles('studio/package.json') != ''
