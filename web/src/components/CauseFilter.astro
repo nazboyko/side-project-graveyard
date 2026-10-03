@@ -1,0 +1,43 @@
+---
+import type {Cause} from '../lib/sanity'
+
+interface Props {
+  causes: Cause[]
+  /** Total number of graves, for the "All graves" link. */
+  total: number
+  /** Slug of the cause being shown. Empty on the home page. */
+  current?: string
+}
+
+const {causes, total, current} = Astro.props
+---
+
+<nav class="section" aria-labelledby="filter-heading">
+  <h2 id="filter-heading">Filter by cause of death</h2>
+  <ul class="chip-list">
+    <li>
+      <a class="chip" href="/" aria-current={current ? undefined : 'page'}>
+        All graves{' '}
+        <span class="chip__count">{total}</span>
+      </a>
+    </li>
+    {
+      causes.map((cause) => (
+        <li>
+          <a class="chip" href={`/cause/${cause.slug}/`} aria-current={cause.slug === current ? 'page' : undefined}>
+            {cause.icon && (
+              <span class="chip__icon" aria-hidden="true">
+                {cause.icon}
+              </span>
+            )}
+            {cause.title}{' '}
+            <span class="chip__count">
+              {cause.count}
+              <span class="visually-hidden">{cause.count === 1 ? ' grave' : ' graves'}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

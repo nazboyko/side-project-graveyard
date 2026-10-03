@@ -1,0 +1,39 @@
+---
+import type {Project, Status} from '../lib/sanity'
+import {formatLifespan, formatYears, lifespanDays, slugTilt} from '../lib/stats'
+
+interface Props {
+  project: Project
+}
+
+const STATUS_MARK: Record<Status, string | null> = {
+  buried: null,
+  retired: 'Retired with honour',
+  undead: 'Undead',
+}
+
+const {project} = Astro.props
+const mark = STATUS_MARK[project.status]
+const days = lifespanDays(project.bornAt, project.diedAt)
+---
+
+<article class="stone" style={`--tilt:${slugTilt(project.slug)}deg`}>
+  {mark && <p class="label">{mark}</p>}
+  <h3 class="stone__name">
+    <a class="stone__link" href={`/rip/${project.slug}/`}>{project.name}</a>
+  </h3>
+  <p class="stone__years">
+    {formatYears(project.bornAt, project.diedAt)} · {days !== null ? `lived ${formatLifespan(days)}` : 'still twitching'}
+  </p>
+  <p class="stone__epitaph">{project.epitaph}</p>
+  <p class="chip">
+    {
+      project.cause.icon && (
+        <span class="chip__icon" aria-hidden="true">
+          {project.cause.icon}
+        </span>
+      )
+    }
+    {project.cause.title}
+  </p>
+</article>

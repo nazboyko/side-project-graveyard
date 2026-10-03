@@ -1,79 +1,83 @@
 ---
-import {getProjects, getSettings, getStats} from '../lib/sanity'
-import {formatLifespan, lifespanDays} from '../lib/stats'
+import {PortableText} from 'astro-portabletext'
+import CauseFilter from '../components/CauseFilter.astro'
+import Graveyard from '../components/Graveyard.astro'
+import Layout from '../layouts/Layout.astro'
+import {getCauses, getProjects, getSettings, getStats} from '../lib/sanity'
+import {formatLifespan} from '../lib/stats'
 
-const [settings, projects] = await Promise.all([getSettings(), getProjects()])
+const [settings, projects, causes] = await Promise.all([getSettings(), getProjects(), getCauses()])
 const stats = getStats(projects)
+
+const description = `${settings.tagline} ${projects.length} side projects, each with an epitaph, a cause of death, and the one thing it taught its author.`
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{settings.title}</title>
-  </head>
-  <body>
+<Layout description={description} home>
+  <section class="gate">
     <h1>{settings.title}</h1>
-    <p>{settings.tagline}</p>
+    <p class="gate__tagline">{settings.tagline}</p>
+    {
+      settings.intro && (
+        <div class="gate__intro prose">
+          <PortableText value={settings.intro} />
+        </div>
+      )
+    }
+  </section>
 
-    <dl>
-      <dt>Buried</dt>
-      <dd>{stats.buried}</dd>
-      <dt>Retired</dt>
-      <dd>{stats.retired}</dd>
+  <section class="section" aria-labelledby="register-heading">
+    <h2 id="register-heading">The register</h2>
+    <dl class="stats">
+      <div>
+        <dt class="label">Buried</dt>
+        <dd>{stats.buried}</dd>
+      </div>
+      <div>
+        <dt class="label">Retired with honour</dt>
+        <dd>{stats.retired}</dd>
+      </div>
       {
         stats.averageLifespanDays !== null && (
-          <>
-            <dt>Average lifespan</dt>
+          <div class="stats__key">
+            <dt class="label">Average lifespan</dt>
             <dd>{formatLifespan(stats.averageLifespanDays)}</dd>
-          </>
+          </div>
         )
       }
       {
         stats.mostCommonCause && (
-          <>
-            <dt>Most common cause of death</dt>
-            <dd>
-              {stats.mostCommonCause.title} ({stats.mostCommonCause.count})
+          <div>
+            <dt class="label">Most common cause of death</dt>
+            <dd class="stats__name">
+              <a href={`/cause/${stats.mostCommonCause.slug}/`}>{stats.mostCommonCause.title}</a>
+              <small>
+                {stats.mostCommonCause.count} of {projects.length} graves
+              </small>
             </dd>
-          </>
+          </div>
         )
       }
       {
         stats.shortest && (
-          <>
-            <dt>Shortest life</dt>
-            <dd>
-              {stats.shortest.name}, {formatLifespan(stats.shortest.days)}
+          <div>
+            <dt class="label">Shortest life</dt>
+            <dd class="stats__name">
+              <a href={`/rip/${stats.shortest.slug}/`}>{stats.shortest.name}</a>
+              <small>lived {formatLifespan(stats.shortest.days)}</small>
             </dd>
-          </>
-        )
-      }
-      {
-        stats.longest && (
-          <>
-            <dt>Longest life</dt>
-            <dd>
-              {stats.longest.name}, {formatLifespan(stats.longest.days)}
-            </dd>
-          </>
+          </div>
         )
       }
     </dl>
+  </section>
 
-    <ul>
-      {
-        projects.map((project) => {
-          const days = lifespanDays(project.bornAt, project.diedAt)
-          return (
-            <li>
-              {project.name} ({project.cause.title}
-              {days !== null && `, lived ${formatLifespan(days)}`}): {project.epitaph}
-            </li>
-          )
-        })
-      }
-    </ul>
-  </body>
-</html>
+  <CauseFilter causes={causes} total={projects.length} />
+
+  <section class="section" aria-labelledby="graves-heading">
+    <h2 id="graves-heading">The graves</h2>
+    <p class="section-note">
+      {projects.length} stones. The undead first, then the most recently departed.
+    </p>
+    <Graveyard projects={projects} />
+  </section>
+</Layout>
