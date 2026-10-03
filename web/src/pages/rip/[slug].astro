@@ -1,0 +1,169 @@
+---
+import type {GetStaticPaths, InferGetStaticPropsType} from 'astro'
+import {PortableText} from 'astro-portabletext'
+import Candle from '../../components/Candle.astro'
+import Layout from '../../layouts/Layout.astro'
+import {getProjects, type Mood, type Status} from '../../lib/sanity'
+import {chipColor} from '../../lib/color'
+import {formatDate, formatLifespan, formatYears, lifespanDays} from '../../lib/stats'
+
+export const getStaticPaths = (async () => {
+  // Same order as the graveyard: the undead first, then by date of death, newest first.
+  const projects = await getProjects()
+  return projects.map((project, index) => ({
+    params: {slug: project.slug},
+    props: {
+      project,
+      previous: projects[index - 1] ?? null,
+      next: projects[index + 1] ?? null,
+    },
+  }))
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const STATUS: Record<Status, string> = {
+  buried: 'Buried',
+  retired: 'Retired with honour',
+  undead: 'Undead',
+}
+
+const MOOD: Record<Mood, string> = {
+  relief: 'Relief',
+  guilt: 'Guilt',
+  denial: 'Denial',
+  peace: 'Peace',
+}
+
+const {project, previous, next} = Astro.props
+const undead = project.status === 'undead'
+const days = lifespanDays(project.bornAt, project.diedAt)
+// The Studio only accepts https here, but the page does not take that on trust.
+const ruinsUrl = project.repoUrl?.startsWith('https://') ? project.repoUrl : null
+---
+
+<Layout title={`${project.name} (${formatYears(project.bornAt, project.diedAt)})`} description={project.epitaph}>
+  <a class="back" href="/">Back to the graveyard</a>
+
+  <article class="grave">
+    <header class="headstone">
+      <p class="label">{STATUS[project.status]}</p>
+      <h1>{project.name}</h1>
+      <p class="headstone__dates">
+        <time datetime={project.bornAt}>{formatDate(project.bornAt)}</time>
+        {' – '}
+        {project.diedAt ? <time datetime={project.diedAt}>{formatDate(project.diedAt)}</time> : 'still twitching'}
+      </p>
+      {days !== null && <p class="headstone__lived">lived {formatLifespan(days)}</p>}
+      <p class="headstone__epitaph">{project.epitaph}</p>
+    </header>
+
+    <Candle slug={project.slug} name={project.name} />
+
+    <section class="section" aria-labelledby="autopsy-heading">
+      <h2 id="autopsy-heading">Autopsy</h2>
+      <dl class="autopsy">
+        <dt>{undead ? 'What keeps it down' : 'Cause of death'}</dt>
+        <dd>
+          <a class="chip" href={`/cause/${project.cause.slug}/`}>
+            {
+              project.cause.icon && (
+                <span class="chip__icon" aria-hidden="true">
+                  {project.cause.icon}
+                </span>
+              )
+            }
+            {project.cause.title}
+          </a>
+        </dd>
+        <dt>Stack</dt>
+        <dd>
+          <ul class="chip-list">
+            {
+              project.stack.map((tech) => (
+                <li>
+                  <a class="chip" href={`/stack/${tech.slug}/`} style={chipColor(tech.color)}>
+                    {tech.name}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </dd>
+        {
+          project.lastCommit && (
+            <>
+              <dt>Last commit</dt>
+              <dd>
+                <code>{project.lastCommit}</code>
+              </dd>
+            </>
+          )
+        }
+        {
+          project.moodAtDeath && (
+            <>
+              <dt>{undead ? 'Mood at last visit' : 'Mood at death'}</dt>
+              <dd>{MOOD[project.moodAtDeath]}</dd>
+            </>
+          )
+        }
+        {
+          project.linesOfCode !== null && (
+            <>
+              <dt>Lines of code</dt>
+              <dd>{project.linesOfCode.toLocaleString('en-US')}</dd>
+            </>
+          )
+        }
+      </dl>
+    </section>
+
+    {
+      project.obituary && project.obituary.length > 0 && (
+        <section class="section" aria-labelledby="obituary-heading">
+          <h2 id="obituary-heading">Obituary</h2>
+          <div class="prose">
+            <PortableText value={project.obituary} />
+          </div>
+        </section>
+      )
+    }
+
+    <section class="section" aria-labelledby="lesson-heading">
+      <h2 id="lesson-heading">What it taught me</h2>
+      <blockquote class="lesson">
+        <p>{project.lesson}</p>
+      </blockquote>
+    </section>
+
+    {
+      ruinsUrl && (
+        <p class="section">
+          <a href={ruinsUrl} rel="noopener">
+            Visit the ruins
+          </a>
+        </p>
+      )
+    }
+
+    <nav class="neighbours" aria-label="Neighbouring graves">
+      {
+        previous && (
+          <a href={`/rip/${previous.slug}/`} rel="prev">
+            <span class="label">Previous grave</span>{' '}
+            <span>{previous.name}</span>
+          </a>
+        )
+      }
+      {
+        next && (
+          <a class="neighbours__next" href={`/rip/${next.slug}/`} rel="next">
+            <span class="label">Next grave</span>{' '}
+            <span>{next.name}</span>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+</Layout>
