@@ -1,0 +1,79 @@
+---
+import {getProjects, getSettings, getStats} from '../lib/sanity'
+import {formatLifespan, lifespanDays} from '../lib/stats'
+
+const [settings, projects] = await Promise.all([getSettings(), getProjects()])
+const stats = getStats(projects)
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{settings.title}</title>
+  </head>
+  <body>
+    <h1>{settings.title}</h1>
+    <p>{settings.tagline}</p>
+
+    <dl>
+      <dt>Buried</dt>
+      <dd>{stats.buried}</dd>
+      <dt>Retired</dt>
+      <dd>{stats.retired}</dd>
+      {
+        stats.averageLifespanDays !== null && (
+          <>
+            <dt>Average lifespan</dt>
+            <dd>{formatLifespan(stats.averageLifespanDays)}</dd>
+          </>
+        )
+      }
+      {
+        stats.mostCommonCause && (
+          <>
+            <dt>Most common cause of death</dt>
+            <dd>
+              {stats.mostCommonCause.title} ({stats.mostCommonCause.count})
+            </dd>
+          </>
+        )
+      }
+      {
+        stats.shortest && (
+          <>
+            <dt>Shortest life</dt>
+            <dd>
+              {stats.shortest.name}, {formatLifespan(stats.shortest.days)}
+            </dd>
+          </>
+        )
+      }
+      {
+        stats.longest && (
+          <>
+            <dt>Longest life</dt>
+            <dd>
+              {stats.longest.name}, {formatLifespan(stats.longest.days)}
+            </dd>
+          </>
+        )
+      }
+    </dl>
+
+    <ul>
+      {
+        projects.map((project) => {
+          const days = lifespanDays(project.bornAt, project.diedAt)
+          return (
+            <li>
+              {project.name} ({project.cause.title}
+              {days !== null && `, lived ${formatLifespan(days)}`}): {project.epitaph}
+            </li>
+          )
+        })
+      }
+    </ul>
+  </body>
+</html>
