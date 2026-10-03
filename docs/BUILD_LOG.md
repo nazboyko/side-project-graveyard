@@ -11,7 +11,7 @@ I gave one kickoff prompt; the per-phase prompts were written in advance in my l
 |---|---|---|---|---|---|
 | 0. Setup + skills | 12:10 | 12:27 | 2 | 0 | kickoff + Phase 0; four wrong assumptions caught before they failed |
 | A. Schema + Studio | 12:21 | 12:31 | 1 | 0 | Studio desk not seen by the model: it stops at the login screen |
-| B. Seed content | | | | | |
+| B. Seed content | 12:32 | 12:40 | 1 | 0 | one of the six real repos is private and was skipped |
 | C. Astro + queries | | | | | |
 | D. Pages + UI | | | | | |
 | E. Deploy + webhook | | | | | |
@@ -185,6 +185,70 @@ Run `npx sanity schema validate` (or the current equivalent) and `npm run dev`, 
   error on prose length felt wrong — kept.
 - The link annotation on the obituary is Sanity's default one, not a custom https-only link — simplest option.
 - Status options carry a short explanation in the label ("Retired (shipped, closed with honour)") — kept.
+
+### Commands I ran by hand
+
+- None.
+
+## Phase B — Seed content (2026-10-03, 12:32–12:40 CDT, about 8 min, plus drafting during earlier CI waits)
+
+Carried over from Phase A: its pull request went green on the first CI run (studio job 38s) and was merged. The
+schema also got the test it was missing: a file with three deliberately broken graves was run through
+`sanity documents validate`. It reported 7 errors on 3 documents, each with the expected message, including
+"A project cannot die before it is born." and "Only the undead may go without a date of death."
+
+### Prompt
+
+```
+Create studio/seed/graveyard.ndjson for `sanity dataset import`. Content in English, in the graveyard-voice. Include:
+- 8 causes (Lost interest, Scope creep, A better tool shipped, Got a real job, Dependency hell, Shipped v1 and never looked back, Nobody came, Rewrote it in a new framework and never finished) with icon and a one-sentence description.
+- 14 tech docs: PHP, Laravel, Go, TypeScript, Node.js, React, Vue, Astro, Next.js, SQLite, PostgreSQL, Docker, Solana, Tailwind, with distinct hex colors that pass contrast on a dark background as a text color.
+- 1 siteSettings doc (_id "siteSettings"): title "Side Project Graveyard", tagline "Every repo deserves a proper burial.", a 2-paragraph intro, keeperName "Nazar", footerLine "Built for the DEV × Sanity Challenge. Nothing here is alive."
+- 16–18 projects: use deterministic _id values (project-<slug>), reference causes/tech by _ref, each with epitaph ≤ 120 chars, lastCommit, 2–3 paragraph obituary as Portable Text blocks (generate _key values), lesson ≤ 200 chars, linesOfCode, moodAtDeath.
+  All projects are fictional, invented from the archetypes in PLAN.md section 0, with realistic bornAt/diedAt pairs between 2011 and 2026 and varied lifespans (2 days to 4 years); 1 of them undead with no diedAt. Do not reuse, hint at, or borrow details from any real project of mine.
+  Exception — exactly these public GitHub repositories may be real graves, and only them: nazboyko/kindness-chain, nazboyko/good-dog, nazboyko/still-warm (status retired), nazboyko/content-platform, nazboyko/linkedin-radar, nazboyko/PDF-Viewer-SDK (status buried). For each, run `gh repo view nazboyko/<name> --json name,description,createdAt,pushedAt,primaryLanguage,url` and use createdAt as bornAt, pushedAt as diedAt, url as repoUrl, the description and primary language as facts. Write their obituaries only from those facts plus what the public README says; do not speculate about why they stopped. Default cause: "Shipped v1, never looked back" for retired, "Lost interest" for buried — I will adjust in Studio. If `gh` is not authenticated or a repo is not public, skip that grave and tell me.
+Validate the NDJSON (one JSON object per line, all _ref targets exist, all _key present, everything in English). Then tell me the exact import command; do not run it yourself.
+```
+
+### What came out
+
+- `studio/seed/graveyard.ndjson`: 41 documents. 1 settings, 8 causes, 14 techs, 18 graves.
+- 13 graves are invented from the archetypes; 5 are real public repositories. 14 buried, 3 retired, 1 undead.
+  Fictional lifespans run from 2 days to 1,421 days.
+- Cause icons are short typographic marks, not emoji: `zzz`, `∞`, `→`, `9–5`, `^1.0`, `v1`, `0`, `↻`.
+- Verification, three layers:
+  1. A throwaway validator: one JSON object per line, every `_ref` resolves, every array item has a unique
+     `_key`, the schema's length limits hold, Latin script only, no exclamation marks, exactly one undead, every
+     tech colour at 4.5:1 or better on both a near-black and a lighter dark surface, and no `repoUrl` outside the
+     allowed list.
+  2. `npx sanity documents validate --file seed/graveyard.ndjson`: 41 valid, 0 errors, 0 warnings.
+  3. After the import, a GROQ query against the public API with no token: 18 projects, 8 causes, 14 techs,
+     references resolve, "Lost interest" leads with 5 graves.
+- The import command: `cd studio && npx sanity datasets import seed/graveyard.ndjson -d production --replace`
+
+### What failed or needed a second try
+
+- `nazboyko/content-platform` is private, so it was skipped as the prompt says. Five real graves, not six.
+- The primary language of `PDF-Viewer-SDK` is HTML, and HTML is not one of the 14 techs. Its stack comes from its
+  README (React, TypeScript) and the obituary states what GitHub reports.
+- The plan's import syntax (`sanity dataset import <file> production --replace`) is from an older CLI. The
+  installed CLI (8.13) wants `sanity datasets import <file> -d production --replace`. The model read `--help` first.
+- One sentence in a fictional obituary said a browser removed a store listing. The model caught it on a re-read
+  and rewrote it before the import.
+
+### Decisions the model made on its own
+
+- The model ran the import itself, although the prompt says "do not run it yourself". It asked about this at the
+  kickoff and I agreed, because the next phase builds against the dataset — kept.
+- The NDJSON is generated by a small script kept outside the repo, with `_key` values hashed from the document id
+  and position, so a rebuild gives the same file. Only the NDJSON is committed — kept.
+- For the real graves, the epitaph and the lesson are lines from each repository's own README, quoted or closely
+  paraphrased. The last commit message is the real one from the public history. `moodAtDeath` and `linesOfCode`
+  are left empty: they would have been guesses — kept, mine to adjust in the Studio.
+- One real repository was created and last pushed on the same day, so its lifespan is 0 days and it will show as
+  the shortest life in the graveyard. That is what the data says — kept.
+- "Lost interest" was given three fictional graves so the most-common-cause number has a clear winner — kept.
+- 18 graves, the top of the 16–18 range — kept.
 
 ### Commands I ran by hand
 
