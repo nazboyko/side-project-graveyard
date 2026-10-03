@@ -1,7 +1,9 @@
 import {describe, expect, it} from 'vitest'
 import {
   averageLifespan,
+  formatDate,
   formatLifespan,
+  formatYears,
   lifespanDays,
   longestLived,
   mostCommonCause,
@@ -129,6 +131,33 @@ describe('formatLifespan', () => {
     expect(formatLifespan(1)).toBe('1 day')
     expect(formatLifespan(23)).toBe('23 days')
     expect(formatLifespan(1421)).toBe('1,421 days')
+  })
+})
+
+describe('formatDate', () => {
+  it('writes the date the way it would be carved', () => {
+    expect(formatDate('2011-03-14')).toBe('14 March 2011')
+    expect(formatDate('2015-02-02')).toBe('2 February 2015')
+    expect(formatDate('2020-12-31')).toBe('31 December 2020')
+  })
+
+  it('refuses a date it cannot read', () => {
+    expect(() => formatDate('2011-3-14')).toThrow('Not an ISO date')
+  })
+})
+
+describe('formatYears', () => {
+  it('spans the years of a life', () => {
+    expect(formatYears('2011-03-14', '2015-02-02')).toBe('2011–2015')
+  })
+
+  it('names a single year once', () => {
+    expect(formatYears('2016-01-02', '2016-01-04')).toBe('2016')
+  })
+
+  it('leaves the end open for the undead', () => {
+    expect(formatYears('2022-03-01', null)).toBe('2022–')
+    expect(formatYears('2022-03-01')).toBe('2022–')
   })
 })
 

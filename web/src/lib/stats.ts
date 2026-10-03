@@ -88,6 +88,35 @@ export function formatLifespan(days: number): string {
   return days === 1 ? '1 day' : `${days.toLocaleString('en-US')} days`
 }
 
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+
+/** "14 March 2011", the way it would be carved. */
+export function formatDate(iso: string): string {
+  const date = new Date(utcDay(iso))
+  return `${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]} ${date.getUTCFullYear()}`
+}
+
+/** The years on a stone: "2011–2015", "2016" for a life inside one year, "2022–" for the undead. */
+export function formatYears(bornAt: string, diedAt?: string | null): string {
+  const born = new Date(utcDay(bornAt)).getUTCFullYear()
+  if (!diedAt) return `${born}–`
+  const died = new Date(utcDay(diedAt)).getUTCFullYear()
+  return born === died ? `${born}` : `${born}–${died}`
+}
+
 const MAX_TILT_DEG = 0.6
 
 /** A stable lean for each stone, between -0.6 and 0.6 degrees, from a hash of its slug. */
