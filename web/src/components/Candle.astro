@@ -1,0 +1,66 @@
+---
+interface Props {
+  slug: string
+  name: string
+}
+
+const {slug, name} = Astro.props
+---
+
+{/* Hidden until the script runs: without it the button would do nothing, and nothing here pretends. */}
+<section class="candle" data-candle={slug} aria-label={`A candle for ${name}`} hidden>
+  <div class="candle__wax" aria-hidden="true">
+    <span class="candle__flame"></span>
+  </div>
+  <div class="candle__body">
+    <button class="button" type="button">Light a candle</button>
+    <p class="candle__count" role="status"></p>
+    <p class="candle__note">Candles are counted in this browser only.</p>
+  </div>
+</section>
+
+<script>
+  const KEY_PREFIX = 'graveyard:candles:'
+
+  function readCount(key: string): number {
+    try {
+      const stored = Number(localStorage.getItem(key))
+      return Number.isInteger(stored) && stored > 0 ? stored : 0
+    } catch {
+      return 0
+    }
+  }
+
+  function writeCount(key: string, count: number): void {
+    try {
+      localStorage.setItem(key, String(count))
+    } catch {
+      // Storage is blocked or full. The candle still burns until the page is closed.
+    }
+  }
+
+  for (const candle of document.querySelectorAll<HTMLElement>('[data-candle]')) {
+    const button = candle.querySelector('button')
+    const status = candle.querySelector('[role="status"]')
+    if (!button || !status) continue
+
+    const key = KEY_PREFIX + candle.dataset.candle
+    let count = readCount(key)
+
+    const render = () => {
+      candle.toggleAttribute('data-lit', count > 0)
+      button.textContent = count > 0 ? 'Light another candle' : 'Light a candle'
+      status.textContent =
+        count === 0 ? 'No candle lit here yet.' : count === 1 ? '1 candle lit here' : `${count} candles lit here`
+    }
+
+    button.addEventListener('click', () => {
+      count += 1
+      writeCount(key, count)
+      render()
+    })
+
+    render()
+    candle.hidden = false
+  }
+</script>
