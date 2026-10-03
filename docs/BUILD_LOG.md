@@ -10,7 +10,7 @@ I gave one kickoff prompt; the per-phase prompts were written in advance in my l
 | Phase | Started | Ended | Prompts | Retries | Notes |
 |---|---|---|---|---|---|
 | 0. Setup + skills | 12:10 | 12:27 | 2 | 0 | kickoff + Phase 0; four wrong assumptions caught before they failed |
-| A. Schema + Studio | | | | | |
+| A. Schema + Studio | 12:21 | 12:31 | 1 | 0 | Studio desk not seen by the model: it stops at the login screen |
 | B. Seed content | | | | | |
 | C. Astro + queries | | | | | |
 | D. Pages + UI | | | | | |
@@ -137,3 +137,55 @@ borrowed skills came from, and nothing about my other work goes into this repo.
 - `npm create sanity@latest -- --template clean --typescript --output-path studio --dataset-default` → `studio/`
   with a new project and a public `production` dataset, before the session.
 - `git init -b main` → empty repository, before the session.
+
+## Phase A — Schema + Studio (2026-10-03, 12:21–12:31 CDT, about 10 min)
+
+Carried over from Phase 0: its pull request went green on the first CI run (studio job 1m7s; the web job skipped
+every step because `web/` does not exist yet) and was merged by rebase.
+
+### Prompt
+
+```
+In studio/, define the content model with defineType/defineField in schemaTypes/ (one file per type) exactly as described in PLAN.md section 1:
+- project: name, slug (from name, unique), epitaph (string, required, max 120), status (string list: buried|retired|undead, initialValue buried, radio layout), bornAt (date, required), diedAt (date, custom rule: required unless status is undead; must be >= bornAt), cause (reference to cause, required), stack (array of references to tech, min 1, max 8, unique), lastCommit (string, max 80), obituary (array of block with only normal/h3/blockquote styles, bold/italic/link marks, no images), lesson (text, required, max 200), repoUrl (url, https only), linesOfCode (number, integer, min 0), moodAtDeath (string list: relief|guilt|denial|peace).
+  Use field groups: Stone (name, epitaph, status, bornAt, diedAt), Autopsy (cause, stack, lastCommit, moodAtDeath, linesOfCode), Story (obituary, lesson, repoUrl).
+  preview: title = name, subtitle = "<cause title> · <bornAt year>–<diedAt year or 'undead'>". orderings: diedAt desc (default), name asc.
+- cause: title, slug, description (text, max 240), icon (string, max 4 chars).
+- tech: name, slug, color (string, regex ^#[0-9a-fA-F]{6}$).
+- siteSettings: title, tagline, intro (array of block), keeperName, footerLine. Singleton: in structure.ts build a desk with "Settings" (document id siteSettings), "Graveyard" (projects), "Causes of death", "Stack"; hide siteSettings from the default list and disable create/delete for it.
+Validation messages should be in the keeper's voice (see .claude/skills/graveyard-voice): e.g. "A project cannot die before it is born."
+Run `npx sanity schema validate` (or the current equivalent) and `npm run dev`, then show me the Studio URL. Append the Phase A entry to docs/BUILD_LOG.md: the prompt, what you produced, anything that failed.
+```
+
+### What came out
+
+- `studio/schemaTypes/project.ts`, `cause.ts`, `tech.ts`, `siteSettings.ts`, one type per file, registered in `index.ts`.
+- `project` has three field groups (Stone, Autopsy, Story), 14 fields and 17 validation rules, each with its own
+  message in the keeper's voice. The date rule reads the sibling fields: no death date is allowed only for the
+  undead, and a death date before the birth date is refused with "A project cannot die before it is born."
+- `studio/structure.ts`: a desk with Settings (fixed document id `siteSettings`), Graveyard (sorted by date of
+  death, newest first), Causes of death, Stack. `sanity.config.ts` removes the singleton from the "new document"
+  templates and leaves it only the publish, discard and restore actions.
+- Verification: `npx tsc --noEmit` exit 0; `npx sanity schema validate` 0 errors, 0 warnings; `npm run dev` served
+  the Studio at http://localhost:3333 with no console errors.
+
+### What failed or needed a second try
+
+- Nothing failed. One thing was not checked: the dev Studio stops at the login screen and the model does not sign
+  in to my accounts, so the desk, the field groups and the date validation were not seen on screen in this phase.
+  The seed import in Phase B is the next real test of the validation rules.
+
+### Decisions the model made on its own
+
+- The `project` type is titled "Grave" in the Studio; the type name stays `project` — kept.
+- The slug uses Sanity's built-in uniqueness check; no custom `isUnique` — kept.
+- `stack`, `description` on `cause` and `color` on `tech` are required, because the pages render them
+  unconditionally. The prompt only gave their limits — kept.
+- Obituary length is a warning at more than four blocks, not an error: the plan asks for 2–4 paragraphs and a hard
+  error on prose length felt wrong — kept.
+- The link annotation on the obituary is Sanity's default one, not a custom https-only link — simplest option.
+- Status options carry a short explanation in the label ("Retired (shipped, closed with honour)") — kept.
+
+### Commands I ran by hand
+
+- None.
