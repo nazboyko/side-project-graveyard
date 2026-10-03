@@ -13,7 +13,7 @@ I gave one kickoff prompt; the per-phase prompts were written in advance in my l
 | A. Schema + Studio | 12:21 | 12:31 | 1 | 0 | Studio desk not seen by the model: it stops at the login screen |
 | B. Seed content | 12:32 | 12:40 | 1 | 0 | one of the six real repos is private and was skipped |
 | C. Astro + queries | 12:33 | 12:46 | 1 | 3 | peer dependencies, TypeScript 7, `process` types |
-| D. Pages + UI | | | | | |
+| D. Pages + UI | 12:48 | 13:01 | 1 | 3 | glued link names, stats row on a phone, `hidden` vs `display: flex` |
 | E. Deploy + webhook | | | | | |
 | F. Polish | | | | | |
 | G. README + post | | | | | |
@@ -317,3 +317,92 @@ Create a placeholder src/pages/index.astro that renders the stats and a plain li
 ### Commands I ran by hand
 
 - None.
+
+## Phase D — Pages + UI (2026-10-03, 12:48–13:01 CDT, about 13 min, plus drafting during earlier CI waits)
+
+Carried over from Phase C: its pull request went green on the first CI run (web job 1m7s, studio job 44s) and was
+merged. Right after the merge the model printed the hosting and webhook checklist for me and went on without waiting.
+
+### Prompt
+
+One word is changed: the prompt quotes a section title from my plan, which is written in Ukrainian. It is
+translated here ("Pages") because this repo is English only.
+
+```
+Build the four pages in web/ following PLAN.md section 1 ("Pages") and .claude/skills/graveyard-voice and accessible-interactions. Plain Astro components + a single global CSS file with custom properties; no UI libraries, no Tailwind.
+- Layout.astro: skip link, header (site title → "/", tagline), main, footer (footerLine, link to the GitHub repo, link to the challenge). Dark theme only; one accent (candle yellow). Serif for epitaphs and names, system sans elsewhere. Meta: title, description, canonical, Open Graph with a static /og.png (generate a simple 1200×630 SVG-based PNG with the site title; no external services).
+- index.astro: hero (title, tagline, intro from siteSettings), stats row (buried, retired, average lifespan in days, most common cause, shortest life) rendered as a <dl>, cause filter as a list of links to /cause/<slug> with counts, then the graveyard: a responsive grid of Tombstone.astro cards (name, years, epitaph, cause chip, status mark for retired/undead). Tombstone shape: top corners rounded, slight rotation from a hash of the slug (±0.6deg), no rotation under prefers-reduced-motion. Cards link to /rip/<slug>.
+- rip/[slug].astro via getStaticPaths: large stone, years + lifespan in days ("lived 23 days"), epitaph, status; "Autopsy" <dl> (cause → link, stack chips → links, last commit in a <code>, mood, lines of code); "Obituary" rendered with astro-portabletext; "What it taught me" blockquote; "Visit the ruins" link if repoUrl. "Light a candle" button: a small inline <script> that increments a per-slug counter in localStorage (try/catch), shows "N candles lit here" in a role="status" region, and animates a CSS flame (disabled under prefers-reduced-motion). Previous/next grave links by diedAt.
+- cause/[slug].astro and stack/[slug].astro: heading, description, grid of tombstones.
+- 404.astro: "This project is not dead yet. Or never existed." with a link home.
+Run `npm run build`, then `npx astro check`. Give me a list of the pages and the file count in dist/. Append Phase D to docs/BUILD_LOG.md: which prompts needed a second try, what you changed on your own and why.
+```
+
+### What came out
+
+- `src/layouts/Layout.astro`: skip link, header, `main`, footer, title, description, canonical and Open Graph tags.
+- `src/styles/global.css`: one stylesheet, eight colour tokens, system serif and sans stacks. No web fonts, no
+  images besides the social card.
+- `src/components/`: `Tombstone`, `Graveyard` (the grid and its empty state), `CauseFilter`, `Candle`.
+- Pages: `/`, `/rip/<slug>/` (18), `/cause/<slug>/` (8), `/stack/<slug>/` (14), `/404`. 42 HTML pages, 45 files in
+  `dist/` (the pages, one CSS file, `og.png`, `favicon.svg`). The candle script is inlined; there is no JS file.
+- `public/og.png`, drawn once from an SVG by `scripts/og.mjs` with `sharp`, which Astro already installs.
+- `src/lib/stats.ts` gained `formatDate` and `formatYears`; `src/lib/color.ts` guards the tech colour before it
+  goes into a style attribute. 28 tests in 2 files.
+- Verification: `npx astro check` 0 errors in 20 files; `npm test` 28 passed; `npm run build` 42 pages; the five
+  expected route types exist in `dist/`.
+- Lighthouse, mobile, against `astro preview` of the production build, home page and one grave page: performance
+  100, accessibility 100, best practices 100, SEO 100 on both. The plan's target was accessibility 95.
+- Seen in a real browser at 1440, 768 and 375 pixels: home, a grave, a cause page, a stack page, the 404. No
+  horizontal overflow at any width. Console clean.
+- Keyboard: the first Tab lands on the skip link and shows it; 13 more Tabs pass the site title, two stat links
+  and nine filter links and reach the first tombstone, which shows the candle-coloured ring around the whole stone.
+- Candle: two clicks gave "2 candles lit here", the stored count 2, the flame lit and animated, the button label
+  changed to "Light another candle". The reduced-motion rule is in the built CSS (tilt off, flame still); it was
+  read in the stylesheet, not exercised with an emulated setting.
+
+### Audience check before building (my review skill's questions, answered by the model)
+
+1. Who smiles, and when? A developer at "Average lifespan: 355 days", then at the first epitaph that matches a
+   folder of their own. A judge when they see the numbers come from references, not from a hard-coded string.
+2. Would it fit a generic CMS demo? The grid is a card grid. What is on the cards is not: years, a lifespan, an
+   epitaph and a cause. The register and the filter only exist because cause and dates are modelled as data.
+3. What does the visitor do? Filter by cause, open a grave, walk to the neighbouring one, light a candle.
+4. Does it serve the three moments (register, stones, candle)? Yes. Nothing else on the page asks for attention.
+5. What was cut to make the rest stronger? A cause index page, hover transitions, any motion besides the flame,
+   web fonts, and a designed look for `/stack/` beyond heading plus grid.
+
+### What failed or needed a second try
+
+- Link names were glued together. The previous/next links read "Previous graveEverything.js" and the filter
+  links "Lost interest5graves" to a screen reader, because the label and the name sat in adjacent spans with no
+  space between them. The model found it by reading `textContent` in the browser, not in the screenshot, where
+  it looked fine. Fixed with explicit spaces; checked again in the built HTML.
+- The candle section is `display: flex`, which silently defeats the `hidden` attribute. The model added
+  `.candle[hidden] { display: none }` before the first run, so this never showed on screen.
+- The first stats row put five cells in one column on a phone and took a whole screen. Changed to two columns
+  with the average lifespan on its own row.
+- Long names in the stats row ("PDF Viewer SDK") wrapped at the number size. Text values now use a smaller size.
+- Merging the previous pull request with these drafts in the working tree needed a `git stash` first, or the
+  branch switch would have refused.
+
+### Decisions the model made on its own
+
+- A tombstone is an `article` with a heading link stretched over the whole stone, not one big link. The link's
+  name is the project name, the rest stays readable text — kept.
+- The stone shows the lifespan next to the years ("2019 · lived 113 days"). The prompt asked for years only; the
+  number is the more interesting half — kept.
+- The candle block is hidden until its script runs, so without JavaScript there is no button that does nothing — kept.
+- Under the count it says "Candles are counted in this browser only." The count is local, and the page says so — kept.
+- For the undead grave the labels change: "What keeps it down" instead of "Cause of death", "Mood at last visit"
+  instead of "Mood at death", and "still twitching" instead of a date — kept.
+- The cause filter is repeated on each cause page with the current cause marked, plus an "All graves" link — kept.
+- Each query runs once per production build instead of once per page (a small in-memory cache in
+  `src/lib/sanity.ts`, off in dev) — kept.
+- The stats section has a visible heading, "The register" — kept.
+- No hover transitions. The plan allows one moving thing, the flame — kept.
+- The social card uses Georgia from the machine that drew it; the PNG is committed so the build needs no font — kept.
+
+### Commands I ran by hand
+
+- None yet. The hosting and webhook checklist is waiting for me.
