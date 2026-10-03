@@ -13,6 +13,7 @@ The gates are not open yet. This file grows as the build does.
 - [@sanity/astro](https://github.com/sanity-io/sanity-astro), the Sanity client inside the Astro build
 - [astro-portabletext](https://github.com/theisel/astro-portabletext), renders the obituaries
 - [Vitest](https://vitest.dev), runs the tests for the date and stats maths
+- [sharp](https://sharp.pixelplumbing.com), draws the social card once, from an SVG in `web/scripts/og.mjs`
 
 ## License
 

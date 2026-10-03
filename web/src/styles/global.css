@@ -1,0 +1,702 @@
+/* Side Project Graveyard. One stylesheet, night only, one accent: the candle. */
+
+:root {
+  color-scheme: dark;
+
+  --night: #0d0f13;
+  --ground: #14171d;
+  --stone: #23272f;
+  --stone-light: #2d323c;
+  --stone-edge: #3d4350;
+  --text: #e9e6df;
+  --muted: #a9aeb8;
+  --candle: #f5c451;
+
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --page: 68rem;
+  --measure: 40rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 1.5rem;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(90rem 34rem at 50% -6rem, #1b2130 0%, transparent 70%) no-repeat,
+    var(--night);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 600;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  color: var(--candle);
+}
+
+:focus-visible {
+  outline: 2px solid var(--candle);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- frame ---------- */
+
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 10;
+  padding: 0.5rem 0.9rem;
+  background: var(--candle);
+  color: var(--night);
+  font-weight: 600;
+  border-radius: 0.3rem;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+  color: var(--night);
+}
+
+.site-header,
+.site-footer,
+main {
+  width: 100%;
+  max-width: var(--page);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  padding-block: 1.25rem;
+}
+
+.site-title {
+  font-family: var(--serif);
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.site-tagline {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+main {
+  flex: 1;
+  padding-block: clamp(1rem, 4vw, 2.5rem) 4rem;
+  scroll-margin-top: 1.5rem;
+}
+
+main:focus {
+  outline: none;
+}
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  padding-block: 1.5rem 2.5rem;
+  border-top: 1px solid var(--stone-edge);
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.site-footer ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- shared pieces ---------- */
+
+.label {
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.section {
+  margin-top: clamp(2.5rem, 7vw, 4rem);
+}
+
+.section > h2 {
+  margin-bottom: 1rem;
+}
+
+.section-note {
+  margin: -0.5rem 0 1.25rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.prose {
+  max-width: var(--measure);
+}
+
+.prose > * + * {
+  margin-top: 1em;
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--stone-edge);
+  color: var(--muted);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--stone-edge);
+  border-radius: 999px;
+  background: var(--night);
+  color: var(--chip, var(--text));
+  font-size: 0.875rem;
+  line-height: 1.4;
+  text-align: left;
+  text-decoration: none;
+}
+
+a.chip:hover,
+.chip[aria-current='page'] {
+  border-color: var(--candle);
+  color: var(--candle);
+}
+
+.chip__icon {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+}
+
+.chip__count {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- gate (home hero) ---------- */
+
+.gate {
+  padding-block: clamp(1.5rem, 6vw, 4rem) 0;
+  max-width: var(--measure);
+}
+
+.gate h1 {
+  font-size: clamp(2.5rem, 9vw, 4.5rem);
+  letter-spacing: -0.01em;
+}
+
+.gate__tagline {
+  margin-top: 0.75rem;
+  color: var(--candle);
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 3.5vw, 1.625rem);
+  font-style: italic;
+}
+
+.gate__intro {
+  margin-top: 1.5rem;
+  color: var(--muted);
+}
+
+/* ---------- stats ---------- */
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  margin: 0;
+  border: 1px solid var(--stone-edge);
+  border-radius: 0.5rem;
+  background: var(--stone-edge);
+  overflow: hidden;
+}
+
+.stats > div {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  padding: 1.1rem 1.25rem 1.25rem;
+  background: var(--ground);
+}
+
+.stats dd {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 4.5vw, 2rem);
+  line-height: 1.15;
+}
+
+.stats dd.stats__name {
+  font-size: clamp(1.25rem, 3.5vw, 1.5rem);
+}
+
+.stats dd small {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* The one number a visitor should leave with gets its own row on a phone. */
+.stats .stats__key {
+  grid-column: 1 / -1;
+}
+
+.stats .stats__key dd {
+  color: var(--candle);
+}
+
+@media (min-width: 52rem) {
+  .stats {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .stats .stats__key {
+    grid-column: auto;
+  }
+}
+
+/* ---------- the graveyard ---------- */
+
+.graveyard {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr));
+  gap: 2.25rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.graveyard > li {
+  display: flex;
+}
+
+.stone {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 17rem;
+  padding: 2.75rem 1.25rem 1.25rem;
+  border: 1px solid var(--stone-edge);
+  border-radius: 8rem 8rem 0.4rem 0.4rem / 5.5rem 5.5rem 0.4rem 0.4rem;
+  background: linear-gradient(180deg, var(--stone-light), var(--stone) 70%);
+  box-shadow: 0 1.1rem 1.25rem -1rem #000;
+  text-align: center;
+  transform: rotate(var(--tilt, 0deg));
+}
+
+.stone:hover {
+  border-color: var(--candle);
+}
+
+.stone__name {
+  font-size: 1.375rem;
+}
+
+.stone__link {
+  text-decoration: none;
+}
+
+/* The whole stone is the target; the link's name stays just the project name. */
+.stone__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+@supports selector(:has(*)) {
+  .stone:has(.stone__link:focus-visible) {
+    outline: 2px solid var(--candle);
+    outline-offset: 3px;
+  }
+
+  .stone__link:focus-visible {
+    outline: none;
+  }
+}
+
+.stone__years {
+  color: var(--muted);
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.stone__epitaph {
+  font-family: var(--serif);
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.stone .chip {
+  margin-top: auto;
+}
+
+.empty {
+  color: var(--muted);
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+/* ---------- a grave ---------- */
+
+.back {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.grave {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+.headstone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  padding: clamp(3.5rem, 12vw, 5.5rem) clamp(1.25rem, 5vw, 2.5rem) clamp(1.75rem, 5vw, 2.5rem);
+  border: 1px solid var(--stone-edge);
+  border-radius: 50% 50% 0.5rem 0.5rem / clamp(6rem, 22vw, 11rem) clamp(6rem, 22vw, 11rem) 0.5rem 0.5rem;
+  background: linear-gradient(180deg, var(--stone-light), var(--stone) 75%);
+  box-shadow: 0 1.5rem 2rem -1.25rem #000;
+  text-align: center;
+}
+
+.headstone h1 {
+  font-size: clamp(2rem, 8vw, 3.25rem);
+  overflow-wrap: anywhere;
+}
+
+.headstone__dates {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.headstone__lived {
+  font-family: var(--serif);
+  font-size: 1.125rem;
+}
+
+.headstone__epitaph {
+  max-width: 28rem;
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.autopsy {
+  display: grid;
+  grid-template-columns: minmax(8rem, auto) 1fr;
+  gap: 0.9rem 1.5rem;
+  margin: 0;
+}
+
+.autopsy dt {
+  color: var(--muted);
+}
+
+.autopsy dd {
+  margin: 0;
+  min-width: 0;
+}
+
+@media (max-width: 30rem) {
+  .autopsy {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+
+  .autopsy dd {
+    margin-bottom: 0.9rem;
+  }
+}
+
+.lesson {
+  margin: 0;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--candle);
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  line-height: 1.4;
+}
+
+.neighbours {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  margin-top: clamp(2.5rem, 7vw, 4rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--stone-edge);
+}
+
+.neighbours a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-decoration: none;
+}
+
+.neighbours a > span:last-child {
+  font-family: var(--serif);
+  font-size: 1.125rem;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.neighbours__next {
+  margin-left: auto;
+  text-align: right;
+}
+
+/* ---------- the candle: the only button, and the only thing that moves ---------- */
+
+.candle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.25rem;
+  margin-top: 2rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--stone-edge);
+  border-radius: 0.5rem;
+  background: var(--ground);
+}
+
+.candle[hidden] {
+  display: none;
+}
+
+.candle__wax {
+  position: relative;
+  flex: none;
+  width: 0.9rem;
+  height: 2rem;
+  margin: 1.5rem 0.6rem 0;
+  border-radius: 0.2rem 0.2rem 0.1rem 0.1rem;
+  background: linear-gradient(90deg, #cfc5a8, #f0e8d2 45%, #bdb294);
+}
+
+.candle__wax::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 2px;
+  height: 0.35rem;
+  background: #4a4234;
+  transform: translateX(-50%);
+}
+
+.candle__flame {
+  position: absolute;
+  bottom: calc(100% + 0.25rem);
+  left: 50%;
+  width: 0.7rem;
+  height: 1.2rem;
+  border-radius: 50% 50% 50% 50% / 64% 64% 36% 36%;
+  background: radial-gradient(ellipse at 50% 78%, #fff7dc 0 22%, var(--candle) 55%, #e58a2c 100%);
+  box-shadow: 0 0 1.1rem 0.3rem rgb(245 196 81 / 0.3);
+  opacity: 0;
+  transform: translateX(-50%) scale(0.2);
+  transform-origin: 50% 100%;
+}
+
+.candle[data-lit] .candle__flame {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+  animation: flicker 2.6s ease-in-out infinite;
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1) rotate(-2deg);
+  }
+  30% {
+    transform: translateX(-50%) scale(1.05, 0.95) rotate(2deg);
+  }
+  55% {
+    transform: translateX(-50%) scale(0.96, 1.06) rotate(-1deg);
+  }
+  80% {
+    transform: translateX(-50%) scale(1.02, 0.98) rotate(1.5deg);
+  }
+}
+
+.candle__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 12rem;
+}
+
+.candle__count {
+  min-height: 1.6em;
+}
+
+.candle__note {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.button {
+  padding: 0.6rem 1.1rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: var(--candle);
+  color: var(--night);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: #ffd774;
+}
+
+/* ---------- page heads for /cause/ and /stack/ ---------- */
+
+.page-head {
+  max-width: var(--measure);
+  padding-top: clamp(0.5rem, 3vw, 1.5rem);
+}
+
+.page-head h1 {
+  margin-top: 0.4rem;
+  font-size: clamp(2rem, 7vw, 3.25rem);
+}
+
+.page-head p:not(.label) {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-style: italic;
+}
+
+/* ---------- 404 ---------- */
+
+.lost {
+  max-width: var(--measure);
+  margin-inline: auto;
+  padding-block: clamp(3rem, 14vw, 8rem);
+  text-align: center;
+}
+
+.lost h1 {
+  font-size: clamp(1.75rem, 6vw, 2.75rem);
+}
+
+.lost p {
+  margin-top: 1.5rem;
+}
+
+/* ---------- stillness ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .stone {
+    transform: none;
+  }
+
+  .candle[data-lit] .candle__flame {
+    animation: none;
+  }
+}

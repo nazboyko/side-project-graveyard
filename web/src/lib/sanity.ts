@@ -95,19 +95,35 @@ const projectFields = /* groq */ `
   repoUrl
 `
 
-export async function getSettings(): Promise<Settings> {
-  const settings = await sanityClient.fetch<Settings | null>(
-    /* groq */ `*[_id == "siteSettings"][0]{title, tagline, intro, keeperName, footerLine}`,
-  )
-  if (!settings) throw new Error('siteSettings is missing from the dataset. Import studio/seed/graveyard.ndjson.')
-  return settings
+const cache = new Map<string, Promise<unknown>>()
+
+/**
+ * A static build renders 40-odd pages and every one of them needs the settings and the graves.
+ * Each query runs once per build. In dev nothing is cached, so an edit in the Studio shows on reload.
+ */
+function once<T>(key: string, load: () => Promise<T>): Promise<T> {
+  if (!import.meta.env.PROD) return load()
+  if (!cache.has(key)) cache.set(key, load())
+  return cache.get(key) as Promise<T>
+}
+
+export function getSettings(): Promise<Settings> {
+  return once('settings', async () => {
+    const settings = await sanityClient.fetch<Settings | null>(
+      /* groq */ `*[_id == "siteSettings"][0]{title, tagline, intro, keeperName, footerLine}`,
+    )
+    if (!settings) throw new Error('siteSettings is missing from the dataset. Import studio/seed/graveyard.ndjson.')
+    return settings
+  })
 }
 
 /** Every grave, most recent death first. The undead have no date and come before everyone. */
-export async function getProjects(): Promise<Project[]> {
-  return sanityClient.fetch<Project[]>(
-    /* groq */ `*[_type == "project" && defined(slug.current)]
-      | order(coalesce(diedAt, "9999-12-31") desc, name asc) {${projectFields}}`,
+export function getProjects(): Promise<Project[]> {
+  return once('projects', () =>
+    sanityClient.fetch<Project[]>(
+      /* groq */ `*[_type == "project" && defined(slug.current)]
+        | order(coalesce(diedAt, "9999-12-31") desc, name asc) {${projectFields}}`,
+    ),
   )
 }
 
@@ -118,26 +134,30 @@ export async function getProject(slug: string): Promise<Project | null> {
   )
 }
 
-export async function getCauses(): Promise<Cause[]> {
-  return sanityClient.fetch<Cause[]>(
-    /* groq */ `*[_type == "cause" && defined(slug.current)] | order(title asc) {
-      title,
-      "slug": slug.current,
-      icon,
-      description,
-      "count": count(*[_type == "project" && references(^._id)])
-    }`,
+export function getCauses(): Promise<Cause[]> {
+  return once('causes', () =>
+    sanityClient.fetch<Cause[]>(
+      /* groq */ `*[_type == "cause" && defined(slug.current)] | order(title asc) {
+        title,
+        "slug": slug.current,
+        icon,
+        description,
+        "count": count(*[_type == "project" && references(^._id)])
+      }`,
+    ),
   )
 }
 
-export async function getTechs(): Promise<Tech[]> {
-  return sanityClient.fetch<Tech[]>(
-    /* groq */ `*[_type == "tech" && defined(slug.current)] | order(name asc) {
-      name,
-      "slug": slug.current,
-      color,
-      "count": count(*[_type == "project" && references(^._id)])
-    }`,
+export function getTechs(): Promise<Tech[]> {
+  return once('techs', () =>
+    sanityClient.fetch<Tech[]>(
+      /* groq */ `*[_type == "tech" && defined(slug.current)] | order(name asc) {
+        name,
+        "slug": slug.current,
+        color,
+        "count": count(*[_type == "project" && references(^._id)])
+      }`,
+    ),
   )
 }
 
