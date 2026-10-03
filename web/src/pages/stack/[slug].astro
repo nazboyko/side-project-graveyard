@@ -1,0 +1,43 @@
+---
+import type {GetStaticPaths, InferGetStaticPropsType} from 'astro'
+import Graveyard from '../../components/Graveyard.astro'
+import Layout from '../../layouts/Layout.astro'
+import {getProjects, getTechs} from '../../lib/sanity'
+
+export const getStaticPaths = (async () => {
+  const [techs, projects] = await Promise.all([getTechs(), getProjects()])
+  return techs.map((tech) => ({
+    params: {slug: tech.slug},
+    props: {
+      tech,
+      graves: projects.filter((project) => project.stack.some((item) => item.slug === tech.slug)),
+    },
+  }))
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const {tech, graves} = Astro.props
+
+const description =
+  graves.length === 0
+    ? `Nothing built with ${tech.name} is buried here yet.`
+    : graves.length === 1
+      ? `One project built with ${tech.name} is buried here.`
+      : `${graves.length} projects built with ${tech.name} are buried here.`
+---
+
+<Layout title={`Built with ${tech.name}`} description={description}>
+  <a class="back" href="/">Back to the graveyard</a>
+
+  <header class="page-head">
+    <p class="label">Built with</p>
+    <h1>{tech.name}</h1>
+    <p>{description}</p>
+  </header>
+
+  <section class="section" aria-labelledby="graves-heading">
+    <h2 id="graves-heading">{graves.length === 1 ? '1 grave' : `${graves.length} graves`}</h2>
+    <Graveyard projects={graves} />
+  </section>
+</Layout>
