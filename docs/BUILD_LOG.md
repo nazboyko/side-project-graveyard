@@ -73,14 +73,14 @@ Written at the end, on Sunday 4 October. Two tools worked on this repository. Cl
 redesign, reviewed the material pass and closed the project. Codex, a second agent, wrote the visual audit in
 [docs/visual-enhancement](visual-enhancement/) and implemented the material pass. Each entry below says whose it is.
 
-- **Messages from me: 24.** 11 for the build (one typed kickoff, eight phase prompts read from my plan, two
+- **Messages from me: 25.** 11 for the build (one typed kickoff, eight phase prompts read from my plan, two
   replies), 3 for the redesign, 4 to Codex (the audit, its clarification, the material pass and an addition to
-  it), 2 around the review (stand by, resume) and 4 at the end (a question about Firefox, Firefox's paste warning
-  pasted back, a screenshot of its console, and the merge message). On top of that, three questions answered with
+  it), 2 around the review (stand by, resume) 4 at the end (a question about Firefox, Firefox's paste warning
+  pasted back, a screenshot of its console, and the merge message) and 1 for a final check before publishing. On top of that, three questions answered with
   a click during the build.
-- **Pull requests: 15.** Eight for the build, five for the redesign, one for the material pass and its review
-  (#14 carries the work of both tools), and one for the final entry. CI did not fail once on the first fourteen.
-  The fifteenth carries this sentence.
+- **Pull requests: 16.** Eight for the build, five for the redesign, one for the material pass and its review
+  (#14 carries the work of both tools), one for the final entry and one for the check before publishing. CI did not
+  fail once on the first fifteen. The sixteenth carries this sentence.
 - **Drawings redone: 19**, all in the redesign. None was redrawn after it. The review moved the relic on the
   smallest stones and removed an outline that only one browser engine drew.
 - **Retries:** 8 in the build, 5 in the redesign besides the drawings, 6 in Codex's audit and none in its
@@ -107,6 +107,7 @@ redesign, reviewed the material pass and closed the project. Codex, a second age
 | Material pass | Codex | Sat 23:40–Sun 00:18 | not recorded | 2 | #14 |
 | Review of the material pass | Claude Code | Sun 00:43–01:49 | 66 min | 2 | #14 |
 | Relic fix, merge, the end | Claude Code | Sun 10:24–10:35, then #15 | about 15 min | 4 | #15 |
+| Check before publishing | Claude Code | Sun 11:19–11:30, then #16 | about 11 min | 1 | #16 |
 
 ## What I cut and why
 
@@ -3135,3 +3136,116 @@ check in this log, this entry, and the post draft.
 - The whole-project totals went to the top of this log, next to the two earlier summaries, and the line there that
   said "one autonomous session for the whole build" now names both tools. It was true when it was written.
 - This entry has its own branch and pull request (#15), merged by the model after green CI, as every phase was.
+
+### Check before publishing (Claude Code, 2026-10-04, 11:19–11:30 CDT, then its pull request)
+
+#### Prompt
+
+```text
+Two tasks before I publish: a final pre-submission check and a home tour GIF for the DEV post.
+Read CLAUDE.md, PLAN.md and CHALLENGE_RULES.md first. The build is finished (main at "Log project
+totals and end"); do not touch code unless task 1 finds a real defect.
+
+## 1. Final check (read-only unless something is actually broken)
+
+Run all of this and print results in one report:
+
+a. Repo: main up to date with origin, no open PRs, no leftover remote branches, last CI run on main
+   green (gh run list -L 3). Run the four pre-push checks from PLAN.md section 3a (tracked files,
+   cross-project mentions, Cyrillic, AI in commits) and show their output.
+b. Live site https://side-project-graveyard.boyko-nazar.workers.dev: crawl every URL in sitemap.xml
+   plus /404 and robots.txt; every page 200, every internal link 200, every <img> loads
+   (naturalWidth > 0), no console errors in headless Chromium on home, one buried grave, one
+   retired grave, one cause page and one stack page. Check og:title / og:image on home and a grave.
+c. Sanity: the public dataset answers without a token —
+   curl 'https://20pcz8by.api.sanity.io/v2025-01-01/data/query/production?query=count(*[_type=="project"])'
+   must equal the number of graves on the home page. In studio/ run
+   npx sanity documents query '*[_id in path("drafts.**")]{_id, _type}' — expect []. I discarded a
+   test draft on Attic a moment ago; if any draft is still there, tell me, do not delete or publish.
+   Also run the studio CI checks locally (tsc --noEmit, sanity schema validate).
+d. Submission: walk the mandatory checklist in CHALLENGE_RULES.md and print a concrete value for
+   every item (demo URL, repo URL, project ID, dataset, template, tags). Confirm README has the demo
+   URL, project ID, credits for every dependency in both package.json files and the provenance of the
+   five generated images; LICENSE exists. Cross-check BUILD_LOG totals against git log and
+   gh pr list --state merged --limit 50.
+e. If everything passes: no commits. If a real defect appears (broken link, missing credit, wrong
+   number in the log): branch final-check, fix, BUILD_LOG entry, PR, checks, merge — the usual loop.
+   Cosmetics are out of scope.
+
+## 2. Home tour GIF
+
+Write shots/record-tour.mjs (shots/ is excluded from git; nothing from this task is committed) using
+the same Playwright setup you used for docs/screenshots. Record against the live site, fresh browser
+context, viewport 1280x800, deviceScaleFactor 1, recordVideo on, no reduced-motion emulation.
+Storyboard, 15–25 s total, with short pauses so a reader can follow:
+  1. home, hero, hold 2 s
+  2. smooth scroll down into the yard, hold 3 s on the stones
+  3. move the mouse over two stones so the hover state shows
+  4. click one cause filter, hold 2 s on the filtered yard
+  5. click a grave, hold 2 s on the stone
+  6. scroll to the candle, click "Light a candle", hold 3 s so the flame and the counter are visible
+Adapt the steps to the real DOM; keep the mouse movement slow.
+Convert with ffmpeg (two-pass palettegen/paletteuse), 12 fps, 960 px wide, loop forever, to
+docs/post-images/home-tour.gif. Target 8 MB or less; if larger, drop to 10 fps and 800 px. If ffmpeg
+is missing, brew install ffmpeg; if that is not possible, capture frames with page.screenshot and
+encode with gifenc installed inside shots/ only. Then verify the result yourself: extract six evenly
+spaced frames, look at them, confirm the text is legible, there is no blank or white frame, the
+filter visibly changed the yard and the candle is lit at the end. Re-record if not.
+
+Report: the checklist from task 1 with values, anything you fixed, the GIF's size, dimensions,
+duration and fps, and up to three things you are not sure about.
+```
+
+#### What the check found
+
+- **Repository:** `main` equal to `origin/main` at "Log project totals and end", no open pull requests, no
+  remote branch but `main`, the last three CI runs green. All 33 CI runs this repository ever had are green.
+  69 commits on `main`, one author. 15 pull requests merged, none closed without a merge.
+- **The four pre-push checks from my plan:** no tracked notes or borrowed skills, no mention of another project,
+  no Cyrillic, no AI in commit messages. Two of the four commands needed a second look, see below. No secret in a
+  tracked file either.
+- **Live site:** there is no `sitemap.xml`. None was ever planned, so the model crawled instead, following every
+  link from the home page: 42 pages, the same 42 the build writes (home, 18 graves, 8 causes, 14 stacks, the 404
+  page), every one 200, every internal link 200, all 19 images loaded, no failed request, no console error on any
+  page, one `h1` on each. Unknown paths get the 404 page with status 404. `og:title` and `og:image` are set on every
+  page checked, and `og.png` is served (1200 × 630). The seven outside links (the repository, the challenge page,
+  five real graves) answer 200. `robots.txt` is Cloudflare's own file with comments only; the site never had one.
+- **Sanity:** the public dataset answers without a token: 18 projects, and the home page says 18 graves and draws
+  18 plots. No drafts, from the Studio's own query and from the public API. Studio `tsc` and schema validation:
+  0 errors, 0 warnings.
+- **Submission:** every item on my checklist has its value; the post itself is mine to publish.
+- **Build log totals against git:** 15 pull requests and no failed CI run, as the totals said. They now say 16 and
+  25 messages, because this check is one more of each.
+
+#### What was fixed
+
+- **Twelve dependencies had no credit in the README:** `@sanity/client`, `@sanity/vision`, React, React DOM,
+  styled-components, TypeScript, `@astrojs/check`, `@types/node`, `@types/react`, ESLint,
+  `@sanity/eslint-config-studio` and Prettier. Most came with the two templates and were covered only by "scaffolded
+  with". Each now has a line in the credits, with a link. Every name in both `package.json` files now appears there;
+  a short script compared them.
+
+#### What failed or needed a second look
+
+- **The tracked-files check in my plan matches too much.** Its pattern `PLAN\.md` also matches
+  `docs/visual-enhancement/06-IMPLEMENTATION-PLAN.md`, which is meant to be in the repository. Anchored to the
+  file names it is after, the check is clean. The push guard already anchors them.
+- **The Cyrillic check in my plan stops at the first image.** Perl gives up on a PNG with "Malformed UTF-8" and the
+  command still prints "english only". Run on the 81 text files only, it is clean. The push guard already skips
+  images.
+- **The Sanity count command in my prompt fails as written.** curl reads the square brackets as a range and exits
+  with error 3 before sending anything. With `-g`, or with the brackets encoded, it returns 18.
+- **The GIF took three recordings.** The first ran 31.7 seconds and came to 24 MB as a GIF; the second 26 seconds
+  and 11 MB, even at 10 frames a second and 800 pixels. Almost all the weight was in the scrolls. The third has
+  shorter scrolls and merges near-identical frames in the holds: 24.5 seconds, 7.15 MB.
+- **Two shell slips in the GIF work.** A removal of old frames with a glob after a `cd` was stopped by a safety
+  check; the frames went to new folders instead. And zsh read `$f[x]` in an ffmpeg filter as an array index, so the
+  first encoding trials failed; quoting it as `${f}[x]` fixed it.
+
+#### Decisions the model made on its own
+
+- No sitemap was added. It was never in the plan, the brief or the README, and the task allowed fixes only.
+- The two broken checks in my plan were not edited: the plan is my local file. The commands that work are above.
+- The GIF and its recording script stay out of the repository (`docs/post-images/` and `shots/` are excluded).
+  The GIF plays at 10 frames a second, 800 × 500, with a drawn pointer that exists only in the recording, because
+  headless Chrome shows none.
