@@ -413,7 +413,7 @@ Performance:
 
 - Lighthouse mobile: performance at least 90, accessibility 100, CLS under 0.02, on the home page and one grave page.
 - Fonts: two woff2 files, at most 130 KB together, `font-display: swap`, roman preloaded.
-- No raster images except `og.png`. No canvas, WebGL, video or Lottie.
+- Raster images only from the photographic set in section 15, within its budget. No canvas, WebGL, video or Lottie.
 - JavaScript: the candle script only, under 2 KB. No framework runtime.
 - Home page HTML under 120 KB uncompressed.
 
@@ -499,10 +499,66 @@ The second review covered the grave page. What it adds, and what it does not:
 | `monument-schema` | Section 4, including `figures`. No visual change needed. | Merge when CI is green. |
 | `cemetery-scene` | Tokens, font, hero, register, legend, yard layout, `Stone.astro` with layouts, shapes and weathering, the `overgrown`, `laurel` and `layers` motifs, footer, the fence strip on other pages. | Open the PR, list the screenshot files, **stop and wait for review**. |
 | `memorial-page` | Sections 7 and 8: the grave page on the memorial-size stone, candle ceremony, lifeline, ledger, figures, lesson slab, signs, neighbours. | Open the PR, list the screenshot files, **stop and wait for review**. |
-| `relics-and-polish` | Section 6: the thirteen relics and the remaining five motifs; candles on the home page; new `og.png` from the hero; optional fog and cat. | Merge when CI is green; print the screenshot paths. |
+| `real-stones` | Section 15: the photographic set wired in — backdrop from Sanity, stone cutouts by shape, relic and overlay images, SVG fallbacks kept. Runs only once the files are in `web/src/assets/scene/`. | Open the PR, list the screenshot files, **stop and wait for review**. |
+| `relics-and-polish` | Section 6 for whatever the photographic set does not cover; candles on the home page; new `og.png` from the hero; optional fog and cat. | Merge when CI is green; print the screenshot paths. |
 | `post-refresh` | README screenshots, the redesign story in the build log, updated post draft. | Merge when CI is green. |
 
 Hard stop for design work: **Sunday 4 October, 15:00 CDT**. Whatever is not merged by then is cut, in this order:
-cat, fog, candles on the home page, new `og.png`, figures medallions, neighbour silhouettes, lifeline, relics
-beyond the first six, motif drawings beyond `overgrown`, `laurel` and `layers`, mausoleum (falls back to `obelisk`).
-The schema branch, the scene branch and the memorial branch are not cut.
+cat, fog, candles on the home page, new `og.png`, figures medallions, neighbour silhouettes, lifeline, relic images
+beyond the first six, overlay images, motif drawings beyond `overgrown`, `laurel` and `layers`, mausoleum (falls back
+to `obelisk`). The schema branch, the scene branch, the memorial branch, and the backdrop and stone cutouts of
+`real-stones` are not cut.
+
+## 15. The photographic set
+
+The challenge allows generated imagery; it only asks that the build process be honest and that borrowed work be
+credited. Hand-written SVG was a safety limit, not a rule. The keeper generates a set of images with an image model
+and the site uses them **through the same record-driven rules**: the shape, status and cause still decide what is
+shown; the images only replace how a shape, a relic or the ground is drawn. Every image has an SVG fallback, so a
+missing file never breaks a page, and a new grave made in the Studio still gets a complete stone.
+
+### Contract
+
+| Image | File | Contains | Must not contain |
+|---|---|---|---|
+| Backdrop | uploaded to Sanity as `siteSettings.backdrop` (image with hotspot), not a file in the repo | an old cemetery at dusk seen from inside the gate: fence, distant chapel, mist, far rows of graves; the lower half plain dark grass so the yard can sit on it | text, readable graves in the foreground, people |
+| Stone cutouts, one per `shape` | `web/src/assets/scene/stones/<shape>.png` for `arch`, `shoulder`, `gothic`, `tablet`, `obelisk`, `broken`, `marker`, `plaque`, `mausoleum` | a weathered pale limestone stone of that silhouette, blank face, light from the upper left, transparent background | any text, symbols, candles, flowers |
+| Relics, one per value | `web/src/assets/scene/relics/<relic>.png` for the thirteen relic values | the single object, resting on the ground, same light, transparent background | text, logos |
+| Overlays | `web/src/assets/scene/overlays/moss.png`, `soil.png`, `grass-1.png`, `grass-2.png`, `flowers.png`, `laurel.png`, `weeds.png` | one element each, transparent background | — |
+
+Sizes: stones 1200 px tall, relics 400 px wide, overlays 600 px wide, backdrop at least 2400×1200. PNG with alpha
+in the repo; Astro's `getImage` turns them into AVIF and WebP at build time, two widths each. Budget on the home
+page: backdrop ≤ 350 KB, all stones together ≤ 500 KB, everything else ≤ 350 KB; Lighthouse performance stays ≥ 90.
+Text on a stone is checked for 4.5:1 against the darkest 10 % of the face it sits on; if a cutout fails, a
+translucent ink wash under the text block is added, never a lower-contrast colour.
+
+### How they are used
+
+- Backdrop: `getSettings` projects `backdrop{asset->{url, metadata{dimensions, lqip}}, hotspot, crop}`;
+  `@sanity/image-url` builds a `<picture>` with `auto=format`, widths 1200/1600/2000/2400, LQIP as the placeholder,
+  `fetchpriority="high"` on the home page. Without a backdrop the SVG hills layer stays. This is the one image that
+  lives in the CMS, so the keeper can change the weather from the Studio.
+- Stones: `Stone.astro` picks `stones/<shape>.png` from the same `describeMonument` output; the HTML text and the
+  engraving shadow stay exactly as they are; weathering adds the moss and soil overlays by class. If the file for a
+  shape is missing, the SVG silhouette renders.
+- Relics and overlays: same rule, keyed by value, SVG fallback.
+- Nothing per project. The five real graves and the thirteen invented ones use the same files.
+
+### Disclosure
+
+README credits: "Stone, relic and backdrop images were generated with <tool> from prompts written for this project;
+prompts are in docs/image-prompts.md." The build log records the tool, the number of generations, and what was
+rejected and why. `docs/image-prompts.md` is committed.
+
+### Generation notes for the keeper
+
+One style line in front of every prompt, so the set matches:
+"photorealistic, old European cemetery, pale weathered limestone, late dusk, soft light from the upper left, muted
+colours, slight mist, no text, no lettering, no symbols".
+
+Then per image: "isolated cutout on a transparent background, front view, centred, full object visible" for stones,
+relics and overlays; the shape words for stones are round-topped headstone / headstone with ogee shoulders /
+pointed gothic-arch headstone / flat tablet with chamfered corners / tall narrow obelisk / headstone with one broken
+jagged top corner / low half-height marker stone / clean pale slab with an empty brass plate / small mausoleum front
+with two columns, a pediment, three steps and a blank stone panel between the columns. Generate two or three
+candidates per image and keep the one with the cleanest edges; reject anything with lettering.
