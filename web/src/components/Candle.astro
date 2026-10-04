@@ -1,26 +1,32 @@
 ---
+/**
+ * The candle ceremony at the foot of a stone. `Candles` (the slot of Stone) draws up to seven candles;
+ * `Candle` is the button, the count and the honest note. Both sit inside one `[data-candle]` element.
+ * Without JavaScript the control stays hidden and no candle is drawn: nothing pretends to work.
+ */
 interface Props {
-  slug: string
   name: string
 }
 
-const {slug, name} = Astro.props
+const {name} = Astro.props
 ---
 
-{/* Hidden until the script runs: without it the button would do nothing, and nothing here pretends. */}
-<section class="candle" data-candle={slug} aria-label={`A candle for ${name}`} hidden>
-  <div class="candle__wax" aria-hidden="true">
-    <span class="candle__flame"></span>
-  </div>
-  <div class="candle__body">
-    <button class="button" type="button">Light a candle</button>
-    <p class="candle__count" role="status"></p>
-    <p class="candle__note">Candles are counted in this browser only.</p>
-  </div>
-</section>
+<div class="vigil" hidden>
+  <button class="vigil__button" type="button" aria-describedby="vigil-note">
+    <svg class="vigil__icon" viewBox="0 0 16 24" aria-hidden="true" focusable="false">
+      <path d="M8 2 c3 4 4 6 4 8 a4 4 0 0 1 -8 0 c0 -2 1 -4 4 -8 Z" />
+      <rect x="5" y="14" width="6" height="9" rx="1" />
+    </svg>
+    <span class="vigil__label">Light a candle</span>
+    <span class="visually-hidden"> for {name}</span>
+  </button>
+  <p class="vigil__count" role="status"></p>
+  <p class="vigil__note" id="vigil-note">Candles are counted in this browser only.</p>
+</div>
 
 <script>
   const KEY_PREFIX = 'graveyard:candles:'
+  const DRAWN = 7
 
   function readCount(key: string): number {
     try {
@@ -39,17 +45,24 @@ const {slug, name} = Astro.props
     }
   }
 
-  for (const candle of document.querySelectorAll<HTMLElement>('[data-candle]')) {
-    const button = candle.querySelector('button')
-    const status = candle.querySelector('[role="status"]')
-    if (!button || !status) continue
+  for (const root of document.querySelectorAll<HTMLElement>('[data-candle]')) {
+    const vigil = root.querySelector<HTMLElement>('.vigil')
+    const button = root.querySelector('button')
+    const label = root.querySelector('.vigil__label')
+    const status = root.querySelector('[role="status"]')
+    const candles = [...root.querySelectorAll<HTMLElement>('.candles__one')]
+    if (!vigil || !button || !label || !status) continue
 
-    const key = KEY_PREFIX + candle.dataset.candle
+    const key = KEY_PREFIX + root.dataset.candle
     let count = readCount(key)
 
-    const render = () => {
-      candle.toggleAttribute('data-lit', count > 0)
-      button.textContent = count > 0 ? 'Light another candle' : 'Light a candle'
+    const render = (fresh: boolean) => {
+      root.toggleAttribute('data-lit', count > 0)
+      candles.forEach((candle, index) => {
+        candle.hidden = index >= Math.min(count, DRAWN)
+        candle.classList.toggle('is-new', fresh && index === Math.min(count, DRAWN) - 1)
+      })
+      label.textContent = count > 0 ? 'Light another candle' : 'Light a candle'
       status.textContent =
         count === 0 ? 'No candle lit here yet.' : count === 1 ? '1 candle lit here' : `${count} candles lit here`
     }
@@ -57,10 +70,10 @@ const {slug, name} = Astro.props
     button.addEventListener('click', () => {
       count += 1
       writeCount(key, count)
-      render()
+      render(true)
     })
 
-    render()
-    candle.hidden = false
+    render(false)
+    vigil.hidden = false
   }
 </script>

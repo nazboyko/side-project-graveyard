@@ -1,0 +1,15 @@
+---
+/** A grave's outline at signpost size: the same shape and weathering, no words. */
+import type {Monument} from '../lib/monument'
+
+interface Props {
+  monument: Monument
+}
+
+const {monument} = Astro.props
+---
+
+<span
+  class:list={['silhouette', `layout-${monument.layout}`, `shape-${monument.shape}`, `weather-${monument.weathering}`]}
+  style={`--life:${monument.life}`}
+  aria-hidden="true"></span>
