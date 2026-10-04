@@ -2798,3 +2798,8 @@ Keep every screenshot you judge from by opening the PNG. If you cannot view imag
 
 - The supplied A01/A02 have compatible cool dusk sky and warm horizon. A01 is the visual anchor. The current task authorizes integration of A01-A05, a bounded Sanity backdrop override and memorial presentation variables, while explicitly skipping new environmental motion and candle work.
 - The additional user instruction sets a Sunday 4 October 15:00 CDT hard stop and cuts Phase 2 before Phase 1 if necessary. The unchanged `main` remains the fallback.
+
+#### Phase 0 source preparation
+
+- Reviewed A05 on the actual dark ground color in `shots/terrain-on-ground.png`; its visible composited edge has no red matte. The apparent red regions when viewing its transparency alone are hidden RGB pixels. Cropped transparent margins from 1254x1254 to 1185x734 and zeroed RGB only where alpha is zero, preventing hidden colors from bleeding into interpolated edges. The source remains lossless PNG. Opened the processed PNG again for inspection.
+- A01 remains the approved visual anchor for integration: cool blue dusk from above and warm low horizon light, with quiet sky behind HTML title text. A02 matches its palette and scale; A03 and A04 are fine-grained material sources. A05 is reserved for sparse foreground grounding. No source master exceeds the 8 MB hook limit.
