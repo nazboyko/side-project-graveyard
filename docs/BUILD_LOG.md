@@ -2827,3 +2827,189 @@ Keep every screenshot you judge from by opening the PNG. If you cannot view imag
 - A computed-style review caught a material regression on ancient stones: `--weather-marks` contains background shorthand layers, so the new `background-image` declaration was invalid for that variant. Replaced it with a complete `background` declaration. The inspected ancient face again shows weather marks and the shared limestone texture at the intended 24rem scale. No content or motion changed.
 - Captured the four required routes again at 1440x900, 1280x800 and 390x844 after that correction, opened the changed full-page PNGs, and captured and opened the final 768px homepage PNG. Replaced the six committed `docs/screenshots/` files from these inspected captures; SHA-256 checks confirm each final file exactly matches its scratch capture in `shots/`.
 - Final checks after the correction: `web/ npx astro check` (0 errors/warnings), `web/ npm test` (68/68), `web/ npm run build` (42 pages), `studio/ npx tsc --noEmit`, and `studio/ npx sanity schema validate` (0 errors/warnings). Three new Lighthouse 13.5 mobile simulated runs against the final local preview had median performance 99, accessibility 100, LCP 2.176 s, CLS 0.00064 and TBT 0 ms. The final results match the earlier local median within the displayed precision.
+
+### Material pass review by Claude Code (PR 14, 2026-10-04, 00:43–01:49 CDT)
+
+Who did what, in one line: Claude Code built the site and the redesign; Codex (a second agent) wrote the visual
+audit package and implemented the material pass; Claude Code reviewed and corrected it. This entry is the review.
+"The model" below is Claude Code.
+
+#### Prompts
+
+Before the material pass started, I told the model to stand by. No work followed this message:
+
+```text
+Phase R is accepted, thank you. Stand by now: another agent is about to run a material pass in this checkout (branch visual-materials, from main, five raster sources under web/src/assets/scene/). Until I say "resume", do not read or write anything in this repository, do not append to BUILD_LOG.md, do not switch branches.
+
+Two answers to your notes. The SVG relics and motifs stay exactly as they are: that agent's "no SVG substitutes" rule applies only to its five raster assets, and its plan preserves your relics as the fallback drawings. The real-stones branch from the brief will not run; the five-image set replaces the cutout library.
+
+When I say "resume", your remaining work is: refresh docs/POST_DRAFT.md with the final screenshots and the material-pass story (two tools: you built the site and the redesign, the other agent did the materials), a cross-browser check of the stone masks and the :has() dimming with Playwright's webkit and firefox engines, and the final BUILD_LOG entry. Publishing stays with me.
+```
+
+After the other agent opened the pull request:
+
+```text
+Resume. Another agent finished a material pass and opened PR #14 (branch visual-materials, pushed, tree clean, main untouched). Your job: review it in full, fix what is wrong, improve what is weak, and leave the PR ready for me to merge. You are the only agent in this checkout now.
+
+Setup: git fetch, check out visual-materials, read the PR body, docs/visual-enhancement/00–07, docs/image-prompts.md, and the audit and material-pass entries in docs/BUILD_LOG.md. Work on the same branch; small commits as usual; push to the PR. Do not merge.
+
+1. Code review. Run code-review-expert over `git diff main...visual-materials`. Fix every P0/P1 yourself; list P2/P3 in a PR comment. Check specifically: the responsive <picture> selects A02 on 390 px and never downloads A01 there; explicit width/height and no layout shift; the SVG horizon still renders when the raster fails (test by blocking the image URL); no duplicated fence or horizon where the raster and the SVG overlap; the limestone texture does not sit under text at a strength that hurts reading; the ground tile is not promoted to one giant layer; terrain-edge alpha has no fringe on the dark ground; marker/tag at 1280, the mausoleum, PDF Viewer SDK and Pocket Ledger extremes; forced-colors and reduced-motion still hold; the Phase 4 continuity item (life, tilt, offsets passed to the memorial Stone) is actually wired; dense packing untouched and the log correction present.
+
+2. Visual review. Build, preview, take your own screenshots at 1440×900, 1280×800 and 390×844 of /, /rip/everything-js/, /rip/kindness-chain/ and /rip/pdf-viewer-sdk/ into shots/, open them, judge them against docs/visual-enhancement/07-VERIFICATION-CHECKLIST.md and brief section 12. Fix only material strength, crops, grounding, alpha edges, contrast and lighting consistency; no new visual concepts. Measure text contrast on the real rendered pixels over the textured stone and parchment, not on tokens. If you change anything visible, refresh the six files in docs/screenshots/ under the same names.
+
+3. Cross-browser. The other agent could not approve WebKit and Firefox. Run `npx playwright install webkit firefox`, screenshot / and /rip/everything-js/ at 1440 and 390 in both, and check the stone masks (container query units) and the legend dimming (:has()). Fix only what is broken; a graceful degradation is acceptable if the content stays readable.
+
+4. Performance. Repeat Lighthouse mobile on / and one grave page from the production build, three runs, report medians; the floor is performance ≥ 90, accessibility 100. Report the selected image bytes per viewport against docs/visual-enhancement/05-PERFORMANCE.md. If the Workers Builds check exposes a preview URL for the PR, curl it and confirm the responsive sources and sizes on the real deployment.
+
+5. Honesty and docs. Replace the provenance placeholders with these facts and nothing more: the five sources were generated by me in ChatGPT, image model Sol 5.6, effort set to medium, two candidates per image; I kept the one with the better detail and the right amount of objects in the frame, nothing else was judged. Confirm docs/image-prompts.md is committed and linked from README credits and the build log. Attribution must now read: Claude Code built the site and the redesign; Codex (a second agent) wrote the visual audit package and implemented the material pass; Claude Code reviewed and corrected it. Check CLAUDE.md "What is committed" includes AGENTS.md, docs/visual-enhancement/ and web/src/assets/scene/, and that its Hosting line still says Worker static assets. Check nothing tracked mentions another local project or path. Append your own review entry to BUILD_LOG: what you found, what you fixed, what you left and why.
+
+6. The untested Sanity backdrop. Test it without the Studio UI: a studio/scripts script run with `--with-user-token` that uploads web/src/assets/scene/environment-wide.png as the siteSettings.backdrop asset, then a local production build; confirm the override renders with hotspot and that the local A01/A02 picture is the fallback when the field is empty. Leave the uploaded backdrop in place only if it looks identical to the local one; otherwise unset it and say so. Note: main does not read this field, so the live site does not change until the merge.
+
+Then: run astro check, npm test, npm run build, studio tsc and schema validate, push, wait for CI, print the PR URL, the screenshot paths, the Lighthouse medians, and the three things you are least sure about, and stop for my "merge". Hard stop for changes: Sunday 15:00 CDT.
+```
+
+#### Image provenance
+
+This replaces the placeholders in the two entries above. The five sources in `web/src/assets/scene/` were
+generated by me in ChatGPT, image model Sol 5.6, effort set to medium, two candidates per image. I kept the one
+with the better detail and the right amount of objects in the frame. Nothing else was judged. The prompts are in
+[docs/image-prompts.md](image-prompts.md), which is committed and linked from the README credits.
+
+#### What the review found and fixed
+
+The model read the whole diff against `main`, then built the branch and judged it from its own screenshots and
+measurements, not from the pull request text.
+
+- **P1. The tagline and the grave count failed contrast on the photograph.** Measured on the rendered pixels
+  behind each line of text, worst pixel: tagline 2.65:1 at 1440 px and 2.82:1 at 390 px, count 3.62:1, 3.15:1 at
+  1280 px and 3.17:1 at 390 px. Lighthouse reported accessibility 100 because it cannot measure text over an
+  image. Fixed with a dusk-coloured veil over the upper half of the gate photograph, gone by the fence. After:
+  tagline 5.25:1 and 4.71:1, count 6.41:1, 5.43:1 and 4.94:1 in Chrome; 4.66:1 or better in WebKit.
+- **P1. The image-failure fallback was incomplete.** With the image URL blocked, only the `<img>` was hidden. The
+  ground fade that belongs to the photograph stayed and darkened the lower half of the SVG fence. Now the whole
+  picture layer is removed and the painted skyline shows complete. Tested by blocking the image requests at
+  1440 and 390 px, on the home page and on a grave page.
+- **P1. A relic crossed the inscription on the smallest stone.** On PDF Viewer SDK the trowel lay over "lived
+  less than a day" on the grave page at every width, and touched it in the yard. Worst pixel under that line:
+  1.54:1. This one is not from the material pass. It is the model's own bug from R4, and it was already in the
+  `grave-390.png` screenshot committed in R5. On a marker the relic now sits at the stone's own corner, smaller,
+  below the last carved line. After: 6.98:1.
+- **P2. A pale gate post floated in the dark on desktop grave pages.** The wide photograph's gate posts fell
+  inside the fade to the ground and showed as a ghost at the left. The fade is now complete before them. The
+  portrait photograph keeps its gate, which stands behind the stone.
+- **P2. The yard read as a textured rectangle.** The soil tile stopped at the edges of the yard box with a hard
+  line. Its edges now dissolve into the page.
+- **P2. The texture crop hash broke on long slugs.** It multiplied past 2^53, so every grave with a slug of about
+  twenty characters or more would get the same crop of the limestone tile. No current grave is that long. It is
+  now `grainOffset()` in `web/src/lib/monument.ts`, with two tests.
+- **P2. Forced colours.** Background images survive forced colours, so the yard became a dark slab on the system
+  canvas. The soil tile, the veil and the fade are now dropped there. Stones keep their real border.
+- **P2. Two texture files were heavier than the budget in `docs/visual-enhancement/05-PERFORMANCE.md`.** Ground
+  80.7 KB against a 60 KB target, now 39.6 KB (384 px, under a dark veil nobody can see the difference).
+  Limestone 64.6 KB, now 47.9 KB.
+- **P2. The painted skyline flashed before the photograph.** The image decodes asynchronously, and until it
+  painted, the old vector hills and fence showed through: two of six screenshots taken at the load event caught
+  it. The picture layer now carries a plain dusk gradient in the photograph's tones while the image loads. It
+  does so only where scripts run, because the script is what removes the layer when the image fails; without
+  scripts the painted skyline stays underneath as before.
+- **P3. The `<picture>` declared the master's size by hand.** The dimensions now come from the derivative, and
+  the portrait source carries its own.
+
+Checked and left unchanged, because they hold:
+
+- At 390 px the browser takes the portrait image and never requests the wide one, at 1x and at 3x. Layout shift
+  0.0000 to 0.0006.
+- The photograph is opaque and covers the SVG skyline, so there is no second fence or horizon. The SVG shows only
+  when the image fails.
+- Text on the limestone: the weakest line is the cause on an ancient stone, 4.56:1 at the worst pixel, 5.28:1 at
+  the median. Parchment text is 9.3:1 or better.
+- The soil tile is not a layer of its own. The compositor layer list has one page-sized layer, the document.
+- The terrain cutout has no light or red fringe on the dark ground, judged from 2x crops.
+- Marker and tag at 1280 px, the mausoleum, PDF Viewer SDK and Pocket Ledger: grounded, nothing overflows,
+  document width equals the viewport on every tested route.
+- Reduced motion: no animation runs.
+- The memorial stone gets the same `--life`, `--tilt`, `--dx` and `--dy` as its plot in the yard. Compared in the
+  built HTML for five graves: identical.
+- `CLAUDE.md` lists `AGENTS.md`, `docs/visual-enhancement/` and `web/src/assets/scene/` as committed, and its
+  hosting line says Worker static assets. No tracked file names a local path or another project.
+- Dense packing is untouched, and the correction is in the log above. For the record: the wrong sentence in the
+  R2 entry ("the yard grid does not use dense packing") was the model's own.
+
+#### Cross-browser
+
+- **WebKit 26.6** (Playwright): pages render at 1440 and 390 px, container query units resolve in the stone
+  masks, the legend dims the other graves on hover and on keyboard focus. One real break: a hairline across the
+  shoulder-shaped stone where the cap mask meets the body mask. It predates the material pass. The overlap is now
+  two pixels and the line is gone.
+- **Firefox: not verified.** Playwright's Firefox 155 exits with "Could not find profile folder" on this macOS
+  27.0, from the tool shell and from a plain terminal. The installed Firefox could not start its content
+  processes from this session; with its content sandbox off for one local run it started but never opened its
+  automation socket. A last attempt, a plain headless screenshot, was not permitted in this session. Nothing
+  about Firefox is claimed.
+
+#### The Sanity backdrop
+
+`studio/scripts/set-backdrop.ts` uploads the wide scene image and sets `siteSettings.backdrop` with a hotspot on
+the gate, or unsets it. With the field set, a local production build took all four candidates from the Sanity
+CDN, and the phone crop was cut around the hotspot. On desktop the result matched the local image (mean
+difference 0.12 of 255 per channel). On a phone it did not: it is a crop of the wide photograph, not the separate
+portrait composition. So the field is empty again. With it empty, the build uses the two local images and
+references no CDN image. The uploaded asset is still in the dataset, unused.
+
+#### Numbers
+
+Lighthouse 13.5 mobile, local production build, three runs each:
+
+| Page | Performance | Accessibility | LCP (median) | CLS |
+|---|---|---|---|---|
+| `/` | 99, 99, 99 (median 99) | 100, 100, 100 | 2.18 s | 0.0006 |
+| `/rip/everything-js/` | 99, 99, 99 (median 99) | 100, 100, 100 | 1.95 s | 0.0008 |
+
+Best practices and SEO were 100 on every run. These are from the final build. A first set, taken before the last
+two style commits, gave 99, 99, 98 for the home page and the same for the rest.
+
+Decorative image bytes actually requested on the home page, against the budget:
+
+| Viewport | Environment | Limestone | Ground | Terrain | Total | Target |
+|---|---|---|---|---|---|---|
+| 1440 and 1280 px | 77.1 KB | 47.9 KB | 39.6 KB | 54.0 KB | 218.6 KB | 600 KB |
+| 390 px at 1x | 25.8 KB | 47.9 KB | 39.6 KB | 54.0 KB | 167.3 KB | 400 KB |
+| 390 px at 3x | 55.9 KB | 47.9 KB | 39.6 KB | 54.0 KB | 197.4 KB | 400 KB |
+
+A grave page requests the environment and the limestone only. On a phone the limestone (target 40 KB) and the
+terrain (target 45 KB) are still over their own lines while the total is well under.
+
+The Workers Builds check on the pull request exposes a preview deployment. Fetched with curl after the fix
+commits were pushed: the same `<picture>` markup as the local build, and every derivative served as `image/webp`
+with the sizes in the table (portrait 25,786 and 55,868 bytes, wide 41,310 and 77,148 bytes, ground 39,564,
+limestone 47,914, terrain 53,950).
+
+#### What failed or needed a second try
+
+- **Firefox.** Eight attempts across two builds and two shells, none worked (see above).
+- **The first Lighthouse loop produced nothing.** The shell variable was called `path`, which in zsh is the
+  command search path. Renamed, rerun.
+- **The first hash fix was inline.** It was correct but untested, so it moved into a tested helper.
+- **WebKit seemed not to dim the yard on hover.** That was the test: a real mouse move showed the dimming works.
+
+#### Left as it is, and why
+
+- **Relics are drawn differently in Chrome and WebKit.** Chrome shows flat shapes; WebKit also draws the ink
+  outline and the inner lines, because the outline rule reaches the copies only in WebKit. This has been so since
+  R4. Both are readable, and my instruction was that the relics stay as they are, so the model did not touch them.
+- **The gate is taller than before the pass**: 506 px instead of 439 px on a 390 × 844 phone.
+- **Between about 53 and 60 rem wide** the gate posts on a grave page stand half inside the fade. Narrower, the
+  whole gate stands clear behind the stone (checked at 600 and 768 px); wider, the fade closes before the posts
+  (checked at 960, 1024, 1100, 1280 and 1440 px).
+- **The six screenshots are full-colour PNGs**, 11.5 MB together. The source images are another 12 MB in the
+  repository; the site ships only their WebP derivatives.
+- **The hosted Studio does not show the backdrop field** until it is deployed again after the merge.
+- **A real phone and 200% zoom** were not tested.
+
+#### Decisions the model made on its own
+
+- A veil over the photograph, not a different crop, to fix the contrast: the other agent's composition stays.
+- The marker stone is a few pixels taller, so its last line clears the relic.
+- The texture offsets changed for most graves when the hash was replaced. Nobody would notice.
+- The backdrop script leaves the uploaded asset in place on `unset`: deleting data was not asked for.
+- The six screenshots in `docs/screenshots/` were retaken from the final build under the same names.
