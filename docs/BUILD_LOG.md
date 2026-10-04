@@ -3013,3 +3013,34 @@ limestone 47,914, terrain 53,950).
 - The texture offsets changed for most graves when the hash was replaced. Nobody would notice.
 - The backdrop script leaves the uploaded asset in place on `unset`: deleting data was not asked for.
 - The six screenshots in `docs/screenshots/` were retaken from the final build under the same names.
+
+#### After the review: Firefox, and the relics
+
+Three short messages and one long one followed the review.
+
+```text
+how and what to check in Firefox?
+```
+
+The model answered with a checklist and a read-only console snippet. I pasted Firefox's own warning back:
+
+```text
+Scam Warning: Take care when pasting things you don’t understand. This could allow attackers to steal your identity or take control of your computer. Please type ‘allow pasting’ below (no need to press enter) to allow pasting.
+```
+
+Then I sent a screenshot of the console output, with no text. Then:
+
+```text
+merge. Before merging, one small fix on the branch: make the relics render the same in Chrome and WebKit (flat, the way Chrome draws them); commit, push, wait for CI. Then `gh pr merge 14 --rebase --delete-branch`, run `npx sanity deploy` so the hosted Studio shows the backdrop field, and remove the unused backdrop asset from the dataset with a --with-user-token script. Wait for the Workers build on main, curl the live site for the new picture markup, screenshot / and one grave page from the live URL, and compare with docs/screenshots/. Firefox: verified by me on the preview, looked fine — record that in the build log as my manual check, not yours. Then the final BUILD_LOG entry for the whole project with totals (phases, PRs, prompts, redone drawings, time), refresh docs/POST_DRAFT.md with the live screenshots list and the two-tool story, and print what the post still needs from me.
+```
+
+- **Firefox was checked by me, by hand, not by the model.** I opened the pull request's preview deployment in
+  Firefox and it looked fine. The model never rendered Firefox. It read my console output only: container query
+  units, `:has()`, `color-mix()` and the scripting media query are supported, the stone mask resolves, and a
+  1728 px window picked the wide image.
+- **The relics are now the same in every engine: flat.** The review had left them alone. The two rules that drew an
+  ink outline and the grass strokes were written against the sprite (`.sprite path`), and only WebKit applies such
+  a rule to the copies a `<use>` makes. They are removed. Chrome renders exactly as before; WebKit now matches it,
+  checked on four stones side by side. A few stroke-only paths in `web/src/lib/drawings.ts` (stems, a flap line)
+  are now invisible everywhere, as they always were in Chrome. They are left in the file.
+- The rest of this prompt, the merge and what follows it, is in the final entry below.
