@@ -75,8 +75,9 @@ every other folder under `.claude/skills/` (they come from my other projects), `
 - `web/` — Astro (latest), `output: 'static'`, `@sanity/astro` (`useCdn: false`, build-time fetch via `sanity:client`),
   `astro-portabletext` for rich text. No React, no Tailwind, no component libraries. One global CSS file with custom properties.
   Pure helpers in `web/src/lib/` are tested with Vitest.
-- Hosting: Cloudflare Pages, Git-connected, root `web/`, build `npm run build`, output `dist`; preview deployment per PR.
-  Sanity GROQ-powered webhook → Pages deploy hook = rebuild on publish.
+- Hosting: a Cloudflare Worker with static assets (Workers Builds), Git-connected, root `web/`, build `npm run build`,
+  deploy `npx wrangler deploy`, assets from `dist` per `web/wrangler.jsonc`.
+  Sanity GROQ-powered webhook → Workers Builds deploy hook = rebuild on publish.
 - CI: `.github/workflows/ci.yml` on pull requests and pushes to main — web: `npm ci`, `npx astro check`, `npm test`,
   `npm run build`; studio: `npm ci`, `npx tsc --noEmit`, `npx sanity schema validate`. Jobs skip while their folder does not exist yet.
 - Node 22, npm.
