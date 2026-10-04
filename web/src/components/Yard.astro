@@ -20,7 +20,8 @@ const now = new Date()
 const plots = projects.map((project) => ({project, monument: describeMonument(project, now)}))
 // The cat follows the whole graveyard, not just the graves on this page.
 const cat = catGrave(await getProjects())
-const ground = await sceneImage('ground', 512, 68)
+// One tile is 13rem wide and sits under a dark veil: 384 pixels is enough for a 2x screen.
+const ground = await sceneImage('ground', 384, 58)
 ---
 
 {
