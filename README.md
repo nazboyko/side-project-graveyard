@@ -162,6 +162,7 @@ The session rules are in [CLAUDE.md](CLAUDE.md). The session also used a handful
 
 ## Credits
 
+- The project owner generated the five scene source images from the prompts in [docs/image-prompts.md](docs/image-prompts.md). The build log records the available asset history and the later material integration.
 - [Sanity Studio](https://www.sanity.io/studio), scaffolded with `npm create sanity@latest` (clean TypeScript template)
 - [Astro](https://astro.build), scaffolded with `npm create astro@latest` (minimal template)
 - [@sanity/astro](https://github.com/sanity-io/sanity-astro), the Sanity client inside the Astro build
