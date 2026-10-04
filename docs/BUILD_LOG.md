@@ -769,3 +769,107 @@ brief claims was recomputed from its token values and matches to the first decim
 #### Lighthouse
 
 Before and after are the same build output: nothing visible changed. Numbers above.
+
+### R2 — cemetery-scene (2026-10-03, 21:05–21:22 CDT, about 17 min, plus drafting during the R1 commit waits)
+
+#### Prompt
+
+The Phase R prompt above. This branch stops at a review gate: the model opens the pull request and waits for me.
+
+#### What came out
+
+- `tokens.css` with the brief's palette, and `tokens.test.ts`: 18 text and background pairs, each at 4.5:1 or
+  better and within half a point of the ratio the brief promises.
+- Fraunces, self-hosted from `@fontsource-variable/fraunces`: the latin weight-axis files only, roman and italic,
+  82 KB together. The roman is preloaded; both use `font-display: swap`.
+- One stylesheet bundle: `global.css` imports `tokens`, `base`, `scene`, `stone` and `grave`.
+- `Horizon.astro`: far hills with a chapel, a tree line, an iron fence, in one hand-written SVG. The home page gets
+  the gate version in a full-width dusk sky; every other page gets a 7rem strip with the same hills and fence.
+- Home page: the title, the tagline and "18 graves. Enter quietly." in the sky; below the gate the keeper's note,
+  the register as a parchment sheet pinned to a board with dotted leaders, and the causes as a carved legend.
+  Hovering or focusing a legend row dims every other grave. No JavaScript: one generated `:has()` rule per cause.
+- `Yard.astro`, `Stone.astro`, `Plants.astro`: a grid of plots that stand on one ground line per row, along an
+  S-shaped path from the gate. On a phone the path runs straight and the plots step left and right of it.
+  Every plot is drawn from `describeMonument()`: height from the lifespan, shape, weathering, motif. Nothing in
+  these files names a grave.
+- Layouts: ordinary stones in six silhouettes, a low marker with its words on a wooden tag for buried projects that
+  lived under a week, a pale plaque with the name on brass, laurel and flowers for the retired, and a mausoleum
+  with a pediment, fluted columns and three steps.
+- Weathering from years since death: fresh stones on bare soil, settled ones on short grass, aged ones with a stain
+  and moss on one edge, ancient ones with long grass, moss on two edges, a hairline crack and chipped edges. The
+  undead grave sits on lifted, cracked soil with a slow green light.
+- Motifs drawn in this branch, as the brief splits them: `overgrown` (weeds, a fallen leaf, extra lean), `laurel`
+  (carved sprig, flowers, cut grass) and `layers` (two older slabs behind the stone).
+- The footer is the keeper's sign: a board with a lantern.
+- The cause and stack pages use the same yard and legend. The grave page keeps its old layout on the new palette
+  until the next branch replaces it.
+- `CauseFilter`, `Graveyard` and `Tombstone` are gone, and so is `slugTilt`, which only `Tombstone` used.
+
+#### Verification
+
+- `npx astro check` 0 errors in 26 files; `npm test` 61 passed; `npm run build` 42 pages.
+- Three look-and-fix rounds with `npx playwright screenshot --channel chrome` at 1440, 768 and 390 pixels on the
+  home page and on three grave pages, plus a cause and a stack page in the last two rounds. Every image was opened
+  and, where it was too tall to read, cut into tiles.
+- In the browser: hovering "Scope creep" dims 16 of 18 plots and leaves its 2; focusing "Nobody came" with the
+  keyboard does the same for its 2. Tab order: skip link, the two register links, the nine legend rows, then the
+  stones in yard order. The focused stone gets the two-tone ring.
+- No horizontal scroll at 390 pixels, measured: page width 390.
+
+#### Drawings that needed a redo, and why
+
+- **The sky.** Round 1 had no warm band at all: the gradient put `--sky-low` at 88–100% of the band, and the hills
+  cover everything below 52%. Moved the band to 50–60%, where it shows through the dips between the hills.
+- **The header strip on other pages.** Round 1 drew the same SVG cropped to a 7rem band. On a wide screen the SVG
+  scales to the width, so the strip showed nothing but pickets, with the site title sitting on them. Round 2
+  cropped the viewBox to the fence: now the far hills filled the gaps between the pickets and the strip read as a
+  barcode. Round 3 stretches only the hills in the SVG and draws the fence in CSS as a repeating 18-pixel picket
+  with two rails, so the pickets keep their size at any width.
+- **Moss.** Round 1 drew it as circles and they read as green polka dots stuck to the stones. It is now thin
+  half-ellipses that hug the left edge and the base, plus a sliver on the right edge for the oldest stones.
+- **Flowers on the retired graves.** Three dots in round 1, too small to read as flowers. Six blooms on stems with
+  leaves in round 2.
+- **Weeds and grass.** In round 2 the taller weeds stood in front of the words at the base of two stones ("lived
+  less than a day", "LOST INTEREST"). Every tuft and weed now grows in the outer fifth of the plot, and markers and
+  plaques have more room at the base.
+- **The mausoleum steps.** They were 104–116% as wide as the stone and pushed the phone layout 12 pixels wider
+  than the screen. The steps now set the width and the building stands on them.
+
+#### What failed or needed a second try
+
+- `git add` of the font files also took three deletions I had staged earlier with `git rm --cached`. The commit
+  would not have built on its own. The model caught it in the summary line, undid the commit before pushing
+  (`git reset --soft`), unstaged the deletions and committed again. The first try at that was refused by the
+  commit-guard hook because the reset and the new commit were in one command.
+- A legend hover test first reported 0 dimmed graves. It measured during the 200 ms fade. With a one-second wait: 16.
+
+#### What I cut from the brief and why
+
+- Nothing from this branch's list.
+
+#### Decisions the model made on its own
+
+- Silhouettes are a cap drawn once in SVG on top of a plain body, joined with a two-layer CSS mask sized with
+  container query units. A `clip-path` polygon in percentages would have stretched every arch with the stone's
+  height. Only the obelisk uses a polygon, because it has no curves — kept.
+- The stone height is a minimum, not a fixed value: on a narrow screen the words come first — kept.
+- The yard grid does not use `dense` packing, so the visual order stays the DOM order and the tab order — kept.
+- The keeper's note got a visible heading, "The keeper's note", and the graves' heading is visually hidden — kept.
+- The legend on a cause page is capped at 36rem wide, so its leaders do not run across the whole yard — kept.
+- The two status labels and the cause title are 11 pixels, the brief's floor; the plaque's status was 10 pixels
+  in the first draft — fixed.
+- The sky and the yard are sized from `100vw`, which on Windows includes the scrollbar. `overflow-x: clip` on the
+  body keeps that from ever scrolling sideways. Found in the review of the branch, not on screen: this Mac hides
+  its scrollbars — kept.
+
+#### Lighthouse
+
+Mobile, production build served locally.
+
+| Page | Before | After | CLS after | LCP after | Transfer after |
+|---|---|---|---|---|---|
+| `/` | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 | 0.001 | 1.5 s | 96 KB |
+| `/rip/everything-js/` | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 | 0.000 | 1.4 s | 91 KB |
+
+Performance / accessibility / best practices / SEO. Home page HTML: 12.6 KB before, 50.6 KB after (budget 120 KB).
+LCP went from 0.9 to 1.5 seconds: the title is now set in a web font.
