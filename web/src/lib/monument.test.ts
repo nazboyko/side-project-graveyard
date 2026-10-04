@@ -1,6 +1,6 @@
 import {readFileSync} from 'node:fs'
 import {describe, expect, it} from 'vitest'
-import {catGrave, describeMonument, lifeScale, weatheringFor, type MonumentInput} from './monument'
+import {catGrave, describeMonument, grainOffset, lifeScale, weatheringFor, type MonumentInput} from './monument'
 
 const NOW = new Date('2026-10-03T12:00:00Z')
 
@@ -147,6 +147,23 @@ describe('describeMonument on the seed dataset', () => {
       const [a, b] = [monuments[i - 1], monuments[i]]
       expect(a.shape === b.shape && a.life === b.life, `${graves[i - 1].slug} and ${graves[i].slug}`).toBe(false)
     }
+  })
+})
+
+describe('grainOffset', () => {
+  it('is deterministic and stays inside the tile offsets', () => {
+    expect(grainOffset('everything-js')).toEqual(grainOffset('everything-js'))
+    for (const slug of ['a', 'pdf-viewer-sdk', 'a-slug-much-longer-than-any-grave-in-the-yard-today']) {
+      const {x, y} = grainOffset(slug)
+      expect(Number.isInteger(x) && x >= 0 && x < 113).toBe(true)
+      expect(Number.isInteger(y) && y >= 0 && y < 127).toBe(true)
+    }
+  })
+
+  it('keeps long slugs apart: a plain multiply-and-add hash gave every one of them the same crop', () => {
+    const long = ['rewrote-it-in-a-new-framework-one', 'rewrote-it-in-a-new-framework-two', 'rewrote-it-in-a-new-framework-three']
+    const crops = new Set(long.map((slug) => JSON.stringify(grainOffset(slug))))
+    expect(crops.size).toBe(long.length)
   })
 })
 

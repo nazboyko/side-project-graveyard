@@ -5,7 +5,7 @@
  * Anything passed in the `front` slot stands in front of the stone's base (the candles on a grave page).
  */
 import type {Project} from '../lib/sanity'
-import type {Monument} from '../lib/monument'
+import {grainOffset, type Monument} from '../lib/monument'
 import {formatDate, formatLifespan, formatYears, lifespanDays} from '../lib/stats'
 import {sceneImage} from '../lib/scene-assets'
 import Art from './Art.astro'
@@ -34,9 +34,9 @@ const Name = plot ? 'h3' : 'h1'
 const status = !plot ? null : project.status === 'retired' ? 'Retired with honour' : undead ? 'Undead' : null
 // On a marker the stone is too small for the epitaph; it goes on a wooden tag beside it.
 const tagged = layout === 'marker'
-const [limestone, terrain] = await Promise.all([sceneImage('limestone', 512, 78), sceneImage('terrain', 480, 72)])
-const grain = Array.from(project.slug).reduce((value, character) => value * 31 + character.charCodeAt(0), 7) >>> 0
-const materialStyle = `--stone-texture:url("${limestone.src}");--terrain-image:url("${terrain.src}");--grain-x:${grain % 113}px;--grain-y:${Math.floor(grain / 113) % 127}px`
+const [limestone, terrain] = await Promise.all([sceneImage('limestone', 512, 60), sceneImage('terrain', 480, 72)])
+const grain = grainOffset(project.slug)
+const materialStyle = `--stone-texture:url("${limestone.src}");--terrain-image:url("${terrain.src}");--grain-x:${grain.x}px;--grain-y:${grain.y}px`
 const memorialStyle = plot
   ? ''
   : `;--life:${monument.life};--tilt:${monument.tilt}deg;--dx:${monument.dx}rem;--dy:${monument.dy}rem`

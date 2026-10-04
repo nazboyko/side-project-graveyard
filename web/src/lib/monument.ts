@@ -146,6 +146,14 @@ export function describeMonument(project: MonumentInput, now: Date): Monument {
 }
 
 /**
+ * Where a stone's face starts in the shared limestone tile, in pixels, so that neighbours never show the same
+ * crop. Derived from the slug alone: the same grave gets the same piece of stone on every page and every build.
+ */
+export function grainOffset(slug: string): {x: number; y: number} {
+  return {x: Math.floor(unitHash(slug, 'grain-x') * 113), y: Math.floor(unitHash(slug, 'grain-y') * 127)}
+}
+
+/**
  * The grave the cat sits on: the one the keeper published most recently, so it moves on every publish.
  * Ties go to the name that sorts first. No graves, no cat.
  */
