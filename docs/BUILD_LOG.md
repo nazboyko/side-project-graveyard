@@ -14,7 +14,7 @@ I gave one kickoff prompt; the per-phase prompts were written in advance in my l
 | B. Seed content | 12:32 | 12:40 | 1 | 0 | one of the six real repos is private and was skipped |
 | C. Astro + queries | 12:33 | 12:46 | 1 | 3 | peer dependencies, TypeScript 7, `process` types |
 | D. Pages + UI | 12:48 | 13:01 | 1 | 3 | glued link names, stats row on a phone, `hidden` vs `display: flex` |
-| E. Deploy + webhook | | | | | |
+| E. Deploy + webhook | 13:06 | 20:40 | 3 | 2 | plan said Pages, dashboard gave a Worker; 7 hours of the gap were me |
 | F. Polish | | | | | |
 | G. README + post | | | | | |
 
@@ -406,3 +406,88 @@ Run `npm run build`, then `npx astro check`. Give me a list of the pages and the
 ### Commands I ran by hand
 
 - None yet. The hosting and webhook checklist is waiting for me.
+
+## Phase E — Deploy + webhook (2026-10-03, 13:06–13:12 and 20:09–20:40 CDT, about 37 min of work around a 7-hour wait for me)
+
+Carried over from Phase D: its pull request went green on the first CI run (web job 30s, studio job 39s) and was
+merged at 13:02. The model then stopped, as the kickoff told it to: there was no `.env` and no hosting yet.
+
+### Prompts
+
+The Phase E prompt from my plan:
+
+```
+Cloudflare Pages is connected to this repo (root web/), the deploy hook and the Sanity webhook exist (values in the repo-root .env: SITE_URL, CF_DEPLOY_HOOK_URL — do not print them). Verify the chain end to end:
+1. `curl -sI $SITE_URL` returns 200 and `curl -s $SITE_URL | grep -c 'rip/'` is > 0 (the merged Phase D deploy is live). If not, inspect with `gh run list` / the Pages dashboard and fix the build config on a branch.
+2. Webhook test without the Studio UI: write studio/scripts/touch-settings.ts that patches siteSettings.footerLine with a trailing timestamp and run it with `npx sanity exec scripts/touch-settings.ts --with-user-token`. Then poll `curl -s $SITE_URL` every 30 s for up to 6 minutes until the new footer text appears. Record the elapsed time in BUILD_LOG. Revert the footer text the same way afterwards.
+3. Deploy the Studio: `cd studio && npx sanity deploy` (hostname side-project-graveyard, or the closest free one); record the URL.
+4. Add a README section "Deploy" describing Pages settings and the Sanity webhook → deploy hook chain, with a mermaid diagram of the content flow.
+Append Phase E to docs/BUILD_LOG.md with the real timings and anything that did not work the first time.
+```
+
+My reply to the stop, at 13:06, before I had set anything up:
+
+```
+continue, https://side-project-graveyard.pages.dev
+```
+
+My second reply, seven hours later:
+
+```
+continue. The site is not on Cloudflare Pages: the dashboard created a Git-connected Cloudflare Worker with static assets (Workers Builds). The real URL is https://side-project-graveyard.<subdomain>.workers.dev and it is in the repo-root .env as SITE_URL, next to CF_DEPLOY_HOOK_URL. The Sanity webhook "rebuild-site" now exists.
+
+The first Cloudflare build failed only because there is no wrangler config. Before the Phase E checks, on this branch: add web/wrangler.jsonc with name "side-project-graveyard", a current compatibility_date, and assets { "directory": "./dist", "not_found_handling": "404-page" }; assets only, no Worker script. Cloudflare runs `npm run build` then `npx wrangler deploy` with root directory web, Node 22, and PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET and SITE_URL as build variables.
+
+Change the uncommitted site URL in web/astro.config.mjs from the pages.dev fallback to the workers.dev URL, and rewrite the uncommitted README Deploy section and its mermaid diagram to say Worker static assets and a Workers Builds deploy hook, not Pages. Update the Hosting line in CLAUDE.md the same way. Then open the PR, merge when CI is green, wait for the Cloudflare build triggered by that merge, and run the Phase E checks against SITE_URL: live-site check, publish-to-rebuild timing with studio/scripts/touch-settings.ts. Record in BUILD_LOG that the plan said Pages and the dashboard gave a Worker. Then continue with Phases F and G.
+```
+
+### What came out
+
+- The Studio is deployed at https://side-project-graveyard.sanity.studio, the hostname the plan asked for. Its
+  deployment id is recorded in `studio/sanity.cli.ts`.
+- `studio/scripts/touch-settings.ts`: `touch` appends a timestamp to `siteSettings.footerLine` and prints it,
+  `restore` removes it. Smoke-tested against the dataset: the public API showed the stamp, then showed it gone.
+- `web/wrangler.jsonc`: a Worker with static assets only. `npx wrangler deploy --dry-run` read the built files and
+  exited clean.
+- `web/astro.config.mjs`: `site` falls back to the workers.dev URL, and a `SITE_URL` without `https://` is accepted.
+- README "Deploy" section: the Workers Builds settings, a mermaid diagram of publish → webhook → deploy hook →
+  build → deploy, and the webhook filter. The hosting line in `CLAUDE.md` says Worker static assets too.
+- Verification before the merge: studio `npx tsc --noEmit` exit 0 and `npx sanity schema validate` 0 errors; web
+  `npx astro check` 0 errors, `npm test` 28 passed, `npm run build` 42 pages; the Wrangler dry run.
+- The chain itself can only be tested after this pull request is merged, because Cloudflare builds `main`. The
+  results are in "Verified after the merge" at the end of this entry.
+
+### What failed or needed a second try
+
+- **The plan said Cloudflare Pages. The dashboard gave me a Worker.** "Connect to Git" now creates a Worker with
+  static assets, built by Workers Builds. The address is on workers.dev, the deploy step is `npx wrangler deploy`,
+  and the first Cloudflare build failed because the repo had no Wrangler config. I found that in the dashboard;
+  the model added `web/wrangler.jsonc` and reworded the README and the session rules.
+- **I said "continue" before the hosting existed**, and gave the Pages address I expected to get. The model did
+  not take my word for it: the name did not resolve (NXDOMAIN), there was no `.env`, `sanity hooks list` was
+  empty and GitHub had no Cloudflare check. It did the half of the phase that needs no hosting (Studio deploy,
+  test script, README) and stopped again with that evidence. The seven hours after that were mine.
+- My settings deny the model any read of `.env`, and a `grep` for the two key names was blocked. It asked. I let
+  it load the file in a subshell and print `SITE_URL` only. The value had no `https://` in front, which Astro
+  would have refused as a site URL; the config now adds the scheme.
+- While it waited, the model had pointed canonical URLs at the pages.dev address. That change was still
+  uncommitted and was replaced with the workers.dev address before it went in.
+- `scripts/touch-settings.ts` failed `tsc` on `process`. Fixed by adding `@types/node` to the Studio.
+- My second reply reached the model as pasted text only, so it asked once more whether to treat it as an
+  instruction. I told it to stop asking for the rest of the session.
+
+### Decisions the model made on its own
+
+- `compatibility_date` is 2026-10-01 — kept.
+- Wrangler is not a dependency of `web/`; Cloudflare runs it with `npx`. It is in the README credits — kept.
+- `.wrangler/` is ignored in `web/.gitignore` — kept.
+- "Preview deployment per PR" was dropped from the hosting line: nobody checked that Workers Builds does that
+  for this project — kept.
+- This pull request was merged before the chain test, not after: the fix has to be on `main` to be built — kept.
+
+### Commands I ran by hand
+
+- Cloudflare dashboard: connected the repo (which created the Worker and Workers Builds), set the build
+  variables, created the deploy hook.
+- sanity.io/manage: created the webhook `rebuild-site`.
+- Wrote `SITE_URL` and `CF_DEPLOY_HOOK_URL` into the local `.env`.
