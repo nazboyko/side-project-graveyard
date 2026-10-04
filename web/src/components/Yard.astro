@@ -5,6 +5,7 @@
  */
 import {getProjects, type Project} from '../lib/sanity'
 import {catGrave, describeMonument} from '../lib/monument'
+import {sceneImage} from '../lib/scene-assets'
 import Candles from './Candles.astro'
 import Sprite from './Sprite.astro'
 import Stone from './Stone.astro'
@@ -19,11 +20,12 @@ const now = new Date()
 const plots = projects.map((project) => ({project, monument: describeMonument(project, now)}))
 // The cat follows the whole graveyard, not just the graves on this page.
 const cat = catGrave(await getProjects())
+const ground = await sceneImage('ground', 512, 68)
 ---
 
 {
   plots.length > 0 ? (
-    <div class="yard__ground">
+    <div class="yard__ground" style={`--ground-texture:url("${ground.src}")`}>
       <Sprite relics={plots.map(({monument}) => monument.relic)} motifs={plots.map(({monument}) => monument.motif)} />
       <svg class="yard__path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <path d="M44 0 C40 14 64 20 62 34 C60 48 30 52 34 66 C38 80 64 84 58 100 H42 C46 86 22 80 20 66 C18 50 48 46 48 34 C48 22 26 16 30 0 Z" />

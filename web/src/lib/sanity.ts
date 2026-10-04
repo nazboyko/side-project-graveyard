@@ -14,12 +14,19 @@ export type PortableText = TypedObject[]
 export type Status = 'buried' | 'retired' | 'undead'
 export type Mood = 'relief' | 'guilt' | 'denial' | 'peace'
 
+export interface Backdrop {
+  asset?: {_ref?: string}
+  hotspot?: {x: number; y: number; width: number; height: number}
+  crop?: {top: number; bottom: number; left: number; right: number}
+}
+
 export interface Settings {
   title: string
   tagline: string
   intro: PortableText | null
   keeperName: string | null
   footerLine: string | null
+  backdrop: Backdrop | null
 }
 
 export interface CauseRef {
@@ -130,7 +137,7 @@ function once<T>(key: string, load: () => Promise<T>): Promise<T> {
 export function getSettings(): Promise<Settings> {
   return once('settings', async () => {
     const settings = await sanityClient.fetch<Settings | null>(
-      /* groq */ `*[_id == "siteSettings"][0]{title, tagline, intro, keeperName, footerLine}`,
+      /* groq */ `*[_id == "siteSettings"][0]{title, tagline, intro, keeperName, footerLine, backdrop{asset, hotspot, crop}}`,
     )
     if (!settings) throw new Error('siteSettings is missing from the dataset. Import studio/seed/graveyard.ndjson.')
     return settings

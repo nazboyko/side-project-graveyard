@@ -4,12 +4,13 @@ import {PortableText} from 'astro-portabletext'
 import Candle from '../../components/Candle.astro'
 import Candles from '../../components/Candles.astro'
 import Horizon from '../../components/Horizon.astro'
+import SceneImage from '../../components/SceneImage.astro'
 import Lifeline from '../../components/Lifeline.astro'
 import Silhouette from '../../components/Silhouette.astro'
 import Sprite from '../../components/Sprite.astro'
 import Stone from '../../components/Stone.astro'
 import Layout from '../../layouts/Layout.astro'
-import {getProjects, type Mood} from '../../lib/sanity'
+import {getProjects, getSettings, type Mood} from '../../lib/sanity'
 import {chipColor} from '../../lib/color'
 import {describeMonument} from '../../lib/monument'
 import {formatDate, formatYears} from '../../lib/stats'
@@ -37,6 +38,7 @@ const MOOD: Record<Mood, string> = {
 }
 
 const {project, previous, next} = Astro.props
+const settings = await getSettings()
 const now = new Date()
 const monument = describeMonument(project, now)
 const undead = project.status === 'undead'
@@ -58,6 +60,7 @@ const lastSeen = undead
     <section class="memorial" data-candle={project.slug} aria-label={`The grave of ${project.name}`}>
       <div class="memorial__sky" aria-hidden="true">
         <Horizon variant="memorial" />
+        <SceneImage variant="memorial" backdrop={settings.backdrop} />
       </div>
       <a class="signpost signpost--back" href="/">
         <span class="signpost__board"><span aria-hidden="true">←</span> Back to the graveyard</span>

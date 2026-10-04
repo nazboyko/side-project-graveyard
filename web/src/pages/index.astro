@@ -3,6 +3,7 @@ import {PortableText} from 'astro-portabletext'
 import Horizon from '../components/Horizon.astro'
 import Legend from '../components/Legend.astro'
 import Register from '../components/Register.astro'
+import SceneImage from '../components/SceneImage.astro'
 import Yard from '../components/Yard.astro'
 import Layout from '../layouts/Layout.astro'
 import {getCauses, getProjects, getSettings, getStats} from '../lib/sanity'
@@ -17,6 +18,7 @@ const description = `${settings.tagline} ${projects.length} side projects, each 
 <Layout description={description} strip={false}>
   <section class="gate" aria-labelledby="site-title">
     <Horizon variant="gate" />
+    <SceneImage variant="gate" backdrop={settings.backdrop} />
     <div class="gate__text">
       <h1 id="site-title">{settings.title}</h1>
       <p class="gate__tagline">{settings.tagline}</p>
