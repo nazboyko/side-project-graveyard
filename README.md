@@ -170,6 +170,11 @@ The session rules are in [CLAUDE.md](CLAUDE.md). The session also used a handful
 - [Astro](https://astro.build), scaffolded with `npm create astro@latest` (minimal template)
 - [@sanity/astro](https://github.com/sanity-io/sanity-astro), the Sanity client inside the Astro build
 - [astro-portabletext](https://github.com/theisel/astro-portabletext), renders the obituaries
+- [@sanity/client](https://github.com/sanity-io/client), the GROQ client that `@sanity/astro` sets up for the build
+- [Sanity Vision](https://github.com/sanity-io/sanity/tree/main/packages/@sanity/vision) (`@sanity/vision`), the GROQ playground inside the Studio
+- [React](https://react.dev), React DOM and [styled-components](https://styled-components.com), which the Studio runs on. They came with the Studio template; the site uses none of them.
+- [TypeScript](https://www.typescriptlang.org), checked with [@astrojs/check](https://github.com/withastro/astro/tree/main/packages/language-tools/astro-check) in the site and `tsc` in the Studio, with the type packages `@types/node` and `@types/react` from [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [ESLint](https://eslint.org) with [@sanity/eslint-config-studio](https://github.com/sanity-io/eslint-config-studio), and [Prettier](https://prettier.io), both from the Studio template
 - [Vitest](https://vitest.dev), runs the tests for the date and stats maths
 - [sharp](https://sharp.pixelplumbing.com), draws the social card once, from an SVG in `web/scripts/og.mjs`
 - [Wrangler](https://developers.cloudflare.com/workers/wrangler/), deploys the built files as Cloudflare Worker static assets
