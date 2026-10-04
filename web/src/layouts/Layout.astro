@@ -9,8 +9,8 @@ interface Props {
   /** Page title without the site name. Leave empty on the home page. */
   title?: string
   description: string
-  /** The home page draws its own gate, so the header strip is left out. */
-  home?: boolean
+  /** The home page and grave pages draw their own sky, so they leave out the header strip. */
+  strip?: boolean
 }
 
 const REPO_URL = 'https://github.com/nazboyko/side-project-graveyard'
@@ -18,7 +18,7 @@ const CHALLENGE_URL = 'https://dev.to/challenges/sanity-2026-09-16'
 const LATIN =
   'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
 
-const {title, description, home = false} = Astro.props
+const {title, description, strip = true} = Astro.props
 const settings = await getSettings()
 
 const pageTitle = title ? `${title} · ${settings.title}` : `${settings.title}. ${settings.tagline}`
@@ -62,7 +62,7 @@ const fontFaces = [
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     {
-      !home && (
+      strip && (
         <header class="strip">
           <Horizon variant="strip" />
           <div class="strip__text">

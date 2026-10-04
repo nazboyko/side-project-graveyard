@@ -1,0 +1,29 @@
+---
+/** One engraved rule under the stone: born on the left, died on the right, the lifespan carved above the middle. */
+import {formatDate, formatLifespan, lifespanDays} from '../lib/stats'
+
+interface Props {
+  bornAt: string
+  diedAt: string | null
+  undead: boolean
+}
+
+const {bornAt, diedAt, undead} = Astro.props
+const days = undead ? null : lifespanDays(bornAt, diedAt)
+const open = undead || !diedAt
+---
+
+<div class:list={['lifeline', open && 'lifeline--open']}>
+  <p class="lifeline__span">{open ? 'still twitching' : `${formatLifespan(days ?? 0)}`}</p>
+  <div class="lifeline__rule" aria-hidden="true"></div>
+  <p class="lifeline__ends">
+    <span>born <time datetime={bornAt}>{formatDate(bornAt)}</time></span>
+    {
+      !open && (
+        <span>
+          died <time datetime={diedAt!}>{formatDate(diedAt!)}</time>
+        </span>
+      )
+    }
+  </p>
+</div>

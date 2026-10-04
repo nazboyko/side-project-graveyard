@@ -1,4 +1,4 @@
-/* A single grave, and the pages that list a cause or a tool. */
+/* Standing at one grave, and the pages that list a cause or a tool. */
 
 .back {
   display: inline-block;
@@ -7,262 +7,932 @@
   font-size: 0.9375rem;
 }
 
+/* ---------- the memorial: sky, stone, candles ---------- */
+
 .grave {
-  max-width: var(--measure);
-  margin-inline: auto;
+  --sky-h: clamp(16rem, 40vh, 24rem);
 }
 
-.headstone {
+.memorial {
+  position: relative;
+  isolation: isolate;
+  margin: calc(-1 * clamp(1.5rem, 4vw, 2.5rem)) calc(50% - 50vw) 0;
+  padding-inline: var(--gutter);
+}
+
+.memorial__sky {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: var(--sky-h);
+  overflow: hidden;
+  background: linear-gradient(
+    to bottom,
+    var(--sky-top) 0%,
+    var(--sky-top) 30%,
+    var(--sky-mid) 52%,
+    var(--sky-low) 66%,
+    var(--sky-low) 100%
+  );
+}
+
+.memorial__stand {
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   align-items: center;
-  gap: 0.9rem;
-  padding: clamp(3.5rem, 12vw, 5.5rem) clamp(1.25rem, 5vw, 2.5rem) clamp(1.75rem, 5vw, 2.5rem);
-  border-radius: 50% 50% 0.4rem 0.4rem / clamp(6rem, 22vw, 11rem) clamp(6rem, 22vw, 11rem) 0.4rem 0.4rem;
-  background: linear-gradient(180deg, var(--stone-hi), var(--stone) 80%);
-  box-shadow: 0 1.5rem 2rem -1.25rem #000;
+  /* Short stones stand on the ground just below the fence; tall ones push the ground down. */
+  min-height: calc(var(--sky-h) + 4rem);
+  padding-top: 5rem;
+}
+
+.marker-plate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.9rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 0 0.4rem 0.6rem -0.4rem #000;
+}
+
+.marker-plate--retired {
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--brass) 80%, white), var(--brass) 55%);
   color: var(--ink);
-  text-align: center;
-  text-shadow: var(--engrave);
 }
 
-.headstone .label {
+.marker-plate--undead {
+  background: var(--board);
+  color: var(--text);
+}
+
+/* The memorial stone: the same object as its plot, closer. */
+.monument--memorial {
+  --stone-w: 21rem;
+  --rise: calc(15rem + var(--life, 0.5) * 15rem);
+  padding-bottom: 1rem;
+}
+
+.monument--memorial.shape-shoulder,
+.monument--memorial.shape-broken {
+  --stone-w: 22rem;
+}
+
+.monument--memorial.shape-gothic {
+  --stone-w: 20.5rem;
+}
+
+.monument--memorial.shape-tablet {
+  --stone-w: 23rem;
+}
+
+.monument--memorial.shape-obelisk {
+  --stone-w: 19rem;
+}
+
+.monument--memorial.layout-plaque {
+  --stone-w: 24rem;
+}
+
+.monument--memorial.layout-marker {
+  --stone-w: 10.5rem;
+  --rise: calc(5.5rem + var(--life, 0) * 9rem);
+}
+
+.monument--memorial.layout-mausoleum {
+  --stone-w: 38rem;
+}
+
+.monument--memorial .stone {
+  width: min(85vw, var(--stone-w));
+}
+
+.monument--memorial.layout-mausoleum .stone {
+  width: min(94vw, var(--stone-w));
+}
+
+.monument--memorial .plants {
+  width: min(100%, 32rem);
+  height: 5rem;
+}
+
+.monument--memorial.layout-marker .plants--front {
+  height: 3.6rem;
+}
+
+.monument--memorial .stone__face {
+  position: relative;
+  padding: calc(var(--cap-h) * 0.6 + 1.2rem) 1.7rem 3.7rem;
+}
+
+.monument--memorial.shape-obelisk .stone__face {
+  padding: 5.5rem 3.2rem 3.7rem;
+}
+
+.monument--memorial.layout-mausoleum .stone__face {
+  padding: 2rem 23% 3.7rem;
+}
+
+.monument--memorial.layout-marker .stone__face {
+  padding: 1.6rem 0.9rem 1.8rem;
+}
+
+.monument--memorial .stone__mark {
+  font-size: 0.9rem;
+}
+
+.monument--memorial .stone__laurel {
+  width: 5rem;
+  height: 1.6rem;
+}
+
+.monument--memorial .stone__name {
+  font-size: clamp(1.9rem, 6vw, 2.75rem);
+}
+
+.monument--memorial.layout-marker .stone__name {
+  font-size: 1.35rem;
+}
+
+.monument--memorial.layout-mausoleum .stone__name {
+  font-size: clamp(1.6rem, 4.5vw, 2.3rem);
+}
+
+/* A marker and its tag stay side by side on a phone, so the stone never floats above the ground. */
+.monument--memorial.layout-marker {
+  flex-wrap: nowrap;
+}
+
+.monument--memorial.layout-marker .stone {
+  width: min(44vw, var(--stone-w));
+}
+
+.monument--memorial.layout-marker .tag {
+  width: min(46vw, 11.5rem);
+}
+
+/* The older stones behind a rewrite stay smaller than the one in front, whatever its size. */
+.monument--memorial .monument__layers span {
+  width: calc(min(85vw, var(--stone-w)) * 0.42);
+  height: calc(var(--rise) * 0.5);
+}
+
+.monument--memorial .monument__layers {
+  gap: calc(min(85vw, var(--stone-w)) * 0.62);
+}
+
+.monument--memorial.layout-plaque .stone__plate {
+  padding: 0.7rem 1.6rem 0.8rem;
+}
+
+.stone__dates {
+  margin-top: 0.6rem;
   color: var(--ink-soft);
-}
-
-.headstone h1 {
-  font-size: clamp(2rem, 8vw, 3.25rem);
-  overflow-wrap: anywhere;
-}
-
-.headstone__dates {
-  color: var(--ink-soft);
+  font-size: 0.9375rem;
   font-variant-numeric: tabular-nums;
 }
 
-.headstone__lived {
+.stone__lived {
+  margin-top: 0.15rem;
   font-family: var(--display);
-  font-size: 1.125rem;
+  font-size: 1.15rem;
 }
 
-.headstone__epitaph {
-  max-width: 28rem;
-  font-family: var(--display);
-  font-size: clamp(1.25rem, 4vw, 1.5rem);
-  font-style: italic;
-  line-height: 1.4;
+.layout-marker .stone__dates {
+  display: none;
 }
 
-.chip {
-  display: inline-flex;
-  align-items: baseline;
+.layout-marker .stone__lived {
+  font-size: 0.9rem;
+}
+
+.monument--memorial .stone__epitaph {
+  margin-top: 1rem;
+  font-size: clamp(1.15rem, 3.2vw, 1.4rem);
+}
+
+.monument--memorial .stone__inscription {
+  font-size: 0.85rem;
+}
+
+.monument--memorial .tag__epitaph {
+  font-size: 1rem;
+}
+
+/* The warmth a lit candle throws on the lower face and the ground. */
+.monument--memorial .stone__face::after,
+.monument--memorial::before {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 280ms ease-out 320ms;
+}
+
+.monument--memorial .stone__face::after {
+  inset: 0;
+  background: radial-gradient(ellipse 75% 34% at 50% 100%, rgb(255 225 160 / 0.42), transparent 75%);
+}
+
+.monument--memorial::before {
+  left: 50%;
+  bottom: -1rem;
+  z-index: 1;
+  width: 22rem;
+  height: 6rem;
+  background: radial-gradient(ellipse 50% 50% at 50% 60%, rgb(240 178 79 / 0.28), transparent 75%);
+  transform: translateX(-50%);
+}
+
+[data-lit] .monument--memorial .stone__face::after,
+[data-lit] .monument--memorial::before {
+  opacity: 1;
+}
+
+.candles {
+  position: absolute;
+  left: 50%;
+  bottom: 0.55rem;
+  z-index: 4;
+  width: 0;
+  height: 0;
+}
+
+.candles__one {
+  position: absolute;
+  bottom: 0;
+  left: var(--x);
+}
+
+.candles__one[hidden] {
+  display: none;
+}
+
+.candles__wax {
+  position: absolute;
+  bottom: 0;
+  left: -0.3rem;
+  width: 0.6rem;
+  height: var(--h);
+  border-radius: 0.15rem 0.15rem 0.05rem 0.05rem;
+  background: linear-gradient(90deg, #cfc5a8, #f0e8d2 45%, #bdb294);
+  box-shadow: 0 0.15rem 0.3rem -0.1rem #000;
+}
+
+.candles__wax::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 2px;
+  height: 0.3rem;
+  background: #3b3428;
+  transform: translateX(-50%);
+}
+
+.candles__flame {
+  position: absolute;
+  bottom: calc(var(--h) + 0.22rem);
+  left: -0.27rem;
+  width: 0.54rem;
+  height: 1rem;
+  border-radius: 50% 50% 50% 50% / 64% 64% 36% 36%;
+  background: radial-gradient(ellipse at 50% 78%, var(--candle-hot) 0 24%, var(--candle) 58%, #e58a2c 100%);
+  transform-origin: 50% 100%;
+  animation: flicker 2.6s ease-in-out infinite;
+}
+
+.candles__halo {
+  position: absolute;
+  bottom: calc(var(--h) - 0.6rem);
+  left: -1.6rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 225 160 / 0.45), rgb(240 178 79 / 0.12) 45%, transparent 70%);
+}
+
+.candles__one.is-new .candles__flame {
+  animation:
+    ignite 600ms ease-out both,
+    flicker 2.6s ease-in-out 600ms infinite;
+}
+
+.candles__one.is-new .candles__halo {
+  animation: halo 600ms ease-out both;
+}
+
+/* 0–120 ms a spark at the wick, 120–320 ms the flame grows; the halo spreads until 600 ms. */
+@keyframes ignite {
+  0% {
+    transform: scale(0.12);
+    filter: brightness(1.8);
+  }
+  20% {
+    transform: scale(0.2);
+    filter: brightness(1.8);
+  }
+  53%,
+  100% {
+    transform: scale(1);
+    filter: none;
+  }
+}
+
+@keyframes halo {
+  0%,
+  53% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    transform: scale(1) rotate(-2deg);
+  }
+  30% {
+    transform: scale(1.05, 0.95) rotate(2deg);
+  }
+  55% {
+    transform: scale(0.96, 1.06) rotate(-1deg);
+  }
+  80% {
+    transform: scale(1.02, 0.98) rotate(1.5deg);
+  }
+}
+
+/* The ceremony's controls: a quiet button on the ground, the count, the honest note. */
+.vigil {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 0.45rem;
-  padding: 0.3rem 0.8rem;
-  border: 1px solid var(--ground-2);
+  margin-top: 1.4rem;
+  text-align: center;
+}
+
+.vigil[hidden] {
+  display: none;
+}
+
+.vigil__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 1.15rem 0.5rem 0.95rem;
+  border: 1px solid rgb(240 178 79 / 0.55);
   border-radius: 999px;
-  background: var(--near);
-  color: var(--chip, var(--text));
+  background: rgb(240 178 79 / 0.08);
+  color: var(--candle);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 200ms ease;
+}
+
+.vigil__button:hover {
+  background: rgb(240 178 79 / 0.16);
+}
+
+.vigil__icon {
+  width: 0.8rem;
+  height: 1.2rem;
+  fill: currentColor;
+}
+
+.vigil__count {
+  min-height: 1.6em;
+}
+
+.vigil__note {
+  color: var(--muted);
   font-size: 0.875rem;
-  line-height: 1.4;
-  text-align: left;
+}
+
+/* ---------- signposts ---------- */
+
+.signpost {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: var(--text);
   text-decoration: none;
 }
 
-a.chip:hover {
-  border-color: var(--candle);
-  color: var(--candle);
+.signpost:hover {
+  color: var(--text);
 }
 
-.chip__icon {
+.signpost__board {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1.4rem 0.55rem 1rem;
+  background:
+    repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.03) 0 3px, transparent 3px 7px),
+    var(--board);
+  font-family: var(--display);
+  font-size: 1rem;
+  box-shadow: 0 0.5rem 0.7rem -0.5rem #000;
+}
+
+.signpost__post {
+  width: 0.45rem;
+  height: 1.6rem;
+  margin-left: 1.4rem;
+  background: linear-gradient(to right, #3a3229, var(--board));
+}
+
+.signpost--back {
+  position: absolute;
+  top: 1.1rem;
+  left: max(var(--gutter), calc(50% - var(--page) / 2 + var(--gutter)));
+  z-index: 2;
+}
+
+.signpost--back .signpost__board {
+  padding: 0.5rem 1rem 0.5rem 1.4rem;
+  clip-path: polygon(0.8rem 0, 100% 0, 100% 100%, 0.8rem 100%, 0 50%);
+}
+
+.signpost--ruins .signpost__board {
+  padding-right: 2.2rem;
+  clip-path: polygon(0 0, calc(100% - 1.1rem) 0, 100% 50%, calc(100% - 1.1rem) 100%, 0 100%);
+}
+
+.signpost__text {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.signpost__host {
+  margin-top: 0.2rem;
   color: var(--muted);
-  font-family: var(--mono);
-  font-size: 0.8125rem;
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-.chip-list {
+.signpost__arrow {
+  font-family: var(--sans);
+  transition: translate 200ms ease;
+}
+
+.signpost:hover .signpost__arrow,
+.signpost:focus-visible .signpost__arrow {
+  translate: 2px 0;
+}
+
+/* ---------- the lifeline ---------- */
+
+.lifeline {
+  width: min(100%, 34rem);
+  margin: 2rem auto 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.lifeline__span {
+  font-family: var(--display);
+  font-size: 1.05rem;
+  font-style: italic;
+}
+
+.lifeline__rule {
+  position: relative;
+  height: 2px;
+  margin: 0.45rem 0.3rem;
+  background: rgb(182 184 168 / 0.45);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.6);
+}
+
+.lifeline__rule::before,
+.lifeline__rule::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--muted);
+  transform: translate(-50%, -50%);
+}
+
+.lifeline__rule::before {
+  left: 0;
+}
+
+.lifeline__rule::after {
+  left: 100%;
+}
+
+.lifeline--open .lifeline__rule {
+  background: linear-gradient(to right, rgb(182 184 168 / 0.45) 60%, transparent);
+}
+
+.lifeline--open .lifeline__rule::after {
+  display: none;
+}
+
+.lifeline__ends {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- the coroner's sheet ---------- */
+
+.ledger {
+  width: min(100%, 40rem);
+  margin: clamp(2.5rem, 7vw, 3.5rem) auto 0;
+  padding: 0.9rem;
+  border-radius: 0.3rem;
+  background: var(--board);
+  box-shadow: 0 0.9rem 1.2rem -0.9rem #000;
+}
+
+.ledger__sheet {
+  position: relative;
+  padding: 1.6rem clamp(1.1rem, 4vw, 2rem) 1.5rem;
+  background: var(--parchment);
+  color: var(--ink);
+}
+
+.ledger__sheet::before,
+.ledger__sheet::after {
+  content: '';
+  position: absolute;
+  top: 0.55rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--brass);
+  box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.35);
+}
+
+.ledger__sheet::before {
+  left: 0.6rem;
+}
+
+.ledger__sheet::after {
+  right: 0.6rem;
+}
+
+.ledger__title {
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+  text-align: center;
+}
+
+.ledger__rows {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+}
+
+.ledger__rows > div {
+  display: grid;
+  grid-template-columns: 9.5rem 1fr;
+  gap: 0.3rem 1rem;
+  align-items: baseline;
+  padding-top: 0.85rem;
+  border-top: 1px dashed rgb(34 35 30 / 0.35);
+}
+
+.ledger__rows > div:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.ledger__rows dt {
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ledger__rows dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.ledger__number {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 34rem) {
+  .ledger__rows > div {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ledger a:hover {
+  color: var(--ink);
+}
+
+.stamp {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.2rem 0.65rem;
+  border: 2px solid var(--ink);
+  border-radius: 0.2rem;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transform: rotate(-1.5deg);
+}
+
+.stamp:hover {
+  background: rgb(34 35 30 / 0.07);
+}
+
+.stamp__mark {
+  font-family: var(--mono);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.autopsy {
-  display: grid;
-  grid-template-columns: minmax(8rem, auto) 1fr;
-  gap: 0.9rem 1.5rem;
-  margin: 0;
+.tags__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2rem;
+  padding: 0.2rem 0.65rem 0.2rem 0.5rem;
+  border: 1px solid rgb(34 35 30 / 0.4);
+  border-radius: 0.15rem;
+  background: rgb(255 255 255 / 0.28);
+  color: var(--ink);
+  font-size: 0.875rem;
+  text-decoration: none;
 }
 
-.autopsy dt {
-  color: var(--muted);
+.tags__tag:hover {
+  border-color: var(--ink);
 }
 
-.autopsy dd {
-  margin: 0;
-  min-width: 0;
+/* The tool's colour lives only in the swatch, so the words never depend on an editor's choice. */
+.tags__swatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 1px solid var(--ink);
+  background: var(--chip, var(--stone));
 }
 
-@media (max-width: 30rem) {
-  .autopsy {
-    grid-template-columns: 1fr;
-    gap: 0.2rem;
-  }
-
-  .autopsy dd {
-    margin-bottom: 0.9rem;
-  }
+.last-words {
+  display: inline-block;
+  padding: 0.45rem 0.8rem;
+  border-radius: 0.15rem;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--brass) 82%, white), var(--brass) 60%);
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.25),
+    0 1px 0 rgb(255 255 255 / 0.35);
 }
 
-.lesson {
-  margin: 0;
-  padding-left: 1.25rem;
-  border-left: 2px solid var(--candle);
+.last-words code {
+  font-size: 0.875rem;
+}
+
+.last-words__when {
+  margin-top: 0.4rem;
+  color: var(--ink-soft);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ---------- figures ---------- */
+
+.figures {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+  margin: 2.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.figures__medal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 7.5rem;
+  height: 7.5rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--brass) 70%, white), var(--brass) 60%);
+  box-shadow:
+    inset 0 0 0 0.3rem rgb(0 0 0 / 0.12),
+    0 0.6rem 0.8rem -0.6rem #000;
+  color: var(--ink);
+  text-align: center;
+}
+
+.figures__value {
   font-family: var(--display);
-  font-size: clamp(1.25rem, 4vw, 1.5rem);
-  line-height: 1.4;
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
 }
+
+.figures__label {
+  max-width: 6rem;
+  margin-top: 0.3rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+/* ---------- obituary and lesson ---------- */
+
+.obituary,
+.lesson {
+  width: min(100%, var(--measure));
+  margin: clamp(2.5rem, 7vw, 3.5rem) auto 0;
+}
+
+.obituary h2,
+.lesson h2 {
+  margin-bottom: 1rem;
+}
+
+.obituary__text {
+  line-height: 1.7;
+}
+
+.obituary__text > p:first-child::first-letter {
+  float: left;
+  margin: 0.08em 0.12em 0 0;
+  font-family: var(--display);
+  font-size: 3.4em;
+  font-weight: 600;
+  line-height: 0.82;
+}
+
+.lesson__slab {
+  position: relative;
+  margin: 0;
+  padding: 2rem clamp(1.4rem, 5vw, 2.4rem) 1.7rem;
+  border-radius: 0.6rem 0.6rem 0.2rem 0.2rem;
+  background:
+    linear-gradient(to top, rgb(52 47 34 / 0.3), transparent 0.7rem),
+    linear-gradient(to bottom, color-mix(in srgb, var(--stone) 82%, white), var(--stone) 45%);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: clamp(1.2rem, 3.6vw, 1.45rem);
+  font-style: italic;
+  line-height: 1.4;
+  text-align: center;
+  text-shadow: var(--engrave);
+  box-shadow: 0 0.8rem 1rem -0.7rem #000;
+}
+
+.lesson__slab::before {
+  content: '';
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  width: 3rem;
+  height: 2px;
+  background: var(--ink-soft);
+  transform: translateX(-50%);
+}
+
+.ruins {
+  width: min(100%, var(--measure));
+  margin: clamp(2.5rem, 7vw, 3.5rem) auto 0;
+}
+
+/* ---------- neighbours ---------- */
 
 .neighbours {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 1rem 2rem;
-  margin-top: clamp(2.5rem, 7vw, 4rem);
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--ground-2);
+  margin-top: clamp(3rem, 8vw, 4.5rem);
 }
 
-.neighbours a {
+.neighbours__sign {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.8rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.2rem;
+  background: var(--board);
+  color: var(--text);
+  text-decoration: none;
+  box-shadow: 0 0.5rem 0.7rem -0.5rem #000;
+}
+
+.neighbours__sign:hover {
+  color: var(--text);
+}
+
+.neighbours__sign--next {
+  margin-left: auto;
+  text-align: right;
+}
+
+.neighbours__text {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  text-decoration: none;
 }
 
-.neighbours a > span:last-child {
+.neighbours__label {
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.neighbours__name {
   font-family: var(--display);
-  font-size: 1.125rem;
+  font-size: 1.1rem;
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
 }
 
-.neighbours__next {
-  margin-left: auto;
-  text-align: right;
+@media (max-width: 34rem) {
+  .neighbours {
+    flex-direction: column;
+  }
+
+  .neighbours__sign--next {
+    margin-left: 0;
+  }
 }
 
-/* The candle: the only button. */
-
-.candle {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem 1.25rem;
-  margin-top: 2rem;
-  padding: 1.1rem 1.25rem;
-  border-radius: 0.5rem;
-  background: var(--board);
-}
-
-.candle[hidden] {
-  display: none;
-}
-
-.candle__wax {
-  position: relative;
+/* A neighbour's outline, drawn from the same shape and weathering classes as its stone. */
+.silhouette {
+  --stone-c: var(--stone);
   flex: none;
-  width: 0.9rem;
-  height: 2rem;
-  margin: 1.5rem 0.6rem 0;
-  border-radius: 0.2rem 0.2rem 0.1rem 0.1rem;
-  background: linear-gradient(90deg, #cfc5a8, #f0e8d2 45%, #bdb294);
+  width: 2rem;
+  height: 2.5rem;
+  background: var(--stone-c);
+  mask:
+    var(--cap) top / 100% auto no-repeat,
+    linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--cap-ratio) * 2rem + 1px) no-repeat;
 }
 
-.candle__wax::before {
-  content: '';
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  width: 2px;
-  height: 0.35rem;
-  background: #4a4234;
-  transform: translateX(-50%);
+.silhouette.layout-marker {
+  height: 1.4rem;
 }
 
-.candle__flame {
-  position: absolute;
-  bottom: calc(100% + 0.25rem);
-  left: 50%;
-  width: 0.7rem;
-  height: 1.2rem;
-  border-radius: 50% 50% 50% 50% / 64% 64% 36% 36%;
-  background: radial-gradient(ellipse at 50% 78%, var(--candle-hot) 0 22%, var(--candle) 55%, #e58a2c 100%);
-  box-shadow: 0 0 1.1rem 0.3rem rgb(240 178 79 / 0.3);
-  opacity: 0;
-  transform: translateX(-50%) scale(0.2);
-  transform-origin: 50% 100%;
+.silhouette.layout-plaque {
+  width: 2.2rem;
+  --stone-c: var(--stone-hi);
 }
 
-.candle[data-lit] .candle__flame {
-  opacity: 1;
-  transform: translateX(-50%) scale(1);
-  animation: flicker 2.6s ease-in-out infinite;
+.silhouette.shape-obelisk {
+  width: 1.5rem;
+  mask: none;
+  clip-path: polygon(10% 100%, 90% 100%, 80% 12%, 50% 0, 20% 12%);
 }
 
-@keyframes flicker {
-  0%,
-  100% {
-    transform: translateX(-50%) scale(1) rotate(-2deg);
-  }
-  30% {
-    transform: translateX(-50%) scale(1.05, 0.95) rotate(2deg);
-  }
-  55% {
-    transform: translateX(-50%) scale(0.96, 1.06) rotate(-1deg);
-  }
-  80% {
-    transform: translateX(-50%) scale(1.02, 0.98) rotate(1.5deg);
-  }
+.silhouette.layout-mausoleum {
+  width: 2.8rem;
+  mask: none;
+  clip-path: polygon(0 100%, 0 38%, 50% 0, 100% 38%, 100% 100%);
 }
 
-.candle__body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  min-width: 12rem;
-}
-
-.candle__count {
-  min-height: 1.6em;
-}
-
-.candle__note {
-  color: var(--muted);
-  font-size: 0.875rem;
-}
-
-.button {
-  min-height: 2.75rem;
-  padding: 0.6rem 1.1rem;
-  border: 0;
-  border-radius: 0.4rem;
-  background: var(--candle);
-  color: var(--ink);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.button:hover {
-  background: var(--candle-hot);
-}
-
-/* Cause and stack pages. */
+/* ---------- cause and stack pages ---------- */
 
 .page-head {
   max-width: var(--measure);
@@ -298,7 +968,16 @@ a.chip:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .candle[data-lit] .candle__flame {
+  .candles__flame,
+  .candles__one.is-new .candles__flame,
+  .candles__one.is-new .candles__halo {
     animation: none;
+  }
+
+  .monument--memorial .stone__face::after,
+  .monument--memorial::before,
+  .vigil__button,
+  .signpost__arrow {
+    transition: none;
   }
 }

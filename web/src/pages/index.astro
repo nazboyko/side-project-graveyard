@@ -14,7 +14,7 @@ const count = projects.length === 1 ? '1 grave' : `${projects.length} graves`
 const description = `${settings.tagline} ${projects.length} side projects, each with an epitaph, a cause of death, and the one thing it taught its author.`
 ---
 
-<Layout description={description} home>
+<Layout description={description} strip={false}>
   <section class="gate" aria-labelledby="site-title">
     <Horizon variant="gate" />
     <div class="gate__text">

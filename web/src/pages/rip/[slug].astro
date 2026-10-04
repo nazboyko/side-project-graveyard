@@ -2,10 +2,16 @@
 import type {GetStaticPaths, InferGetStaticPropsType} from 'astro'
 import {PortableText} from 'astro-portabletext'
 import Candle from '../../components/Candle.astro'
+import Candles from '../../components/Candles.astro'
+import Horizon from '../../components/Horizon.astro'
+import Lifeline from '../../components/Lifeline.astro'
+import Silhouette from '../../components/Silhouette.astro'
+import Stone from '../../components/Stone.astro'
 import Layout from '../../layouts/Layout.astro'
-import {getProjects, type Mood, type Status} from '../../lib/sanity'
+import {getProjects, type Mood} from '../../lib/sanity'
 import {chipColor} from '../../lib/color'
-import {formatDate, formatLifespan, formatYears, lifespanDays} from '../../lib/stats'
+import {describeMonument} from '../../lib/monument'
+import {formatDate, formatYears} from '../../lib/stats'
 
 export const getStaticPaths = (async () => {
   // Same order as the graveyard: by date of death, oldest first, the undead last.
@@ -22,12 +28,6 @@ export const getStaticPaths = (async () => {
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>
 
-const STATUS: Record<Status, string> = {
-  buried: 'Buried',
-  retired: 'Retired with honour',
-  undead: 'Undead',
-}
-
 const MOOD: Record<Mood, string> = {
   relief: 'Relief',
   guilt: 'Guilt',
@@ -36,112 +36,168 @@ const MOOD: Record<Mood, string> = {
 }
 
 const {project, previous, next} = Astro.props
+const now = new Date()
+const monument = describeMonument(project, now)
 const undead = project.status === 'undead'
-const days = lifespanDays(project.bornAt, project.diedAt)
+const figures = (project.monument?.figures ?? []).filter((figure) => figure?.value && figure?.label).slice(0, 3)
 // The Studio only accepts https here, but the page does not take that on trust.
 const ruinsUrl = project.repoUrl?.startsWith('https://') ? project.repoUrl : null
+const lastSeen = undead
+  ? `last seen · ${formatYears(project.bornAt, null)}`
+  : project.diedAt && `final commit · ${formatDate(project.diedAt)}`
 ---
 
-<Layout title={`${project.name} (${formatYears(project.bornAt, project.diedAt)})`} description={project.epitaph}>
-  <a class="back" href="/">Back to the graveyard</a>
-
+<Layout
+  title={`${project.name} (${formatYears(project.bornAt, undead ? null : project.diedAt)})`}
+  description={project.epitaph}
+  strip={false}
+>
   <article class="grave">
-    <header class="headstone">
-      <p class="label">{STATUS[project.status]}</p>
-      <h1>{project.name}</h1>
-      <p class="headstone__dates">
-        <time datetime={project.bornAt}>{formatDate(project.bornAt)}</time>
-        {' – '}
-        {project.diedAt ? <time datetime={project.diedAt}>{formatDate(project.diedAt)}</time> : 'still twitching'}
-      </p>
-      {days !== null && <p class="headstone__lived">lived {formatLifespan(days)}</p>}
-      <p class="headstone__epitaph">{project.epitaph}</p>
-    </header>
+    <section class="memorial" data-candle={project.slug} aria-label={`The grave of ${project.name}`}>
+      <div class="memorial__sky" aria-hidden="true">
+        <Horizon variant="memorial" />
+      </div>
+      <a class="signpost signpost--back" href="/">
+        <span class="signpost__board"><span aria-hidden="true">←</span> Back to the graveyard</span>
+        <span class="signpost__post" aria-hidden="true"></span>
+      </a>
 
-    <Candle slug={project.slug} name={project.name} />
+      <div class="memorial__stand">
+        {
+          project.status === 'retired' && (
+            <p class="marker-plate marker-plate--retired">Retired with honour</p>
+          )
+        }
+        {
+          undead && (
+            <p class="marker-plate marker-plate--undead">
+              <span class="stone__light" aria-hidden="true" />
+              Undead
+            </p>
+          )
+        }
+        <Stone project={project} monument={monument} size="memorial">
+          <Candles slot="front" />
+        </Stone>
+      </div>
+      <Candle name={project.name} />
+    </section>
 
-    <section class="section" aria-labelledby="autopsy-heading">
-      <h2 id="autopsy-heading">Autopsy</h2>
-      <dl class="autopsy">
-        <dt>{undead ? 'What keeps it down' : 'Cause of death'}</dt>
-        <dd>
-          <a class="chip" href={`/cause/${project.cause.slug}/`}>
-            {
-              project.cause.icon && (
-                <span class="chip__icon" aria-hidden="true">
-                  {project.cause.icon}
-                </span>
-              )
-            }
-            {project.cause.title}
-          </a>
-        </dd>
-        <dt>Stack</dt>
-        <dd>
-          <ul class="chip-list">
-            {
-              project.stack.map((tech) => (
-                <li>
-                  <a class="chip" href={`/stack/${tech.slug}/`} style={chipColor(tech.color)}>
-                    {tech.name}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </dd>
-        {
-          project.lastCommit && (
-            <>
-              <dt>Last commit</dt>
-              <dd>
-                <code>{project.lastCommit}</code>
-              </dd>
-            </>
-          )
-        }
-        {
-          project.moodAtDeath && (
-            <>
-              <dt>{undead ? 'Mood at last visit' : 'Mood at death'}</dt>
-              <dd>{MOOD[project.moodAtDeath]}</dd>
-            </>
-          )
-        }
-        {
-          project.linesOfCode !== null && (
-            <>
-              <dt>Lines of code</dt>
-              <dd>{project.linesOfCode.toLocaleString('en-US')}</dd>
-            </>
-          )
-        }
-      </dl>
+    <Lifeline bornAt={project.bornAt} diedAt={project.diedAt} undead={undead} />
+
+    <section class="ledger" aria-labelledby="autopsy-heading">
+      <div class="ledger__sheet">
+        <h2 id="autopsy-heading" class="ledger__title">Autopsy</h2>
+        <dl class="ledger__rows">
+          <div>
+            <dt>{undead ? 'What keeps it down' : 'Cause of death'}</dt>
+            <dd>
+              <a class="stamp" href={`/cause/${project.cause.slug}/`}>
+                {
+                  project.cause.icon && (
+                    <span class="stamp__mark" aria-hidden="true">
+                      {project.cause.icon}
+                    </span>
+                  )
+                }
+                {project.cause.title}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt>Stack recovered</dt>
+            <dd>
+              <ul class="tags">
+                {
+                  project.stack.map((tech) => (
+                    <li>
+                      <a class="tags__tag" href={`/stack/${tech.slug}/`} style={chipColor(tech.color)}>
+                        <span class="tags__swatch" aria-hidden="true" />
+                        <span class="visually-hidden">Built with </span>
+                        {tech.name}
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+            </dd>
+          </div>
+          {
+            project.lastCommit && (
+              <div>
+                <dt>Last words</dt>
+                <dd>
+                  <p class="last-words">
+                    <code>“{project.lastCommit}”</code>
+                  </p>
+                  {lastSeen && <p class="last-words__when">{lastSeen}</p>}
+                </dd>
+              </div>
+            )
+          }
+          {
+            project.moodAtDeath && (
+              <div>
+                <dt>{undead ? 'Mood at last visit' : 'Mood at death'}</dt>
+                <dd>{MOOD[project.moodAtDeath]}</dd>
+              </div>
+            )
+          }
+          {
+            project.linesOfCode !== null && (
+              <div>
+                <dt>Lines of code</dt>
+                <dd class="ledger__number">{project.linesOfCode.toLocaleString('en-US')}</dd>
+              </div>
+            )
+          }
+        </dl>
+      </div>
     </section>
 
     {
+      figures.length > 0 && (
+        <ul class="figures" aria-label="Figures carved for this grave">
+          {figures.map((figure) => (
+            <li class="figures__medal">
+              <span class="figures__value">{figure.value}</span>
+              <span class="figures__label">{figure.label}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
       project.obituary && project.obituary.length > 0 && (
-        <section class="section" aria-labelledby="obituary-heading">
+        <section class="obituary" aria-labelledby="obituary-heading">
           <h2 id="obituary-heading">Obituary</h2>
-          <div class="prose">
+          <div class="prose obituary__text">
             <PortableText value={project.obituary} />
           </div>
         </section>
       )
     }
 
-    <section class="section" aria-labelledby="lesson-heading">
+    <section class="lesson" aria-labelledby="lesson-heading">
       <h2 id="lesson-heading">What it taught me</h2>
-      <blockquote class="lesson">
+      <blockquote class="lesson__slab">
         <p>{project.lesson}</p>
       </blockquote>
     </section>
 
     {
       ruinsUrl && (
-        <p class="section">
-          <a href={ruinsUrl} rel="noopener">
-            {new URL(ruinsUrl).hostname === 'github.com' ? 'Visit the ruins on GitHub' : 'Visit the ruins'}
+        <p class="ruins">
+          <a class="signpost signpost--ruins" href={ruinsUrl} rel="noopener">
+            <span class="signpost__board">
+              <span class="signpost__text">
+                Visit the ruins
+                <span class="signpost__host">{new URL(ruinsUrl).hostname}</span>
+              </span>
+              <span class="signpost__arrow" aria-hidden="true">→</span>
+            </span>
+            <span class="signpost__post" aria-hidden="true" />
           </a>
         </p>
       )
@@ -150,17 +206,23 @@ const ruinsUrl = project.repoUrl?.startsWith('https://') ? project.repoUrl : nul
     <nav class="neighbours" aria-label="Neighbouring graves">
       {
         previous && (
-          <a href={`/rip/${previous.slug}/`} rel="prev">
-            <span class="label">Previous grave</span>{' '}
-            <span>{previous.name}</span>
+          <a class="neighbours__sign" href={`/rip/${previous.slug}/`} rel="prev">
+            <Silhouette monument={describeMonument(previous, now)} />
+            <span class="neighbours__text">
+              <span class="neighbours__label">Previous grave</span>{' '}
+              <span class="neighbours__name">{previous.name}</span>
+            </span>
           </a>
         )
       }
       {
         next && (
-          <a class="neighbours__next" href={`/rip/${next.slug}/`} rel="next">
-            <span class="label">Next grave</span>{' '}
-            <span>{next.name}</span>
+          <a class="neighbours__sign neighbours__sign--next" href={`/rip/${next.slug}/`} rel="next">
+            <span class="neighbours__text">
+              <span class="neighbours__label">Next grave</span>{' '}
+              <span class="neighbours__name">{next.name}</span>
+            </span>
+            <Silhouette monument={describeMonument(next, now)} />
           </a>
         )
       }
