@@ -52,6 +52,14 @@
   }
 }
 
+/* On a small laptop the posts sit higher in the fade; it closes sooner there. Narrower than this, the whole gate
+   stands clear of it. */
+@media (min-width: 60rem) and (max-width: 76rem) {
+  .memorial__sky .scene-picture::after {
+    background: linear-gradient(to bottom, transparent, var(--ground) 38%);
+  }
+}
+
 .memorial__stand {
   display: flex;
   flex-direction: column;

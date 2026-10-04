@@ -35,6 +35,30 @@
   pointer-events: none;
 }
 
+/* A quiet dusk in the photograph's own tones while it loads and decodes, so the painted skyline never flashes
+   through first. Only where scripts run: the script is what takes this layer away when the image fails. Without
+   scripts the layer stays clear and the painted skyline shows underneath. */
+@media (scripting: enabled) {
+  .scene-picture {
+    background: linear-gradient(
+      to bottom,
+      var(--sky-mid) 0 22%,
+      color-mix(in srgb, var(--sky-mid) 75%, var(--sky-low)) 38%,
+      var(--far) 50%,
+      var(--ground) 90%
+    );
+  }
+
+  .scene-picture--memorial {
+    background: linear-gradient(
+      to bottom,
+      var(--sky-mid) 0 35%,
+      color-mix(in srgb, var(--sky-mid) 75%, var(--sky-low)) 60%,
+      var(--far) 80%
+    );
+  }
+}
+
 /* Set by the component when the image fails: the whole layer goes, its ground fade included. */
 .scene-picture[hidden] {
   display: none;
