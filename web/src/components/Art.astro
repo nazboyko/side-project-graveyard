@@ -1,0 +1,29 @@
+---
+/** One drawing from the page's sprite: a relic at the foot of a stone, or a cause's mark beside it. */
+import {MOTIF_ART, RELIC_ART} from '../lib/drawings'
+
+interface Props {
+  kind: 'relic' | 'motif'
+  name: string
+}
+
+const {kind, name} = Astro.props
+const drawn = kind === 'relic' ? name in RELIC_ART : name in MOTIF_ART
+// A vine climbs the whole edge of its stone and a pile of crates grows tall, so both stretch upwards;
+// everything else keeps its proportions.
+const stretch = (kind === 'motif' && name === 'vines') || (kind === 'relic' && name === 'crates')
+---
+
+{
+  drawn && (
+    <svg
+      class={`art art--${kind} art--${name}`}
+      viewBox="0 0 48 48"
+      preserveAspectRatio={stretch ? 'none' : undefined}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <use href={`#${kind}-${name}`} />
+    </svg>
+  )
+}
