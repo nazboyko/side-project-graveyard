@@ -8,7 +8,7 @@ import {chipColor} from '../../lib/color'
 import {formatDate, formatLifespan, formatYears, lifespanDays} from '../../lib/stats'
 
 export const getStaticPaths = (async () => {
-  // Same order as the graveyard: the undead first, then by date of death, newest first.
+  // Same order as the graveyard: by date of death, oldest first, the undead last.
   const projects = await getProjects()
   return projects.map((project, index) => ({
     params: {slug: project.slug},
@@ -141,7 +141,7 @@ const ruinsUrl = project.repoUrl?.startsWith('https://') ? project.repoUrl : nul
       ruinsUrl && (
         <p class="section">
           <a href={ruinsUrl} rel="noopener">
-            Visit the ruins
+            {new URL(ruinsUrl).hostname === 'github.com' ? 'Visit the ruins on GitHub' : 'Visit the ruins'}
           </a>
         </p>
       )
