@@ -62,8 +62,9 @@ Everything else: decide, note the decision in the BUILD_LOG, continue. Phase H (
 
 ## What is committed and what is not
 
-Committed: `studio/`, `web/`, `docs/BUILD_LOG.md`, `README.md`, `LICENSE`, `.gitignore`, `.github/workflows/`,
-this `CLAUDE.md`, `.claude/skills/graveyard-voice/` (written for this project), optionally `scripts/setup-wizard.sh`.
+Committed: `studio/`, `web/`, `docs/BUILD_LOG.md`, `docs/DESIGN_BRIEF.md`, `docs/screenshots/`, `README.md`, `LICENSE`,
+`.gitignore`, `.github/workflows/`, this `CLAUDE.md`, `.claude/skills/graveyard-voice/` (written for this project),
+optionally `scripts/setup-wizard.sh`.
 Never committed: `PLAN.md`, `CHALLENGE_RULES.md`, `docs/POST_DRAFT.md`, `.claude/settings.json`, `.claude/hooks/`,
 every other folder under `.claude/skills/` (they come from my other projects), `.env*`. They are kept out by
 `.git/info/exclude` and the global git excludes; do not `git add -f` anything except what is listed as committed above.
@@ -73,7 +74,9 @@ every other folder under `.claude/skills/` (they come from my other projects), `
 - `studio/` — Sanity Studio v4+, TypeScript, `defineType`/`defineField`, structure builder for the settings singleton.
   Dataset `production`, public. Deployed with `npx sanity deploy`.
 - `web/` — Astro (latest), `output: 'static'`, `@sanity/astro` (`useCdn: false`, build-time fetch via `sanity:client`),
-  `astro-portabletext` for rich text. No React, no Tailwind, no component libraries. One global CSS file with custom properties.
+  `astro-portabletext` for rich text. No React, no Tailwind, no component libraries. One stylesheet bundle:
+  `styles/global.css` importing tokens, base, scene, stone and grave partials, with custom properties. One self-hosted
+  font package is allowed: `@fontsource-variable/fraunces`, credited in README.
   Pure helpers in `web/src/lib/` are tested with Vitest.
 - Hosting: a Cloudflare Worker with static assets (Workers Builds), Git-connected, root `web/`, build `npm run build`,
   deploy `npx wrangler deploy`, assets from `dist` per `web/wrangler.jsonc`.
