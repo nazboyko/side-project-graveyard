@@ -1,17 +1,22 @@
 ---
 import '../styles/global.css'
+import frauncesRoman from '@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url'
+import frauncesItalic from '@fontsource-variable/fraunces/files/fraunces-latin-wght-italic.woff2?url'
+import Horizon from '../components/Horizon.astro'
 import {getSettings} from '../lib/sanity'
 
 interface Props {
   /** Page title without the site name. Leave empty on the home page. */
   title?: string
   description: string
-  /** The home page carries the tagline in its hero, so the header leaves it out. */
+  /** The home page draws its own gate, so the header strip is left out. */
   home?: boolean
 }
 
 const REPO_URL = 'https://github.com/nazboyko/side-project-graveyard'
 const CHALLENGE_URL = 'https://dev.to/challenges/sanity-2026-09-16'
+const LATIN =
+  'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
 
 const {title, description, home = false} = Astro.props
 const settings = await getSettings()
@@ -19,6 +24,16 @@ const settings = await getSettings()
 const pageTitle = title ? `${title} · ${settings.title}` : `${settings.title}. ${settings.tagline}`
 const canonical = new URL(Astro.url.pathname, Astro.site)
 const ogImage = new URL('/og.png', Astro.site)
+const fontFaces = [
+  [frauncesRoman, 'normal'],
+  [frauncesItalic, 'italic'],
+]
+  .map(
+    ([url, style]) =>
+      `@font-face{font-family:'Fraunces Variable';font-style:${style};font-display:swap;font-weight:100 900;` +
+      `src:url(${url}) format('woff2-variations');unicode-range:${LATIN}}`,
+  )
+  .join('')
 ---
 
 <!doctype html>
@@ -30,7 +45,9 @@ const ogImage = new URL('/og.png', Astro.site)
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" content="#0d0f13" />
+    <link rel="preload" href={frauncesRoman} as="font" type="font/woff2" crossorigin />
+    <style is:inline set:html={fontFaces}></style>
+    <meta name="theme-color" content="#1d2636" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={settings.title} />
     <meta property="og:title" content={title ?? settings.title} />
@@ -44,22 +61,38 @@ const ogImage = new URL('/og.png', Astro.site)
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-    <header class="site-header">
-      <a class="site-title" href="/">{settings.title}</a>
-      {!home && <p class="site-tagline">{settings.tagline}</p>}
-    </header>
+    {
+      !home && (
+        <header class="strip">
+          <Horizon variant="strip" />
+          <div class="strip__text">
+            <a class="strip__title" href="/">
+              {settings.title}
+            </a>
+            <p class="strip__tagline">{settings.tagline}</p>
+          </div>
+        </header>
+      )
+    }
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    <footer class="site-footer">
-      <p>
-        {settings.footerLine}
-        {settings.keeperName && ` Kept by ${settings.keeperName}.`}
-      </p>
-      <ul>
-        <li><a href={REPO_URL}>Source on GitHub</a></li>
-        <li><a href={CHALLENGE_URL}>The DEV × Sanity Challenge</a></li>
-      </ul>
+    <footer class="keeper">
+      <div class="keeper__sign">
+        <svg class="keeper__lantern" viewBox="0 0 32 48" aria-hidden="true" focusable="false">
+          <path class="keeper__lantern-frame" d="M10 6 h12 l-2 -4 h-8 Z M8 8 h16 v4 h-16 Z M9 12 h14 v24 h-14 Z M7 36 h18 v4 h-18 Z" />
+          <rect class="keeper__lantern-glass" x="11" y="14" width="10" height="20" />
+          <path class="keeper__lantern-flame" d="M16 18 c3 4 4 7 4 9 a4 4 0 0 1 -8 0 c0 -2 1 -5 4 -9 Z" />
+        </svg>
+        <div class="keeper__text">
+          {settings.keeperName && <p class="keeper__name">Kept by {settings.keeperName}</p>}
+          <p>{settings.footerLine}</p>
+          <ul>
+            <li><a href={REPO_URL}>Source on GitHub</a></li>
+            <li><a href={CHALLENGE_URL}>The DEV × Sanity Challenge</a></li>
+          </ul>
+        </div>
+      </div>
     </footer>
   </body>
 </html>
