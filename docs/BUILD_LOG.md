@@ -14,8 +14,8 @@ I gave one kickoff prompt; the per-phase prompts were written in advance in my l
 | B. Seed content | 12:32 | 12:40 | 1 | 0 | one of the six real repos is private and was skipped |
 | C. Astro + queries | 12:33 | 12:46 | 1 | 3 | peer dependencies, TypeScript 7, `process` types |
 | D. Pages + UI | 12:48 | 13:01 | 1 | 3 | glued link names, stats row on a phone, `hidden` vs `display: flex` |
-| E. Deploy + webhook | 13:06 | 20:40 | 3 | 2 | plan said Pages, dashboard gave a Worker; 7 hours of the gap were me |
-| F. Polish | | | | | |
+| E. Deploy + webhook | 13:06 | 20:23 | 3 | 2 | plan said Pages, dashboard gave a Worker; 7 hours of the gap were me; publish to live in under 60 s |
+| F. Polish | 20:20 | 20:35 | 1 | 0 | four fixes picked from the review; Lighthouse still 100 |
 | G. README + post | | | | | |
 
 ---
@@ -407,7 +407,7 @@ Run `npm run build`, then `npx astro check`. Give me a list of the pages and the
 
 - None yet. The hosting and webhook checklist is waiting for me.
 
-## Phase E — Deploy + webhook (2026-10-03, 13:06–13:12 and 20:09–20:40 CDT, about 37 min of work around a 7-hour wait for me)
+## Phase E — Deploy + webhook (2026-10-03, 13:06–13:12 and 20:09–20:23 CDT, about 20 min of work around a 7-hour wait for me)
 
 Carried over from Phase D: its pull request went green on the first CI run (web job 30s, studio job 39s) and was
 merged at 13:02. The model then stopped, as the kickoff told it to: there was no `.env` and no hosting yet.
@@ -491,3 +491,100 @@ Change the uncommitted site URL in web/astro.config.mjs from the pages.dev fallb
   variables, created the deploy hook.
 - sanity.io/manage: created the webhook `rebuild-site`.
 - Wrote `SITE_URL` and `CF_DEPLOY_HOOK_URL` into the local `.env`.
+
+### Verified after the merge (20:19–20:23 CDT, committed with the Phase F pull request)
+
+- Merged at 20:19. The live site served the new build 77 seconds after the model started watching for it: the
+  canonical tag changed from localhost to the workers.dev address. Until then the address was serving the
+  Phase D build.
+- Live-site check: `curl -sI` returns 200. The home page has 19 links to `/rip/…`. The plan's own check,
+  `grep -c 'rip/'`, prints 1, because the HTML is a single line and `-c` counts lines; it still passes its "> 0".
+  One grave, the undead grave, a cause page, a stack page, `og.png` and `favicon.svg` all return 200. An unknown
+  path returns 404 with the site's own 404 page.
+- Publish to rebuild: the script stamped the footer line at 20:20:41. The stamp was not on the live page after
+  30 seconds and was there after 60. The restore at 20:21:44 behaved the same way. With a poll every 30 seconds,
+  that puts a publish on the live site in 30 to 60 seconds. The plan had allowed six minutes.
+- Afterwards the dataset and the live footer both read the original line again.
+- In a browser on the live site: the candle lights, the console is clean, nothing overflows at 375 pixels.
+
+## Phase F — Polish (2026-10-03, 20:20–20:35 CDT, about 15 min)
+
+Carried over from Phase E: its pull request went green on the first run of all three checks (web 36s, studio 1m7s,
+and Cloudflare's own Workers Builds check on the branch) and was merged at 20:19. The chain test that had to wait
+for the merge is written up at the end of the Phase E entry above.
+
+### Prompt
+
+```
+Run the ui-review skill on the deployed site (I will paste screenshots of / and one /rip/ page, desktop and mobile) and then the wow-review gate checks. Produce findings only. Then I will pick what to fix; implement only what I pick. Any fix must keep Lighthouse a11y ≥ 95 and must not add features outside PLAN.md. Append Phase F to docs/BUILD_LOG.md.
+```
+
+I was not there to paste screenshots or to pick. The model took its own screenshots of the live site in a browser
+(home and one grave page, 1440 and 375 pixels wide) and picked the fixes itself, which I had agreed to at the kickoff.
+
+### What came out: the review
+
+My UI review skill, run by the model against https://side-project-graveyard.boyko-nazar.workers.dev.
+
+- **Overall.** Dark, quiet, consistent. Strongest: the tombstone grid and the grave page. Weakest: the order of the
+  grid and the first screen on a phone.
+- **First screen, desktop.** Title, tagline in the candle colour, the intro, the register with five numbers. What
+  the site is takes about three seconds.
+- **First screen, phone.** Title, tagline, intro. The register starts at the fold with "14 buried" and
+  "3 retired". The one number the page wants remembered, 355 days, sits at the bottom edge.
+- **The three-click path.** Scroll to the stones, open the first one, light a candle or walk to the next grave.
+  The first stones were the five real 2026 repositories, whose epitaphs are sober lines from their READMEs. The
+  invented graves with the better epitaphs were below the fold.
+- **Critical issues.** None.
+- **High impact.** (1) Grid order: newest death first puts the plainest stones first. (2) On a phone the average
+  lifespan is below the two counts.
+- **Polish.** (3) The undead stone read "2022– · still twitching"; the dangling dash looks like a typo. (4) "Visit
+  the ruins" does not say where it leads. (5) "Retired with honour" wraps and makes the register cells uneven.
+  (6) The 404 page is bare. (7) A stack page has no way to another stack except through a grave.
+- **Wow-factor ideas, none of them built:** a candle count shared between visitors, stones that lean more the
+  older they are, a "random grave" link, a print stylesheet that turns the page into a burial register.
+- **Quick wins.** 1 to 4, each well under an hour.
+- **Score.** Visual design 8, UX clarity 8, consistency 9, accessibility 9, polish 7, overall 8.
+
+The audience gate (my other review skill), on the live site:
+
+- 10-second test: desktop passes on "355 days" in the first screen; the phone passes only after fix 2.
+- Play test: filter, stones, candle, all reachable with a thumb. The candle button is about 46 pixels tall.
+- Screenshot test: a row of headstones does not look like a blog grid.
+- Memory test: "a graveyard where side projects live 355 days on average, and you can light a candle for a todo
+  app that lived two days."
+- Remove-one-thing check: nothing removed. The line "Candles are counted in this browser only" was the candidate
+  and stays, because it is true.
+
+### What came out: the fixes
+
+The model picked findings 1 to 4 and left 5 to 7.
+
+1. The graveyard is ordered by date of death, oldest first, with the undead last. The note under the heading
+   says "The oldest are nearest the gate. The undead wait at the back." Previous and next follow the same order.
+2. On narrow screens the average lifespan is the first row of the register. The order in the HTML is unchanged.
+3. The undead stone reads "since 2022 · still twitching".
+4. The link reads "Visit the ruins on GitHub" when the repository is on GitHub.
+
+- Verification: `npx astro check` 0 errors; `npm test` 28 passed; `npm run build` 42 pages; the new order, the
+  undead line and the link text read back from the built HTML.
+- Lighthouse, mobile, production build with the fixes, home and the undead grave: 100 in all four categories.
+- Seen in the browser after the fixes at 375 and 1440 pixels: "355 days" is the first cell on the phone, the
+  desktop register is unchanged, the first two rows of stones are six invented graves.
+
+### What failed or needed a second try
+
+- The first screenshot of the live site came back empty from the browser tool. The second attempt worked.
+- Nothing else failed. One thing was already known from Phase D and only now fixed: the grid order.
+
+### Decisions the model made on its own
+
+- It picked the fixes. Findings 5 to 7 were left alone: 5 and 6 are cosmetic, 7 would be a new page — kept.
+- Oldest first rather than some hand-made "best first" order: the order is still computed from the data, and a
+  cemetery that grows outwards from the gate is a reason a visitor can see — kept.
+- The review was drafted on the local production build while I was away, then checked again against the live
+  site before anything was logged — kept.
+
+### Commands I ran by hand
+
+- None.
