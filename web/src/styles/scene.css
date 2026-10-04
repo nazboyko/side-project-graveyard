@@ -20,9 +20,38 @@
 .horizon {
   position: absolute;
   inset: auto 0 0;
-  z-index: -1;
+  z-index: -2;
   width: 100%;
   height: 100%;
+}
+
+/* The local photographic pair is the complete default; the SVG remains behind it if images fail. */
+.scene-picture {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scene-picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+.scene-picture--gate img {
+  object-position: center 55%;
+}
+
+.scene-picture::after {
+  content: '';
+  position: absolute;
+  inset: 60% 0 0;
+  background: linear-gradient(to bottom, transparent, var(--ground));
 }
 
 .horizon__far {
@@ -47,7 +76,7 @@
 
 /* Full bleed: main is centred, the sky is not. */
 .gate {
-  height: clamp(22rem, 52vh, 34rem);
+  height: clamp(28rem, 66vh, 40rem);
   margin: calc(-1 * clamp(1.5rem, 4vw, 2.5rem)) calc(50% - 50vw) 0;
 }
 
@@ -79,10 +108,22 @@
 }
 
 .gate__text {
+  position: relative;
+  z-index: 1;
   max-width: var(--page);
   margin-inline: auto;
   padding: clamp(2rem, 7vh, 4rem) var(--gutter) 0;
   text-align: center;
+}
+
+@media (max-width: 34rem) {
+  .gate {
+    height: clamp(28rem, 60vh, 33rem);
+  }
+
+  .gate .scene-picture::after {
+    inset-block-start: 76%;
+  }
 }
 
 .gate h1 {
@@ -388,6 +429,9 @@
   position: relative;
   isolation: isolate;
   padding-block: 1rem 2rem;
+  background-color: var(--ground);
+  background-image: linear-gradient(rgb(25 31 26 / 0.8), rgb(25 31 26 / 0.8)), var(--ground-texture, none);
+  background-size: auto, 13rem 13rem;
 }
 
 .yard__path {

@@ -75,7 +75,8 @@ every other folder under `.claude/skills/` (they come from my other projects), `
 - `studio/` — Sanity Studio v4+, TypeScript, `defineType`/`defineField`, structure builder for the settings singleton.
   Dataset `production`, public. Deployed with `npx sanity deploy`.
 - `web/` — Astro (latest), `output: 'static'`, `@sanity/astro` (`useCdn: false`, build-time fetch via `sanity:client`),
-  `astro-portabletext` for rich text. No React, no Tailwind, no component libraries. One stylesheet bundle:
+  `astro-portabletext` for rich text. The approved backdrop override uses `@sanity/image-url` for crop and hotspot.
+  No React, no Tailwind, no component libraries. One stylesheet bundle:
   `styles/global.css` importing tokens, base, scene, stone and grave partials, with custom properties. One self-hosted
   font package is allowed: `@fontsource-variable/fraunces`, credited in README.
   Pure helpers in `web/src/lib/` are tested with Vitest.

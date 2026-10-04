@@ -36,6 +36,14 @@
   );
 }
 
+.memorial__sky .scene-picture img {
+  object-position: center 22%;
+}
+
+.memorial__sky .scene-picture::after {
+  inset-block-start: 55%;
+}
+
 .memorial__stand {
   display: flex;
   flex-direction: column;
@@ -273,7 +281,7 @@
   left: 50%;
   bottom: -1rem;
   z-index: 1;
-  width: 22rem;
+  width: min(22rem, 100vw);
   height: 6rem;
   background: radial-gradient(ellipse 50% 50% at 50% 60%, rgb(240 178 79 / 0.28), transparent 75%);
   transform: translateX(-50%);

@@ -1,0 +1,64 @@
+---
+import {sanityClient} from 'sanity:client'
+import {createImageUrlBuilder} from '@sanity/image-url'
+import {sceneImage} from '../lib/scene-assets'
+import type {Backdrop} from '../lib/sanity'
+
+interface Props {
+  backdrop?: Backdrop | null
+  variant: 'gate' | 'memorial'
+}
+
+const {backdrop, variant} = Astro.props
+const configured = /^image-[a-zA-Z0-9]+-\d+x\d+-(?:jpg|jpeg|png|webp|gif)$/.test(backdrop?.asset?._ref ?? '')
+
+const [wide960, wide1440, mobile480, mobile780] = configured
+  ? [null, null, null, null]
+  : await Promise.all([
+      sceneImage('environmentWide', 960, 76),
+      sceneImage('environmentWide', 1440, 76),
+      sceneImage('environmentMobile', 480, 76),
+      sceneImage('environmentMobile', 780, 76),
+    ])
+
+// The builder respects Sanity crop and hotspot. This remains optional: the local pair is complete by itself.
+const builder = configured ? createImageUrlBuilder(sanityClient).image(backdrop!) : null
+const overrideWide = builder?.width(1440).height(810).fit('crop').auto('format').quality(76).url()
+const overrideMobile = builder?.width(780).height(975).fit('crop').auto('format').quality(76).url()
+---
+
+<picture class:list={['scene-picture', `scene-picture--${variant}`]} aria-hidden="true">
+  {
+    configured ? (
+      <>
+        <source media="(max-width: 34rem)" srcset={overrideMobile} />
+        <img src={overrideWide} width="1440" height="810" alt="" decoding="async" fetchpriority={variant === 'gate' ? 'high' : 'auto'} />
+      </>
+    ) : (
+      <>
+        <source media="(max-width: 34rem)" srcset={`${mobile480!.src} 480w, ${mobile780!.src} 780w`} sizes="100vw" />
+        <img
+          src={wide1440!.src}
+          srcset={`${wide960!.src} 960w, ${wide1440!.src} 1440w`}
+          sizes="100vw"
+          width="1672"
+          height="941"
+          alt=""
+          decoding="async"
+          fetchpriority={variant === 'gate' ? 'high' : 'auto'}
+        />
+      </>
+    )
+  }
+</picture>
+
+<script>
+  // A failed optional image exposes the existing painted skyline, without a broken-image glyph.
+  for (const image of document.querySelectorAll<HTMLImageElement>('.scene-picture img')) {
+    const hideFailure = () => {
+      if (image.naturalWidth === 0) image.style.visibility = 'hidden'
+    }
+    image.addEventListener('error', hideFailure)
+    if (image.complete) hideFailure()
+  }
+</script>

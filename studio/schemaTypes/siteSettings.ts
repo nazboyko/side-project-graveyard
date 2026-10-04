@@ -35,6 +35,13 @@ export const siteSettings = defineType({
       title: 'Footer line',
       type: 'string',
     }),
+    defineField({
+      name: 'backdrop',
+      title: 'Scene backdrop override',
+      description: 'Optional image for the gate and memorial sky. Crop and hotspot guide both screen sizes; the local dusk scene is used when empty.',
+      type: 'image',
+      options: {hotspot: true},
+    }),
   ],
   preview: {
     select: {title: 'title', subtitle: 'tagline'},

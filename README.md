@@ -152,6 +152,8 @@ I typed one kickoff prompt. The prompts for the eight phases were written in adv
 
 The site then worked and looked like a dark dashboard. I had two outside design reviews done, checked them against the code and the data, and wrote the result up as [docs/DESIGN_BRIEF.md](docs/DESIGN_BRIEF.md). The redesign ran as five more branches. For the two visual ones the model stopped at an open pull request and waited for me to look. Every visual change went through at least three rounds of screenshots, taken with Playwright and read by the model, and the log lists every drawing that needed a redo.
 
+Claude Code built the original site and completed that redesign. Codex later implemented the scene and material pass: the supplied dusk environments, limestone and ground textures, restrained terrain details, and an optional Sanity backdrop override. The local desktop and mobile scenes remain the default when no backdrop is set.
+
 The session rules are in [CLAUDE.md](CLAUDE.md). The session also used a handful of my own skills as guard rails:
 
 - a voice guide for the copy, written for this project and kept in [`.claude/skills/graveyard-voice`](.claude/skills/graveyard-voice/SKILL.md)
@@ -163,6 +165,7 @@ The session rules are in [CLAUDE.md](CLAUDE.md). The session also used a handful
 ## Credits
 
 - The project owner generated the five scene source images from the prompts in [docs/image-prompts.md](docs/image-prompts.md). The build log records the available asset history and the later material integration.
+- [@sanity/image-url](https://github.com/sanity-io/image-url), used only to honor crop and hotspot settings for the optional Sanity backdrop override. Astro's image pipeline builds the local scene and material derivatives.
 - [Sanity Studio](https://www.sanity.io/studio), scaffolded with `npm create sanity@latest` (clean TypeScript template)
 - [Astro](https://astro.build), scaffolded with `npm create astro@latest` (minimal template)
 - [@sanity/astro](https://github.com/sanity-io/sanity-astro), the Sanity client inside the Astro build
