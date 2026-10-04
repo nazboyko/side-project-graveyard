@@ -117,12 +117,12 @@ export function getSettings(): Promise<Settings> {
   })
 }
 
-/** Every grave, most recent death first. The undead have no date and come before everyone. */
+/** Every grave, oldest death first, like a cemetery that grew outwards. The undead have no date and come last. */
 export function getProjects(): Promise<Project[]> {
   return once('projects', () =>
     sanityClient.fetch<Project[]>(
       /* groq */ `*[_type == "project" && defined(slug.current)]
-        | order(coalesce(diedAt, "9999-12-31") desc, name asc) {${projectFields}}`,
+        | order(coalesce(diedAt, "9999-12-31") asc, name asc) {${projectFields}}`,
     ),
   )
 }
