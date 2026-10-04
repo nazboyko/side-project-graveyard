@@ -113,13 +113,11 @@
   align-items: center;
   min-height: var(--rise);
   padding: calc(var(--cap-h) * 0.6 + 0.85rem) 1.05rem 1.15rem;
-  background-color: var(--stone-c);
-  background-image:
+  background:
     var(--weather-marks, none),
     linear-gradient(to bottom, color-mix(in srgb, var(--stone-c) 72%, transparent), color-mix(in srgb, var(--stone-c) 78%, transparent)),
-    var(--stone-texture, none);
-  background-size: auto, auto, 24rem 24rem;
-  background-position: center, center, var(--grain-x, 0) var(--grain-y, 0);
+    var(--stone-texture, none) var(--grain-x, 0) var(--grain-y, 0) / 24rem 24rem repeat,
+    var(--stone-c);
   box-shadow:
     inset 0.15rem 0.15rem 0.2rem rgb(255 255 255 / 0.25),
     inset -0.3rem 0 0.35rem rgb(33 32 27 / 0.3),
