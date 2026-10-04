@@ -23,7 +23,11 @@ const days = lifespanDays(project.bornAt, project.diedAt)
     <a class="stone__link" href={`/rip/${project.slug}/`}>{project.name}</a>
   </h3>
   <p class="stone__years">
-    {formatYears(project.bornAt, project.diedAt)} · {days !== null ? `lived ${formatLifespan(days)}` : 'still twitching'}
+    {
+      days !== null
+        ? `${formatYears(project.bornAt, project.diedAt)} · lived ${formatLifespan(days)}`
+        : `since ${formatYears(project.bornAt, project.bornAt)} · still twitching`
+    }
   </p>
   <p class="stone__epitaph">{project.epitaph}</p>
   <p class="chip">

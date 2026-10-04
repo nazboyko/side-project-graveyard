@@ -326,6 +326,7 @@ a.chip:hover,
 /* The one number a visitor should leave with gets its own row on a phone. */
 .stats .stats__key {
   grid-column: 1 / -1;
+  order: -1;
 }
 
 .stats .stats__key dd {
@@ -339,6 +340,7 @@ a.chip:hover,
 
   .stats .stats__key {
     grid-column: auto;
+    order: 0;
   }
 }
 
