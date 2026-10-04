@@ -26,12 +26,27 @@ export interface CauseRef {
   title: string
   slug: string
   icon: string | null
+  /** How the cause marks the plot. Drawn by the site; may be missing on an old document. */
+  motif: string | null
 }
 
 export interface TechRef {
   name: string
   slug: string
   color: string
+}
+
+export interface Figure {
+  value: string
+  label: string
+}
+
+/** Optional fields an editor can set on a grave. Every one of them may be missing. */
+export interface MonumentFields {
+  shape: string | null
+  relic: string | null
+  inscription: string | null
+  figures: Figure[] | null
 }
 
 export interface Project {
@@ -50,6 +65,7 @@ export interface Project {
   obituary: PortableText | null
   lesson: string
   repoUrl: string | null
+  monument: MonumentFields | null
 }
 
 export interface Cause extends CauseRef {
@@ -85,14 +101,15 @@ const projectFields = /* groq */ `
   status,
   bornAt,
   diedAt,
-  "cause": cause->{title, "slug": slug.current, icon},
+  "cause": cause->{title, "slug": slug.current, icon, motif},
   "stack": coalesce(stack[]->{name, "slug": slug.current, color}, []),
   lastCommit,
   moodAtDeath,
   linesOfCode,
   obituary,
   lesson,
-  repoUrl
+  repoUrl,
+  "monument": monument{shape, relic, inscription, "figures": figures[]{value, label}}
 `
 
 const cache = new Map<string, Promise<unknown>>()
@@ -141,6 +158,7 @@ export function getCauses(): Promise<Cause[]> {
         title,
         "slug": slug.current,
         icon,
+        motif,
         description,
         "count": count(*[_type == "project" && references(^._id)])
       }`,
