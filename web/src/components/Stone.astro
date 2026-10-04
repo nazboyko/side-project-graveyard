@@ -7,15 +7,18 @@
 import type {Project} from '../lib/sanity'
 import type {Monument} from '../lib/monument'
 import {formatDate, formatLifespan, formatYears, lifespanDays} from '../lib/stats'
+import Art from './Art.astro'
 import Plants from './Plants.astro'
 
 interface Props {
   project: Project
   monument: Monument
   size?: 'plot' | 'memorial'
+  /** The cemetery cat sits on this stone. */
+  cat?: boolean
 }
 
-const {project, monument, size = 'plot'} = Astro.props
+const {project, monument, size = 'plot', cat = false} = Astro.props
 const {layout, shape, weathering, motif} = monument
 const plot = size === 'plot'
 const days = lifespanDays(project.bornAt, project.diedAt)
@@ -52,6 +55,18 @@ const tagged = layout === 'marker'
     )
   }
   <div class="stone">
+    {
+      cat && (
+        <svg class="cat" viewBox="0 0 32 36" aria-hidden="true" focusable="false">
+          <path
+            class="cat__body"
+            d="M9 35 C5 35 4 30 6 25 C7 21 9 18 10 15 C8 13 8 9 9 6 L11 1 L14 6 C15 5.6 17 5.6 18 6 L21 1 L23 6 C24 9 24 13 22 15 C23 18 25 21 26 25 C27 28 27 31 26 33 C29 33 31 31 31 28 C31 26 30 25 30 24 C31.5 24.5 32 26 32 28 C32 32 29 35 25 35 Z"
+          />
+          <circle class="cat__eye" cx="13.6" cy="10" r="1" />
+          <circle class="cat__eye" cx="18.4" cy="10" r="1" />
+        </svg>
+      )
+    }
     {layout === 'mausoleum' && <div class="stone__pediment" aria-hidden="true" />}
     <div class="stone__face">
       {
@@ -115,6 +130,8 @@ const tagged = layout === 'marker'
     }
   </div>
   <Plants layer="front" weathering={weathering} motif={motif} layout={layout} />
+  {motif && <Art kind="motif" name={motif} />}
+  {monument.relic && <Art kind="relic" name={monument.relic} />}
   <slot name="front" />
   {
     tagged && (

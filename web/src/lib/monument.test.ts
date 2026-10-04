@@ -1,6 +1,6 @@
 import {readFileSync} from 'node:fs'
 import {describe, expect, it} from 'vitest'
-import {describeMonument, lifeScale, weatheringFor, type MonumentInput} from './monument'
+import {catGrave, describeMonument, lifeScale, weatheringFor, type MonumentInput} from './monument'
 
 const NOW = new Date('2026-10-03T12:00:00Z')
 
@@ -147,5 +147,29 @@ describe('describeMonument on the seed dataset', () => {
       const [a, b] = [monuments[i - 1], monuments[i]]
       expect(a.shape === b.shape && a.life === b.life, `${graves[i - 1].slug} and ${graves[i].slug}`).toBe(false)
     }
+  })
+})
+
+describe('catGrave', () => {
+  const at = (slug: string, name: string, _updatedAt: string) => ({slug, name, _updatedAt})
+
+  it('picks the grave published last', () => {
+    expect(
+      catGrave([
+        at('attic', 'Attic', '2026-10-03T18:00:00Z'),
+        at('umbrella', 'Umbrella', '2026-10-04T09:30:00Z'),
+        at('inkwell', 'Inkwell', '2026-10-01T12:00:00Z'),
+      ]),
+    ).toBe('umbrella')
+  })
+
+  it('breaks a tie by name, whatever the order it was given', () => {
+    const tie = [at('umbrella', 'Umbrella', '2026-10-03T18:00:00Z'), at('attic', 'Attic', '2026-10-03T18:00:00Z')]
+    expect(catGrave(tie)).toBe('attic')
+    expect(catGrave([...tie].reverse())).toBe('attic')
+  })
+
+  it('has no cat for an empty graveyard', () => {
+    expect(catGrave([])).toBeNull()
   })
 })

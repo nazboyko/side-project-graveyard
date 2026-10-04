@@ -6,6 +6,7 @@ import Candles from '../../components/Candles.astro'
 import Horizon from '../../components/Horizon.astro'
 import Lifeline from '../../components/Lifeline.astro'
 import Silhouette from '../../components/Silhouette.astro'
+import Sprite from '../../components/Sprite.astro'
 import Stone from '../../components/Stone.astro'
 import Layout from '../../layouts/Layout.astro'
 import {getProjects, type Mood} from '../../lib/sanity'
@@ -52,6 +53,7 @@ const lastSeen = undead
   description={project.epitaph}
   strip={false}
 >
+  <Sprite relics={[monument.relic]} motifs={[monument.motif]} />
   <article class="grave">
     <section class="memorial" data-candle={project.slug} aria-label={`The grave of ${project.name}`}>
       <div class="memorial__sky" aria-hidden="true">
