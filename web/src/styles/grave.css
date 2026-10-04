@@ -107,12 +107,39 @@
   --stone-w: 38rem;
 }
 
-.monument--memorial .stone {
-  width: min(85vw, var(--stone-w));
+.monument--memorial {
+  --span: min(85vw, var(--stone-w));
 }
 
-.monument--memorial.layout-mausoleum .stone {
-  width: min(94vw, var(--stone-w));
+.monument--memorial.layout-mausoleum {
+  --span: min(94vw, var(--stone-w));
+}
+
+.monument--memorial .art {
+  bottom: 0.6rem;
+  width: 4.2rem;
+  height: 4.2rem;
+}
+
+.monument--memorial .art--relic {
+  left: max(0rem, calc(50% - var(--span) / 2 - 2rem));
+}
+
+.monument--memorial .art--motif {
+  right: max(0rem, calc(50% - var(--span) / 2 - 2.2rem));
+}
+
+.monument--memorial .art--annexes,
+.monument--memorial .art--signpost {
+  right: max(0rem, calc(50% - var(--span) / 2 - 4rem));
+  width: 6rem;
+  height: 6rem;
+}
+
+.monument--memorial .art--vines {
+  left: max(0rem, calc(50% - var(--span) / 2 - 1.2rem));
+  width: 2.6rem;
+  height: calc(var(--rise) * 0.62);
 }
 
 .monument--memorial .plants {
@@ -167,8 +194,8 @@
   flex-wrap: nowrap;
 }
 
-.monument--memorial.layout-marker .stone {
-  width: min(44vw, var(--stone-w));
+.monument--memorial.layout-marker {
+  --span: min(44vw, var(--stone-w));
 }
 
 .monument--memorial.layout-marker .tag {
@@ -177,12 +204,12 @@
 
 /* The older stones behind a rewrite stay smaller than the one in front, whatever its size. */
 .monument--memorial .monument__layers span {
-  width: calc(min(85vw, var(--stone-w)) * 0.42);
+  width: calc(var(--span) * 0.42);
   height: calc(var(--rise) * 0.5);
 }
 
 .monument--memorial .monument__layers {
-  gap: calc(min(85vw, var(--stone-w)) * 0.62);
+  gap: calc(var(--span) * 0.62);
 }
 
 .monument--memorial.layout-plaque .stone__plate {
@@ -223,9 +250,9 @@
   font-size: 1rem;
 }
 
-/* The warmth a lit candle throws on the lower face and the ground. */
-.monument--memorial .stone__face::after,
-.monument--memorial::before {
+/* The warmth a lit candle throws on the lower face and the ground, on a grave page and in the yard. */
+.monument .stone__face::after,
+.monument::before {
   content: '';
   position: absolute;
   pointer-events: none;
@@ -233,12 +260,16 @@
   transition: opacity 280ms ease-out 320ms;
 }
 
-.monument--memorial .stone__face::after {
+.monument .stone__face {
+  position: relative;
+}
+
+.monument .stone__face::after {
   inset: 0;
   background: radial-gradient(ellipse 75% 34% at 50% 100%, rgb(255 225 160 / 0.42), transparent 75%);
 }
 
-.monument--memorial::before {
+.monument::before {
   left: 50%;
   bottom: -1rem;
   z-index: 1;
@@ -248,9 +279,21 @@
   transform: translateX(-50%);
 }
 
-[data-lit] .monument--memorial .stone__face::after,
-[data-lit] .monument--memorial::before {
+[data-lit] .monument .stone__face::after,
+[data-lit] .monument::before {
   opacity: 1;
+}
+
+.monument--plot::before {
+  width: 13rem;
+  height: 4rem;
+}
+
+/* In the yard a grave shows at most three of this visitor's candles, small and low, below the inscription. */
+.monument--plot .candles {
+  bottom: 0;
+  scale: 0.5;
+  transform-origin: 0 100%;
 }
 
 .candles {
@@ -974,8 +1017,8 @@
     animation: none;
   }
 
-  .monument--memorial .stone__face::after,
-  .monument--memorial::before,
+  .monument .stone__face::after,
+  .monument::before,
   .vigil__button,
   .signpost__arrow {
     transition: none;

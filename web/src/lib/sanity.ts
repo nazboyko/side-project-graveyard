@@ -51,6 +51,8 @@ export interface MonumentFields {
 
 export interface Project {
   _id: string
+  /** When the record was last published; the cemetery cat sits on the most recent one. */
+  _updatedAt: string
   name: string
   slug: string
   epitaph: string
@@ -95,6 +97,7 @@ export interface Stats {
 
 const projectFields = /* groq */ `
   _id,
+  _updatedAt,
   name,
   "slug": slug.current,
   epitaph,

@@ -1,5 +1,10 @@
 ---
-/** Seven candles at the foot of a stone, all unlit and hidden until the candle script shows them. */
+/** Candles at the foot of a stone, all hidden until a candle script shows them. Seven on a grave page. */
+interface Props {
+  count?: number
+}
+
+const {count = 7} = Astro.props
 const SPOTS = [
   {x: 0, h: 2.3},
   {x: -2.3, h: 1.8},
@@ -13,7 +18,7 @@ const SPOTS = [
 
 <div class="candles" aria-hidden="true">
   {
-    SPOTS.map(({x, h}) => (
+    SPOTS.slice(0, count).map(({x, h}) => (
       <span class="candles__one" style={`--x:${x}rem;--h:${h}rem`} hidden>
         <span class="candles__halo" />
         <span class="candles__flame" />

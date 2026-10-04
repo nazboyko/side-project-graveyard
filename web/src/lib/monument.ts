@@ -144,3 +144,14 @@ export function describeMonument(project: MonumentInput, now: Date): Monument {
     dy: round2(unitHash(project.slug, 'dy') * 0.75),
   }
 }
+
+/**
+ * The grave the cat sits on: the one the keeper published most recently, so it moves on every publish.
+ * Ties go to the name that sorts first. No graves, no cat.
+ */
+export function catGrave<T extends {slug: string; name: string; _updatedAt?: string | null}>(projects: T[]): string | null {
+  const ranked = [...projects].sort(
+    (a, b) => (b._updatedAt ?? '').localeCompare(a._updatedAt ?? '') || a.name.localeCompare(b.name),
+  )
+  return ranked[0]?.slug ?? null
+}

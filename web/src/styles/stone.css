@@ -5,6 +5,8 @@
 
 .monument {
   --stone-w: 13.5rem;
+  /* The stone's real width, for anything placed beside it. */
+  --span: min(100%, var(--stone-w));
   --stone-c: var(--stone);
   --rise: calc(11rem + var(--life, 0.5) * 11rem);
   position: relative;
@@ -97,7 +99,7 @@
   position: relative;
   z-index: 2;
   container-type: inline-size;
-  width: min(100%, var(--stone-w));
+  width: var(--span);
   transform: translate(var(--dx, 0), calc(-1 * var(--dy, 0))) rotate(var(--tilt, 0deg));
   transform-origin: 50% 100%;
   filter: drop-shadow(0 0.35rem 0.4rem rgb(0 0 0 / 0.45));
@@ -331,8 +333,10 @@
 /* ---------- layouts ---------- */
 
 /* Marker: a low stone, its words on a wooden tag beside it. */
+/* Stone and tag share one row at every width, so the stone never ends up above the ground. */
 .layout-marker {
-  flex-flow: row wrap;
+  --span: min(46%, var(--stone-w));
+  flex-flow: row nowrap;
   align-items: flex-end;
   justify-content: center;
   gap: 0.25rem 0.9rem;
@@ -361,7 +365,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 8.5rem;
+  width: min(8.5rem, 48%);
 }
 
 .tag__card {
@@ -522,12 +526,12 @@
   z-index: 0;
   display: flex;
   justify-content: center;
-  gap: calc(min(100%, var(--stone-w)) * 0.55);
+  gap: calc(var(--span) * 0.55);
   pointer-events: none;
 }
 
 .monument__layers span {
-  width: calc(min(100%, var(--stone-w)) * 0.55);
+  width: calc(var(--span) * 0.55);
   height: calc(var(--rise) * 0.62);
   border-radius: 2.2rem 2.2rem 0.2rem 0.2rem;
   background: linear-gradient(to bottom, var(--stone-ancient), color-mix(in srgb, var(--stone-ancient) 70%, black));
@@ -541,6 +545,164 @@
 .monument__layers span:last-child {
   border-radius: 0.3rem 0.3rem 0.2rem 0.2rem;
   transform: rotate(2.5deg);
+}
+
+/* ---------- relics and the drawn motifs ---------- */
+
+.sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* One drawing style: flat token fills, one ink outline. The rules match the originals inside the sprite. */
+.sprite :is(path, circle, ellipse, rect) {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.sprite .s-grass {
+  stroke: var(--moss);
+  stroke-width: 3.2;
+}
+
+.f-none {
+  fill: none;
+}
+
+.f-soil {
+  fill: var(--soil);
+}
+
+.f-stone {
+  fill: var(--stone);
+}
+
+.f-parchment {
+  fill: var(--parchment);
+}
+
+.f-brass {
+  fill: var(--brass);
+}
+
+.f-ground {
+  fill: var(--ground);
+}
+
+.f-board {
+  fill: var(--board);
+}
+
+.f-candle {
+  fill: var(--candle);
+}
+
+.f-undead {
+  fill: var(--undead);
+}
+
+.f-near {
+  fill: var(--near);
+}
+
+.f-grass {
+  fill: var(--grass);
+}
+
+.f-moss {
+  fill: var(--moss);
+}
+
+.f-ink {
+  fill: var(--ink);
+}
+
+.art {
+  position: absolute;
+  bottom: 0.35rem;
+  z-index: 3;
+  width: 3.1rem;
+  height: 3.1rem;
+  translate: var(--dx, 0) 0;
+  filter: drop-shadow(0 0.2rem 0.2rem rgb(0 0 0 / 0.45));
+  pointer-events: none;
+}
+
+/* A pile of crates is taller than you would expect. */
+.art--crates {
+  height: 4.8rem;
+}
+
+/* The relic rests at the front-left corner of the stone, the cause's object at the right. */
+.art--relic {
+  left: max(0rem, calc(50% - var(--span) / 2 - 1.3rem));
+}
+
+.art--motif {
+  right: max(0rem, calc(50% - var(--span) / 2 - 1.5rem));
+}
+
+/* The annex is bolted on: it stands in front of the stone's edge, its plaque over the face. */
+.art--annexes {
+  z-index: 3;
+  right: max(0rem, calc(50% - var(--span) / 2 - 2.8rem));
+  bottom: 0.6rem;
+  width: 4.4rem;
+  height: 4.4rem;
+}
+
+.art--signpost {
+  z-index: 1;
+  right: max(0rem, calc(50% - var(--span) / 2 - 2.9rem));
+  width: 3.4rem;
+  height: 3.4rem;
+}
+
+.art--vines {
+  left: max(0rem, calc(50% - var(--span) / 2 - 1rem));
+  bottom: 0.9rem;
+  width: 2.3rem;
+  height: calc(var(--rise) * 0.62);
+  filter: none;
+}
+
+.art--emptyPlot {
+  right: max(0rem, calc(50% - var(--span) / 2 - 2.6rem));
+  width: 3.4rem;
+  height: 3.4rem;
+  filter: none;
+}
+
+/* A marker stands beside its tag; its relic leans on the stone's left corner instead of widening the row. */
+.layout-marker .art--relic {
+  left: 0;
+}
+
+/* The cemetery cat: a dark silhouette with a faint rim, sitting on top of the stone, eyes catching the light. */
+.cat {
+  position: absolute;
+  bottom: calc(100% - 0.35rem);
+  left: 50%;
+  z-index: 1;
+  width: 2rem;
+  height: 2.25rem;
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+.cat__body {
+  fill: var(--near);
+  stroke: var(--muted);
+  stroke-opacity: 0.55;
+  stroke-width: 1;
+}
+
+.cat__eye {
+  fill: var(--candle);
 }
 
 /* ---------- in the yard ---------- */
