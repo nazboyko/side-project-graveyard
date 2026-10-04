@@ -968,3 +968,100 @@ Mobile, production build served locally. Performance / accessibility / best prac
 | `/rip/kindness-chain/` | not measured | 100 / 100 / 100 / 100 (91 SEO before the link fix) | 0.000 |
 
 Grave page HTML: 16.2 KB.
+
+### R4 — relics-and-polish (2026-10-03, 22:34–22:51 CDT, about 17 min)
+
+#### Prompts
+
+The Phase R prompt above, and my reply at the review gate of the memorial branch:
+
+```
+merge it and continue
+```
+
+The model had said at that gate that the image folders from section 15 were still empty, and that it would draw
+the relics and motifs in SVG first so they become the fallbacks the brief asks for. I did not object. The
+`real-stones` branch waits for my images.
+
+#### What came out
+
+- `web/src/lib/drawings.ts`: the thirteen relics and the five motifs that stand beside a stone (annexes, signpost,
+  briefcase, vines, empty plot), each the inside of a 48×48 SVG with flat token fills and one ink outline. Coins are
+  nine coins, two standing and seven fallen; server lights are four lights, two lit green; the crate pile is taller
+  than you would expect. `drawings.test.ts` checks that every relic and every motif has exactly one drawing, that
+  no drawing uses more than three fills or a colour outside the tokens, and that none contains text, scripts or
+  external references.
+- `Sprite.astro` defines each drawing once per page, only the ones the page needs; `Art.astro` places it with
+  `<use>`. The relic leans on the front-left corner of its stone, the cause's object stands at the right, the
+  annex is bolted on with a brass plaque over the stone's edge, the vine climbs the left edge.
+- Candles in the yard: a 250-byte script reads the same storage as the grave page and, for graves this visitor has
+  lit candles for, shows up to three small candles at the foot of the stone and the warm tint. Without JavaScript
+  nothing is shown and nothing is missing.
+- A new `og.png`, drawn by `scripts/og.mjs` from the gate scene: the dusk sky, the hills and chapel, the fence with
+  its gate, six blank stones and one lit candle.
+- The two optional items, both done: a fog band drifting across the hero on a 90-second loop (still under reduced
+  motion), and the cemetery cat. The cat sits on the grave the keeper published most recently, chosen by a tested
+  helper from `_updatedAt`, so it moves when a record changes. Today 17 graves share one publish time from the
+  monument script, and the tie goes to Attic.
+
+#### Verification
+
+- `npx astro check` 0 errors; `npm test` 68 passed in 5 files; `npm run build` 42 pages.
+- Three look-and-fix rounds at 1440, 768 and 390 pixels on the home page and five grave pages, with the relic
+  areas cropped and enlarged to judge each drawing at real size.
+- In the browser: two candles lit on Night Porter's page, then the home page showed exactly that plot lit, with two
+  candles and the warm tint, and no other.
+- Acceptance point 6: more than eight graves can now be told apart by relic or motif alone (guitar pick, key and
+  signpost, server lights and briefcase, envelope and wilted flower, annex, crates and vine, umbrella, notes and
+  annex, coins, older slabs, puzzle piece and vine, shovel, mug, collar tag, chain).
+- Phone width 390 pixels, measured: no sideways scroll.
+
+#### Drawings that needed a redo, and why
+
+- **Signpost, briefcase, crates.** Drawn in the board and soil browns, they disappeared into the dark ground.
+  Redrawn in parchment and brass with the same ink outline.
+- **Vine stem and wilted flower.** The stems were thin lines in the grass colour, close to the ground colour; the
+  flower read as a stray petal. Stems are now thicker and in the lighter moss colour, the flower head larger and
+  drooping.
+- **The crate pile** was as tall as it was wide. It now stretches upward, as the brief asks.
+- **The cup** read as a white block: its handle and steam were ink lines on dark ground. Redrawn as a mug with a
+  filled handle and coffee showing at the rim.
+- **The annex's brass plaque** sat behind the main stone, so only the slab showed. The annex now stands in front of
+  the stone's edge.
+- **PDF Viewer SDK in the yard.** The shovel joined the marker's row, the row wrapped, and the stone ended up above
+  its tag, away from the ground. The relic now leans on the stone instead, and a marker, its tag and its relic stay
+  on one row at every width.
+- **The annex beside the mausoleum** pushed the phone layout 31 pixels wider than the screen. Every drawing placed
+  beside a stone is now clamped inside its plot.
+- **Candles in the yard** first stood as tall as on a grave page and reached into the inscription. They are half
+  size in the yard.
+
+#### What failed or needed a second try
+
+- Everything above is a drawing redo; nothing failed in the checks.
+
+#### What I cut from the brief and why
+
+- Nothing. The cut list was not needed: this branch finished long before the Sunday 15:00 stop.
+
+#### Decisions the model made on its own
+
+- The drawings live in a TypeScript module, not in `.astro` files, so a Vitest test can check that every key has
+  one — kept.
+- The sprite holds only the drawings a page uses: the home page gets all eighteen, a grave page one or two — kept.
+- Fills are classes from the tokens, not colour values in the drawings, so the palette stays in one file — kept.
+- The social card says "Every stone is computed from its record." instead of the gate's grave count: a PNG cannot
+  update its number when a grave is added — kept.
+- The card's title is Georgia, not Fraunces: `sharp` draws it and cannot load the web font — kept.
+
+#### Lighthouse
+
+Mobile, production build served locally. Performance / accessibility / best practices / SEO.
+
+| Page | Before this branch | After | CLS after | Transfer after |
+|---|---|---|---|---|
+| `/` | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 | 0.001 | 101 KB |
+| `/rip/everything-js/` | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 | 0.001 | 96 KB |
+| `/rip/night-porter/` | not measured | 100 / 100 / 100 / 100 | 0.001 | 96 KB |
+
+Home page HTML 70 KB (budget 120 KB). JavaScript: 250 bytes on the home page, 851 bytes on a grave page.
