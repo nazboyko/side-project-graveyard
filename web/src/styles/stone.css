@@ -127,7 +127,7 @@
   text-shadow: var(--engrave);
   mask:
     var(--cap) top / 100% auto no-repeat,
-    linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--cap-h) + 1px) no-repeat;
+    linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--cap-h) + 2px) no-repeat;
 }
 
 /* One shared cutout grounds the oldest stones without repeating a grass border down the yard. */
