@@ -1,7 +1,7 @@
 ---
 import type {GetStaticPaths, InferGetStaticPropsType} from 'astro'
-import CauseFilter from '../../components/CauseFilter.astro'
-import Graveyard from '../../components/Graveyard.astro'
+import Legend from '../../components/Legend.astro'
+import Yard from '../../components/Yard.astro'
 import Layout from '../../layouts/Layout.astro'
 import {getCauses, getProjects} from '../../lib/sanity'
 
@@ -32,10 +32,14 @@ const {cause, causes, graves, total} = Astro.props
     <p>{cause.description}</p>
   </header>
 
-  <section class="section" aria-labelledby="graves-heading">
-    <h2 id="graves-heading">{graves.length === 1 ? '1 grave' : `${graves.length} graves`}</h2>
-    <Graveyard projects={graves} />
-  </section>
+  <div class="yard">
+    <section class="graves" aria-labelledby="graves-heading">
+      <h2 id="graves-heading" class="graves__count">{graves.length === 1 ? '1 grave' : `${graves.length} graves`}</h2>
+      <Yard projects={graves} />
+    </section>
 
-  <CauseFilter causes={causes} total={total} current={cause.slug} />
+    <div class="section legend-wrap">
+      <Legend causes={causes} total={total} current={cause.slug} />
+    </div>
+  </div>
 </Layout>

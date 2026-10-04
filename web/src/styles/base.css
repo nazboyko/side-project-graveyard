@@ -22,6 +22,8 @@ body {
   font-family: var(--sans);
   font-size: 1.0625rem;
   line-height: 1.6;
+  /* The sky and the yard are sized from 100vw, which includes a classic scrollbar; never scroll sideways. */
+  overflow-x: clip;
 }
 
 h1,

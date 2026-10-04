@@ -1,0 +1,116 @@
+---
+/**
+ * One grave, drawn from its record. `plot` is the stone in the yard; `memorial` is the same stone, closer,
+ * on its own page. Everything visual comes from describeMonument(); this file only arranges it.
+ */
+import type {Project} from '../lib/sanity'
+import type {Monument} from '../lib/monument'
+import {formatLifespan, formatYears, lifespanDays} from '../lib/stats'
+import Plants from './Plants.astro'
+
+interface Props {
+  project: Project
+  monument: Monument
+  size?: 'plot' | 'memorial'
+}
+
+const {project, monument, size = 'plot'} = Astro.props
+const {layout, shape, weathering, motif} = monument
+const days = lifespanDays(project.bornAt, project.diedAt)
+const undead = project.status === 'undead'
+const lived = undead
+  ? `since ${formatYears(project.bornAt, project.bornAt)} · still twitching`
+  : `${formatYears(project.bornAt, project.diedAt)} · lived ${formatLifespan(days ?? 0)}`
+const href = `/rip/${project.slug}/`
+const Name = size === 'plot' ? 'h3' : 'h1'
+const status = project.status === 'retired' ? 'Retired with honour' : undead ? 'Undead' : null
+// On a marker the stone is too small for the epitaph; it goes on a wooden tag beside it.
+const tagged = layout === 'marker'
+---
+
+<div
+  class:list={[
+    'monument',
+    `monument--${size}`,
+    `layout-${layout}`,
+    `shape-${shape}`,
+    `weather-${weathering}`,
+    motif && `motif-${motif}`,
+  ]}
+>
+  <Plants layer="back" weathering={weathering} motif={motif} layout={layout} />
+  {
+    motif === 'layers' && (
+      <div class="monument__layers" aria-hidden="true">
+        <span />
+        <span />
+      </div>
+    )
+  }
+  <div class="stone">
+    {layout === 'mausoleum' && <div class="stone__pediment" aria-hidden="true" />}
+    <div class="stone__face">
+      {
+        status && layout !== 'plaque' && (
+          <p class="stone__status">
+            {undead && <span class="stone__light" aria-hidden="true" />}
+            {status}
+          </p>
+        )
+      }
+      {
+        (motif === 'laurel' || layout === 'plaque') && (
+          <svg class="stone__laurel" viewBox="0 0 64 20" aria-hidden="true" focusable="false">
+            <path d="M32 18 C24 16 14 12 6 4 M32 18 C40 16 50 12 58 4" />
+            <path d="M12 9 q-5 -1 -6 -6 q5 0 6 6 M18 12 q-5 0 -7 -5 q5 0 7 5 M24 15 q-5 0 -7 -4 q5 -1 7 4" />
+            <path d="M52 9 q5 -1 6 -6 q-5 0 -6 6 M46 12 q5 0 7 -5 q-5 0 -7 5 M40 15 q5 0 7 -4 q-5 -1 -7 4" />
+          </svg>
+        )
+      }
+      {project.cause.icon && !tagged && <span class="stone__mark" aria-hidden="true">{project.cause.icon}</span>}
+      <div class="stone__plate">
+        {layout === 'plaque' && status && <p class="stone__status">{status}</p>}
+        <Name class="stone__name">
+          {size === 'plot' ? <a class="stone__link" href={href}>{project.name}</a> : project.name}
+        </Name>
+      </div>
+      <p class="stone__years">{lived}</p>
+      {
+        !tagged && (
+          <>
+            <p class="stone__epitaph">{project.epitaph}</p>
+            <p class="stone__cause">{project.cause.title}</p>
+            {monument.inscription && <p class="stone__inscription">{monument.inscription}</p>}
+          </>
+        )
+      }
+    </div>
+    {
+      layout === 'mausoleum' && (
+        <div class="stone__steps" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      )
+    }
+  </div>
+  <Plants layer="front" weathering={weathering} motif={motif} layout={layout} />
+  {
+    tagged && (
+      <div class="tag">
+        <span class="tag__stake" aria-hidden="true" />
+        <div class="tag__card">
+          {project.cause.icon && (
+            <span class="tag__mark" aria-hidden="true">
+              {project.cause.icon}
+            </span>
+          )}
+          <p class="tag__epitaph">{project.epitaph}</p>
+          <p class="tag__cause">{project.cause.title}</p>
+          {monument.inscription && <p class="tag__inscription">{monument.inscription}</p>}
+        </div>
+      </div>
+    )
+  }
+</div>
