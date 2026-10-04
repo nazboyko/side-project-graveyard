@@ -62,7 +62,8 @@ Everything else: decide, note the decision in the BUILD_LOG, continue. Phase H (
 
 ## What is committed and what is not
 
-Committed: `studio/`, `web/`, `docs/BUILD_LOG.md`, `docs/DESIGN_BRIEF.md`, `docs/screenshots/`, `README.md`, `LICENSE`,
+Committed: `studio/`, `web/`, `AGENTS.md`, `docs/BUILD_LOG.md`, `docs/DESIGN_BRIEF.md`, `docs/image-prompts.md`,
+`docs/visual-enhancement/`, `docs/screenshots/`, `web/src/assets/scene/`, `README.md`, `LICENSE`,
 `.gitignore`, `.github/workflows/`, this `CLAUDE.md`, `.claude/skills/graveyard-voice/` (written for this project),
 optionally `scripts/setup-wizard.sh`.
 Never committed: `PLAN.md`, `CHALLENGE_RULES.md`, `docs/POST_DRAFT.md`, `.claude/settings.json`, `.claude/hooks/`,

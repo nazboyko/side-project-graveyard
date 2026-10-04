@@ -1145,3 +1145,1656 @@ The Phase R prompt above. No new message from me: the branch merges on green.
 #### Lighthouse
 
 No page changed in this branch. The numbers at the end of R4 stand.
+
+
+### Visual enhancement specification audit (analysis only, 2026-10-03)
+
+#### Prompt
+
+The user's earlier instruction limited the first review to reading because another agent was working. The following new prompt authorized documentation and rendered local inspection only. No implementation was authorized.
+
+```text
+You are working on an existing production project:
+
+Side Project Graveyard.
+
+The project already has an approved concept, content structure, pages,
+navigation, data model, filters, copy and functionality.
+
+Your task at this stage is NOT to redesign it and NOT to implement
+visual changes yet.
+
+Your first task is to perform a deep visual, architectural and
+implementation audit and prepare the complete specification required
+for a future cinematic visual-enhancement pass.
+
+# Core objective
+
+The existing website should eventually become a significantly more
+beautiful, atmospheric, realistic and memorable version of itself.
+
+The goal is to transform the visual presentation from a mostly web/UI
+representation of a cemetery into something that feels much more like
+a physical miniature cemetery environment for abandoned side projects.
+
+This must be achieved without changing the fundamental website.
+
+Preserve:
+
+- current content
+- current copy
+- information architecture
+- page hierarchy
+- URLs
+- navigation
+- filters
+- grave data
+- Sanity integration
+- project ordering
+- existing product concept
+- developer humor
+- current user flows
+
+The future work is a VISUAL ENHANCEMENT, not a product redesign.
+
+# Desired art direction
+
+The target visual direction is:
+
+cinematic miniature cemetery
++
+handcrafted diorama
++
+stylized realism
++
+high-end editorial web design
+
+The final website should feel:
+
+- peaceful
+- slightly melancholic
+- tactile
+- physical
+- atmospheric
+- premium
+- restrained
+- slightly humorous
+- developer-oriented
+- memorable
+- art-directed
+
+It should NOT feel:
+
+- horror
+- Halloween
+- gothic fantasy
+- cartoon
+- children's illustration
+- generic SaaS
+- generic AI-generated landing page
+- vector-heavy
+- over-animated
+
+# Very important visual rule
+
+Do not automatically solve visual problems with SVG illustration.
+
+Do not create generic vector cemetery artwork merely because it is easy
+to generate in code.
+
+If a section genuinely requires realistic, cinematic, atmospheric,
+textured or illustrated source imagery, document the required asset
+instead.
+
+Missing realistic artwork must be treated as:
+
+ASSET REQUIRED
+
+not as permission to generate a low-quality SVG substitute.
+
+# Existing architecture
+
+Before doing anything:
+
+1. Read CLAUDE.md completely.
+2. Read all existing project documentation relevant to design,
+   architecture, workflow and build history.
+3. Inspect package configuration and understand the existing technology
+   stack.
+4. Inspect all homepage-related source files.
+5. Inspect grave-detail page source files.
+6. Inspect shared components.
+7. Inspect all style files.
+8. Inspect existing visual assets.
+9. Inspect existing JavaScript used for interaction or animation.
+10. Understand the Sanity integration and make sure future visual work
+    will not interfere with it.
+
+Do not assume the project architecture from memory.
+
+Inspect the actual repository.
+
+# Rendered-site inspection
+
+You must inspect the actual rendered website.
+
+Run the project locally using the repository's documented development
+workflow.
+
+Inspect at least:
+
+- homepage
+- one representative /rip/[slug] detail page
+- the Kindness Chain grave page if it is available locally
+
+Inspect the visual result at approximately:
+
+- 1440 × 900
+- 1280 × 800
+- 390 × 844
+
+Do not base the audit only on source code.
+
+The rendered result is the source of truth for visual analysis.
+
+# Things to analyze
+
+Analyze the current design in detail.
+
+For each major area determine:
+
+1. What already works well.
+2. What gives the project its current identity.
+3. What should be preserved.
+4. What currently feels flat or overly digital.
+5. What currently looks like ordinary UI instead of a physical scene.
+6. Where realism would strengthen the concept.
+7. Where realism would hurt usability.
+8. Where depth can be introduced.
+9. Where material texture would help.
+10. Where atmosphere could help.
+11. Where subtle motion could make the environment feel alive.
+12. What must remain static.
+13. Which existing effects are worth retaining.
+14. Which current decorative elements look generic.
+15. Which effects could become distracting or expensive.
+
+# Homepage visual goal
+
+The homepage should eventually feel like a physical miniature cemetery.
+
+Think in physical layers rather than just web backgrounds.
+
+Possible depth model:
+
+Layer 1:
+sky / distant atmosphere
+
+Layer 2:
+distant landscape / tree silhouettes
+
+Layer 3:
+rear atmospheric fog
+
+Layer 4:
+background gravestones
+
+Layer 5:
+main grave field
+
+Layer 6:
+ground / soil / grass
+
+Layer 7:
+foreground vegetation / stones
+
+Layer 8:
+very subtle foreground atmospheric layer
+
+Do not assume all of these layers are necessary.
+
+Determine the minimal set that produces a convincing sense of depth.
+
+The environment should not overpower the content.
+
+# Physical materials
+
+Consider whether the design can use visually convincing representations
+of:
+
+- weathered stone
+- rough stone edges
+- chips
+- cracks
+- moss
+- dampness
+- soil
+- grass
+- dried vegetation
+- small flowers
+- candle wax
+- atmospheric mist
+- directional light
+- contact shadows
+- depth-of-field cues
+
+Do not add visual detail for decoration alone.
+
+Every material should support the cemetery metaphor.
+
+# Lighting system
+
+Define one coherent lighting model for the future implementation.
+
+Prefer a consistent large ambient source such as:
+
+cool dusk / moonlight from upper-left
+
+with occasional local warm sources such as candlelight.
+
+The lighting direction should influence:
+
+- highlights
+- stone appearance
+- shadows
+- moss visibility
+- vegetation
+- atmospheric layers
+- depth
+- candle interaction
+
+Avoid arbitrary glows that have no physical explanation.
+
+# Gravestones
+
+Analyze how current grave cards/objects can become more physical without
+changing what information they contain.
+
+Consider:
+
+- multiple gravestone silhouettes
+- subtle material variation
+- texture variation
+- moss variation
+- irregular weathering
+- contact shadows
+- small differences in rotation
+- physical depth
+- surrounding vegetation
+
+Project names, dates and dynamic content should remain HTML whenever
+possible.
+
+Do not bake dynamic project text into generated imagery.
+
+# Homepage motion philosophy
+
+Future motion should feel:
+
+- subtle
+- slow
+- physical
+- deliberate
+- almost subconscious
+
+Potential techniques to evaluate:
+
+- extremely restrained pointer parallax
+- slow atmospheric fog drift
+- subtle vegetation motion
+- restrained entrance motion
+- minor hover depth
+- foreground/background movement
+- selective scroll-linked movement
+
+Do not recommend movement just because animation is possible.
+
+Avoid:
+
+- bouncing
+- excessive scaling
+- continuous object floating
+- random rotation
+- large cursor-following movement
+- excessive particle systems
+- decorative motion without conceptual purpose
+
+# Pointer parallax
+
+Evaluate whether a very small pointer-driven parallax system would be
+appropriate.
+
+The maximum movement should be small.
+
+The user should primarily experience increased depth, not consciously
+notice elements chasing the cursor.
+
+The future implementation should prefer transform-based motion.
+
+Mobile should not attempt to reproduce desktop pointer behavior.
+
+# Detail-page visual concept
+
+Do not redesign the grave-detail page structure.
+
+The future visual metaphor should be:
+
+homepage:
+you are looking across the cemetery
+
+detail page:
+you have walked closer to one memorial stone
+
+Preserve all current detail-page content and functionality.
+
+The upper visual area may become a closer, more physical memorial scene.
+
+The content below should retain its strong documentary / technical
+quality.
+
+The contrast should feel intentional:
+
+physical memorial
+↓
+technical autopsy
+
+Analyze how to create this transition without changing information
+architecture.
+
+# Light a candle interaction
+
+Treat the existing Light a candle functionality as a potential signature
+interaction.
+
+Do not change its meaning or data behavior.
+
+Analyze how the visual feedback could eventually include:
+
+- a natural ignition
+- a subtle flame
+- small warm local illumination
+- warm reflection on nearby stone or ground
+- extremely restrained flicker
+- optional subtle smoke
+
+Avoid:
+
+- cartoon flames
+- explosions
+- excessive particle effects
+- sound
+- strong glow
+- distracting looping animation
+
+Reduced-motion behavior must be specified.
+
+# Footer / page ending
+
+Analyze whether the existing ending of the page can visually transition
+into darker ground, vegetation or atmosphere without creating a new
+content section.
+
+Do not invent new content merely to support decoration.
+
+# Technology constraints
+
+Preserve the existing project architecture unless the actual repository
+requires otherwise.
+
+Do not introduce React.
+
+Do not introduce Tailwind.
+
+Do not migrate the project to another framework.
+
+Do not introduce a new component system.
+
+Do not introduce Three.js during the analysis phase.
+
+Do not assume GSAP is required.
+
+Prefer future implementation using:
+
+- existing Astro architecture
+- existing CSS
+- CSS custom properties
+- CSS transforms
+- pseudo-elements
+- responsive images
+- masks where appropriate
+- small amounts of vanilla JavaScript
+- IntersectionObserver
+- requestAnimationFrame only where justified
+
+A future dependency may be proposed only if there is a concrete reason
+the existing stack cannot reasonably achieve the desired result.
+
+# 2.5D before full 3D
+
+Prefer evaluating layered 2.5D visual composition before recommending
+full WebGL or Three.js.
+
+A layered scene can use:
+
+- static background imagery
+- transparent foreground assets
+- multiple atmospheric layers
+- controlled parallax
+- masking
+- overlap
+- depth-of-field cues
+
+This is likely preferable because of:
+
+- performance
+- mobile support
+- maintenance
+- accessibility
+- loading cost
+- implementation complexity
+
+If you believe real 3D is required for any specific effect, document why.
+
+Do not add it.
+
+# Performance expectations
+
+Visual quality must not destroy page performance.
+
+Create explicit performance recommendations.
+
+Consider:
+
+- AVIF
+- WebP
+- responsive images
+- srcset
+- explicit image dimensions
+- lazy loading
+- preload only when justified
+- image compression
+- compositing cost
+- animation repaint cost
+- memory use
+- mobile GPU load
+
+Prefer transform and opacity for animation.
+
+Avoid continuously animating:
+
+- large filters
+- large blur radii
+- box-shadow on huge elements
+- expensive backdrop filters
+- layout properties
+
+The initial decorative visual payload should be tightly controlled.
+
+Prefer a realistic target near or below approximately 2 MB for the
+initial high-impact visual experience if quality can be maintained.
+
+If you believe this target is unrealistic, explain why.
+
+# Reduced motion
+
+All future motion must support prefers-reduced-motion.
+
+For every proposed animation specify what reduced-motion users will see.
+
+The site must remain visually complete when motion is disabled.
+
+# Mobile
+
+Mobile is not simply a scaled-down desktop composition.
+
+Analyze mobile scene composition independently.
+
+Consider:
+
+- different image crop
+- fewer visual layers
+- reduced atmospheric complexity
+- reduced parallax
+- smaller image payload
+- simplified motion
+- maintaining readable gravestone text
+- keeping the focal point visible
+
+If a separate mobile visual asset would significantly improve the result,
+document it.
+
+# Required documentation
+
+Create the following directory:
+
+docs/visual-enhancement/
+
+Create these files:
+
+00-CURRENT-STATE.md
+01-VISUAL-AUDIT.md
+02-ART-DIRECTION.md
+03-VISUAL-ASSETS.md
+04-MOTION-SPEC.md
+05-PERFORMANCE.md
+06-IMPLEMENTATION-PLAN.md
+07-VERIFICATION-CHECKLIST.md
+
+If AGENTS.md does not exist, create it as described later in this prompt.
+
+Do not modify application source files during this task.
+
+# 00-CURRENT-STATE.md
+
+Document the project exactly as it currently exists.
+
+Include:
+
+- current framework and build setup
+- relevant directory structure
+- homepage structure
+- detail-page structure
+- shared components
+- CSS architecture
+- current visual assets
+- existing animations
+- existing interactive behavior
+- responsive approach
+- relevant accessibility behavior
+- relevant performance characteristics
+
+This document is a baseline, not a recommendation document.
+
+# 01-VISUAL-AUDIT.md
+
+Perform a detailed visual audit.
+
+Include sections for at least:
+
+Homepage
+- hero
+- introduction
+- register/statistics
+- filtering/navigation
+- grave presentation
+- spacing
+- hierarchy
+- background/environment
+- interactions
+- footer/page ending
+
+Detail page
+- upper memorial area
+- status
+- title
+- dates/lifespan
+- epitaph
+- candle
+- Autopsy
+- Stack
+- Last commit
+- Obituary
+- lessons
+- previous/next navigation
+- transition between memorial and content
+
+For every relevant area use:
+
+KEEP
+IMPROVE
+DO NOT TOUCH
+
+Be explicit.
+
+# 02-ART-DIRECTION.md
+
+Define a coherent art direction.
+
+Include:
+
+- one-sentence visual concept
+- emotional objective
+- visual references in descriptive terms
+- realism level
+- physical materials
+- lighting model
+- atmospheric model
+- depth model
+- foreground/midground/background strategy
+- gravestone appearance
+- vegetation
+- color logic
+- relationship between imagery and typography
+- mobile art direction
+- detail-page continuity
+- visual anti-patterns
+- explicit list of things that would make the site look AI-generated
+
+The art direction should be specific enough that another designer or
+image-generation model could follow it.
+
+# 03-VISUAL-ASSETS.md
+
+This file is extremely important.
+
+Identify every visual asset required for the proposed direction.
+
+Do not over-request assets.
+
+Prefer the smallest useful asset set.
+
+For every asset provide:
+
+ID
+
+Filename
+
+Status:
+- EXISTS
+or
+- REQUIRED
+
+Purpose
+
+Where used
+
+Recommended format
+
+Dimensions
+
+Aspect ratio
+
+Transparency requirement
+
+Camera / viewpoint
+
+Composition
+
+Foreground
+
+Midground
+
+Background
+
+Lighting direction
+
+Material details
+
+Depth-of-field expectations
+
+Color / mood
+
+Safe zones for HTML content
+
+Mobile considerations
+
+What MUST NOT appear in the generated asset
+
+How the application will integrate the asset
+
+Performance considerations
+
+Whether an independent mobile asset is required
+
+Do not include dynamic project text, UI labels, logos or other data
+inside generated imagery unless absolutely unavoidable.
+
+Create a final section:
+
+## Minimum asset set for implementation
+
+List only the assets that are actually required before the first
+implementation pass can begin.
+
+Also create:
+
+## Optional polish assets
+
+These must not block implementation.
+
+# 04-MOTION-SPEC.md
+
+Define every recommended motion behavior.
+
+For each effect specify:
+
+Name
+
+Purpose
+
+Trigger
+
+Elements
+
+Property being animated
+
+Expected distance / magnitude
+
+Duration
+
+Easing
+
+Desktop behavior
+
+Mobile behavior
+
+Reduced-motion behavior
+
+Performance notes
+
+Examples may include:
+
+- fog drift
+- pointer depth
+- grave hover
+- section reveal
+- vegetation motion
+- candle ignition
+- candle flame
+- candle light
+- detail-page entrance
+
+Do not include an animation if it does not improve the experience.
+
+# 05-PERFORMANCE.md
+
+Create the visual-performance strategy.
+
+Include:
+
+- expected visual payload
+- image-format strategy
+- responsive image strategy
+- desktop/mobile asset strategy
+- preload strategy
+- lazy-load strategy
+- animation compositor strategy
+- potential repaint risks
+- memory considerations
+- mobile GPU considerations
+- accessibility
+- reduced motion
+- likely Core Web Vitals risks
+- recommendations for visual regression testing
+
+Be conservative.
+
+# 06-IMPLEMENTATION-PLAN.md
+
+Create a detailed implementation plan.
+
+DO NOT implement it.
+
+Organize work into safe phases.
+
+Recommended shape:
+
+Phase 0 — Asset preparation
+
+Phase 1 — Homepage environmental foundation
+
+Phase 2 — Homepage physical gravestones
+
+Phase 3 — Depth and restrained motion
+
+Phase 4 — Detail-page memorial scene
+
+Phase 5 — Candle visual interaction
+
+Phase 6 — Mobile adaptation
+
+Phase 7 — Performance optimization
+
+Phase 8 — Final visual polish
+
+Change the phases if the actual project suggests a better sequence.
+
+For every phase document:
+
+Objective
+
+Why this phase exists
+
+Prerequisites
+
+Required assets
+
+Files likely to be modified
+
+Exact implementation concepts
+
+What must remain unchanged
+
+Risks
+
+Desktop verification
+
+Mobile verification
+
+Accessibility verification
+
+Performance verification
+
+Definition of done
+
+Also explicitly identify which phases can be rolled back independently.
+
+# 07-VERIFICATION-CHECKLIST.md
+
+Create a reusable verification checklist.
+
+At minimum include:
+
+Homepage desktop
+
+Homepage mobile
+
+Detail page desktop
+
+Detail page mobile
+
+Navigation
+
+Filters
+
+Sanity data
+
+Keyboard interaction
+
+Focus state
+
+Reduced motion
+
+Text contrast
+
+Image crop
+
+HTML content readability
+
+No layout shifts
+
+No broken links
+
+No broken URLs
+
+No content changes
+
+No information-architecture changes
+
+No functionality regression
+
+Image loading
+
+Mobile payload
+
+Animation smoothness
+
+Visual hierarchy
+
+Lighting consistency
+
+Material consistency
+
+Lighthouse / equivalent performance checks where appropriate
+
+# AGENTS.md
+
+If AGENTS.md does not already exist, create one.
+
+It should be concise.
+
+It should tell Codex:
+
+- read CLAUDE.md first
+- repository workflow rules still apply
+- for visual work, act as the visual frontend engineer
+- existing structure and functionality are approved
+- visual enhancement is not redesign
+- do not introduce React
+- do not introduce Tailwind
+- do not migrate frameworks
+- do not create generic SVG substitutes for required realistic assets
+- document missing assets instead
+- prefer the existing Astro/CSS architecture
+- major visual work must be inspected in the rendered browser
+- desktop and mobile must both be verified
+- reduced-motion behavior is mandatory
+- do not modify application files during analysis-only tasks
+
+If AGENTS.md already exists, do not overwrite useful existing
+instructions.
+
+Extend it carefully only if necessary.
+
+# Important AI-design anti-patterns
+
+Explicitly look for ways to avoid common AI-generated design clichés:
+
+- purple/blue gradient backgrounds
+- meaningless mesh gradients
+- floating circles and spheres
+- random decorative particles
+- excessive glassmorphism
+- glowing card borders
+- excessive pills
+- excessive badges
+- repetitive rounded cards
+- unnecessary bento grids
+- fake terminal windows
+- generic code decorations
+- giant gradient headlines
+- arbitrary neon
+- visual effects with no physical explanation
+- perfectly uniform repeated components
+- over-smoothed materials
+- excessive visual symmetry
+
+The finished direction should feel art-directed rather than decorated.
+
+# Final response
+
+After creating the documentation:
+
+1. Do not implement the enhancement.
+2. Do not modify application source files.
+3. Do not install dependencies.
+4. Do not generate placeholder SVG scenery.
+5. Do not create temporary fake artwork.
+
+Return a concise summary containing:
+
+- files created
+- top 5 visual opportunities
+- minimum generated asset set
+- highest implementation risk
+- expected first implementation phase
+- anything in the existing architecture that changes the plan
+
+Then stop.
+
+I will review the analysis and visual-asset specification before
+implementation begins.
+```
+
+#### What came out
+
+- Eight documents in `docs/visual-enhancement/`, numbered 00 through 07: current state, visual audit, art direction, complete asset contracts, motion, performance, phased implementation with independent rollback boundaries, and verification checklist.
+- A concise `AGENTS.md`, as explicitly requested, preserving existing workflow and analysis-only boundaries.
+- Minimum proposed source set: wide environment, independent mobile environment, shared limestone, shared soil, and sparse transparent terrain edge. All five remain ASSET REQUIRED; none was generated. Optional moss, honored flowers and wax are deferred.
+- This appended audit entry. No application source, existing artwork, package/lockfile, Sanity document or behavior was changed by this audit. No dependency was installed.
+
+#### Inspection and verification
+
+- Read repository rules, relevant planning/design/history, configs, schemas, data helpers, page/shared-component sources, all styles, visual assets and interaction scripts. Consulted the relevant Sanity and local motion/voice guidance.
+- Started the documented dev workflow on separate loopback ports using existing dependencies. After concurrent artwork edits began, used an isolated temporary archive of commit 934f4f3 for repeatable review. The public production dataset was read through the existing integration, without writes.
+- Inspected home, Everything.js and Kindness Chain at 1440x900, 1280x800 and 390x844. Checked local candle feedback and keyboard cause preview on the frozen origin; the click changed only that browser's local count.
+- The parallel agent completed R4/R5 while this audit ran. Read its final changes through commit 218304c and repeated all nine rendered route/viewport inspections on the active app. Recorded the authoritative refresh separately: thirteen relics, all motif families, static latest-published cat, 90-second hero fog, three-candle yard restoration, updated social card/README and historic R4 metrics.
+- Inspected both initial and refreshed OG images. Screenshots were inspected inline; this audit did not create or alter the parallel agent's committed screenshots.
+- Documentation count, local Markdown link targets and English-only content were checked. No production build, unit test, Lighthouse run, reduced-motion emulation or real-device performance test was claimed. Existing test and Lighthouse figures are attributed to prior build-log entries.
+- Reset the temporary browser viewport, closed the audit tab and stopped only the two verified audit dev processes. Did not stop another agent's server.
+
+#### What failed or needed a retry
+
+- Initial sandboxed dev startup exited before readiness; the same loopback-only dev command succeeded with approved execution outside the sandbox.
+- The first archive extraction used a Python tar filter unavailable in the installed version. Retried with member-path validation and no archive links before extraction.
+- An intermediate live capture showed artwork without its matching styles while the other agent was editing. Used a frozen archive instead of treating the transient result as a settled product defect.
+- Some full-page captures omitted an offscreen masked stone after viewport changes. An actual scrolled viewport showed Pocket Ledger intact; documented this as a capture artifact.
+- During final refresh, the browser binding was stale; reopened only the audit tab. A log read and a source-size read initially used the wrong relative directory and were retried against the actual paths.
+- One multi-file documentation patch had a nonmatching whole-paragraph context and made no changes; retried with matching context. A sandbox process-status query was denied; a narrowly scoped approved query identified only the two audit PIDs before cleanup. Astro's dev-status command reported no registered server for the audit processes, so it was not used to stop an unrelated server.
+
+#### Decisions made during the audit
+
+- Chose reusable material skins and five coherent source images over nine fixed-height stone cutouts and thirteen newly generated relics. This preserves dynamic HTML, variable-height stones, existing data-derived shapes and the final relic work while controlling delivery cost.
+- Proposed local Astro assets with no new CMS backdrop field or image dependency. The older photographic brief is a proposal, not an implemented schema contract.
+- Proposed static baked atmosphere for the first visual pass; documented refinement of the existing fog instead of adding another loop. Tiny pointer depth remains optional and disabled initially.
+- Recorded the dense-grid/build-log mismatch and memorial custom-property default behavior as architecture caveats, without fixing either during a visual audit.
+- Left the documentation unstaged and uncommitted because the user explicitly asked not to interfere with the parallel agent. Did not switch branches, stash, reset, stage, commit, create a PR or deploy. The new documentation paths are explicitly requested by the current user prompt.
+
+
+### Approved visual specification clarifications (documentation only)
+
+#### Prompt
+
+```text
+The analysis package is approved with three clarifications before implementation.
+
+Do not rewrite the existing specification. Add these clarifications to the relevant documents only.
+
+## 1. A01 is the visual anchor
+
+A01 `environment-wide` establishes the definitive visual language for the entire generated asset set.
+
+Generate and visually approve A01 before finalizing A02–A05.
+
+A02–A05 must inherit A01's:
+
+- lighting direction
+- color temperature
+- realism level
+- material scale
+- atmospheric softness
+- camera impression
+- contrast level
+
+Do not independently generate all five assets and attempt to reconcile them afterward.
+
+Phase 0 should therefore use this sequence:
+
+A01 candidate generation\
+→ A01 visual approval\
+→ A02–A05 generation using A01 as the reference\
+→ full asset-set consistency review.
+
+## 2. The first viewport needs one memorable visual moment
+
+The goal is not only to make the existing site more tactile.
+
+The homepage first viewport should contain one immediately memorable visual composition that makes the experience feel materially different from an ordinary styled web page.
+
+The WOW effect should come primarily from:
+
+- composition
+- atmospheric depth
+- believable materials
+- cinematic light
+- foreground/background separation
+- scale
+- subtle photographic softness
+
+Do not achieve this by adding more UI, more decoration, more text or excessive animation.
+
+A static screenshot of the hero should already feel impressive before motion is enabled.
+
+## 3. Allow one restrained signature depth effect after static approval
+
+The static composition remains the priority.
+
+However, after Phases 1 and 2 pass visual review, one slightly stronger environmental depth effect may be evaluated.
+
+Examples:
+
+- pointer depth with approximately 6–10 px maximum foreground/background differential
+
+OR
+
+- one subtle hero-only scroll depth transition during the first portion of the page
+
+Do not enable both by default.
+
+Do not animate content text, gravestone inscriptions or controls.
+
+The effect must be independently removable.
+
+If it is more noticeable than the artwork itself, remove it.
+
+These clarifications do not authorize implementation yet.
+```
+
+#### What came out
+
+- Appended clarification sections to `02-ART-DIRECTION.md`, `03-VISUAL-ASSETS.md`, `04-MOTION-SPEC.md`, `06-IMPLEMENTATION-PLAN.md` and `07-VERIFICATION-CHECKLIST.md` in `docs/visual-enhancement/`.
+- A01 is now the approved reference before dependent generation, with all seven inherited visual characteristics and a final consistency review.
+- Added the memorable static first-viewport composition gate and one optional signature depth evaluation after Phases 1 and 2 pass visual review.
+- Explicitly scoped the exception to the earlier pointer ceiling and blanket scroll-depth rejection. Preserved all pre-existing specification text.
+
+#### Verification and scope
+
+- Verified the additions preserve each file's original text as an exact prefix; checked local Markdown links, English-only content and whitespace.
+- No application, asset, dependency or CMS changes; no generation, dev server, build or tests were needed for this documentation-only clarification.
+- No staging, commits or branch changes. Existing concurrent-work boundaries remain.
+
+#### Failures or retries
+
+- None. Some combined read output was truncated; focused reads retrieved the relevant phase and motion passages before editing.
+
+#### Decisions made during the update
+
+- Added explicit precedence language so the new limited depth allowance is actionable without rewriting the original specification.
+- Kept the scroll alternative static on mobile by default and specified bounded transform-only behavior, matching the existing mobile, reduced-motion and performance constraints. Its proposed initial 6–10 px excursion is a conservative evaluation limit, not a mandate to implement it.
+- Clarified that preserving content hierarchy does not prohibit art-directing the decorative hero composition; protected HTML and existing controls remain fixed.
+
+
+### Visual material implementation kickoff (2026-10-03 CDT)
+
+#### Prompts
+
+```text
+Read, in this exact order:
+
+1. AGENTS.md
+2. CLAUDE.md
+3. docs/DESIGN_BRIEF.md
+4. docs/visual-enhancement/00-CURRENT-STATE.md
+5. docs/visual-enhancement/01-VISUAL-AUDIT.md
+6. docs/visual-enhancement/02-ART-DIRECTION.md
+7. docs/visual-enhancement/03-VISUAL-ASSETS.md
+8. docs/visual-enhancement/04-MOTION-SPEC.md
+9. docs/visual-enhancement/05-PERFORMANCE.md
+10. docs/visual-enhancement/06-IMPLEMENTATION-PLAN.md
+11. docs/visual-enhancement/07-VERIFICATION-CHECKLIST.md
+
+Implementation is now authorized within the scope below.
+
+Work autonomously through the entire authorized scope.
+Do not stop to ask me design questions or ask me to perform intermediate
+steps.
+
+If a nonessential optional step cannot be completed with the access or
+tools already available, skip that optional step, document it, and
+continue with the rest of the authorized work.
+
+Do not substitute fake assets or change product behavior to work around
+a missing permission.
+
+# Authorized implementation scope
+
+Implement:
+
+- Phase 0
+- Phase 1
+- Phase 2
+
+from docs/visual-enhancement/06-IMPLEMENTATION-PLAN.md.
+
+Also implement this single Phase 4 item:
+
+Pass the existing computed monument presentation values required for
+life, tilt and offset into the memorial Stone so the detail page presents
+the same physical object as its yard counterpart.
+
+Do not otherwise implement Phase 4.
+
+Skip Phase 3 entirely:
+
+- no pointer depth
+- no parallax
+- no scroll-linked scenery
+- no new environmental motion
+
+Phase 5 is already implemented.
+
+Do not modify candle behavior, candle persistence, candle count semantics,
+or introduce new candle features.
+
+Use Phases 6, 7 and 8 as verification and acceptance gates.
+
+Do not introduce new optional features from Phases 6–8.
+
+Small corrective fixes are allowed only when required to pass those
+verification gates.
+
+Do not introduce new visual concepts during final verification.
+
+# Primary objective
+
+The final result of this task must be a visibly upgraded, stylized,
+physical and realistic version of the existing Side Project Graveyard.
+
+This is not a redesign.
+
+The existing:
+
+- content
+- structure
+- routes
+- navigation
+- filtering
+- ordering
+- project data
+- Sanity content
+- developer humor
+- information architecture
+- user flows
+
+must remain intact.
+
+The main visual improvement should come from the supplied physical
+materials and environment:
+
+- realistic miniature cemetery environment
+- limestone material
+- physical ground
+- terrain contact
+- coherent dusk lighting
+- believable depth
+- better object grounding
+
+A static screenshot should already look significantly more physical and
+cinematic than the current vector/CSS scene.
+
+# Supplied assets
+
+The five required A01–A05 source assets are expected under:
+
+web/src/assets/scene/
+
+Expected logical assets:
+
+A01 — environment-wide
+A02 — environment-mobile
+A03 — limestone-tile
+A04 — ground-tile
+A05 — terrain-edge
+
+Inspect the actual files before implementation.
+
+Do not reject a source solely because its dimensions differ slightly
+from the suggested master dimensions in 03-VISUAL-ASSETS.md.
+
+Judge it by:
+
+- composition
+- usable crop
+- lighting compatibility
+- material quality
+- HTML safe zones
+- responsive integration
+- performance
+
+If one of A01–A05 is genuinely absent, stop before application
+implementation and report exactly which file is missing.
+
+Do not create an SVG or procedural replacement.
+
+A01 is the visual anchor.
+
+A02–A05 must be integrated so that their color, contrast and material
+treatment remain consistent with A01.
+
+# Asset-specific implementation notes
+
+## A01 / A02 environment
+
+Use A01 for desktop and A02 as the dedicated mobile art-directed source.
+
+Do not simply load A01 on mobile and crop most of it away.
+
+Preserve the existing HTML title, tagline and grave count.
+
+Do not bake any text into the imagery.
+
+Keep the upper title region quiet and readable.
+
+The environment should replace or visually supersede flat procedural
+scenery where appropriate without duplicating the fence or horizon.
+
+Preserve a graceful CSS/SVG fallback if raster imagery fails.
+
+## A03 limestone
+
+Use the limestone image as a shared material, not as a full fixed-size
+gravestone.
+
+Preserve:
+
+- all existing stone silhouettes
+- content-driven height
+- HTML names
+- HTML dates
+- HTML epitaphs
+- statuses
+- markers
+- mausoleum behavior
+
+Use bounded deterministic material positioning where appropriate so
+repeated stones do not visibly use an identical crop.
+
+Do not make the texture busy beneath text.
+
+## A04 ground
+
+Use the supplied ground as restrained material texture.
+
+It should remain subtle.
+
+Do not render it at full visual contrast if that competes with body text
+or grave inscriptions.
+
+Do not create a giant GPU-promoted page texture.
+
+## A05 terrain edge
+
+The source contains transparent terrain clusters.
+
+Inspect and trim/crop transparent bounds as part of asset preparation if
+that materially reduces decoded dimensions or transfer cost.
+
+Check carefully for alpha fringes or color halos against the actual dark
+ground.
+
+Do not accept red/light matte contamination around grass edges.
+
+Use the terrain sparingly.
+
+It should break the artificial base of selected stones and scene edges,
+not become a repeated grass border around every object.
+
+# Sanity backdrop exception
+
+One controlled exception to the original no-schema-change rule is
+authorized.
+
+Implement docs/DESIGN_BRIEF.md section 15's optional site backdrop:
+
+- add an image field with hotspot to siteSettings
+- project it from getSettings
+- support rendering it using the existing Sanity image tooling described
+  by the project
+
+However, this task MUST NOT wait for me to upload anything to Sanity.
+
+The supplied local A01/A02 environment remains the complete default
+implementation.
+
+If siteSettings.backdrop is absent, the website must use A01/A02 and be
+visually complete.
+
+If a valid backdrop exists later, the code may use it as the configured
+override according to the design brief.
+
+Do not pause the task asking me to upload the backdrop.
+
+Do not require a Sanity mutation or manual Studio action to finish this
+task.
+
+# Dense grid honesty correction
+
+The existing application uses:
+
+grid-auto-flow: row dense
+
+Do not remove or change dense packing in this visual-material pass.
+
+Changing visual ordering/packing is out of scope.
+
+Append a correction to docs/BUILD_LOG.md stating accurately that dense
+packing exists and explaining its current effect.
+
+Do not rewrite history; append the correction according to repository
+rules.
+
+# Documentation attribution
+
+Update current documentation truthfully so it states:
+
+- Claude Code built the site and performed the prior redesign work
+- Codex performed this material/realism implementation pass
+
+Update CLAUDE.md "What is committed" to include:
+
+- AGENTS.md
+- docs/visual-enhancement/
+- web/src/assets/scene/
+
+Do not add tool attribution to Git commit messages.
+
+# Asset provenance honesty
+
+Record only image provenance that is actually known.
+
+Do not invent:
+
+- generation tool names
+- prompts
+- candidate counts
+- rejection reasons
+
+If that provenance is not available in repository context, record:
+
+"Source supplied by user; generation provenance not provided."
+
+Record technical asset processing performed during this task separately
+and truthfully.
+
+# Git workflow
+
+Create and work only on:
+
+visual-materials
+
+from main.
+
+Keep main untouched.
+
+Before creating the branch:
+
+- inspect git status
+- inspect current branch
+- inspect relevant recent history
+- make sure no other agent's uncommitted work would be destroyed
+
+Never:
+
+- reset another agent's changes
+- stash another agent's changes
+- force checkout over local work
+- bypass hooks
+- use git add .
+- use git add -A
+- force push
+
+Commit the audit package first:
+
+- AGENTS.md
+- docs/visual-enhancement/
+- corresponding BUILD_LOG audit entry
+
+Then use small logical commits for implementation.
+
+Commit messages:
+
+- plain
+- verb-first
+- no trailers
+- no tool attribution
+
+Examples:
+
+Add visual enhancement audit
+
+Add responsive cemetery environment
+
+Apply physical stone materials
+
+Refine grave grounding
+
+Keep commits reviewable.
+
+# Autonomous execution
+
+Do not stop for ordinary implementation choices when the specification
+already provides enough direction.
+
+Inspect the rendered result and make reasonable corrective decisions
+yourself.
+
+Do not ask me to approve intermediate visual tweaks.
+
+If an operation is blocked solely because the current environment does
+not have network credentials or permission for a remote action:
+
+1. finish every local implementation, verification, screenshot and
+   commit step that is possible;
+2. do not repeatedly request permission;
+3. report only the blocked remote action at the end.
+
+Do not treat inability to push/open a PR as failure of the local
+implementation.
+
+# Required verification
+
+Before considering the task complete, run the repository-required checks.
+
+In web/:
+
+npx astro check
+npm test
+npm run build
+
+In studio/:
+
+npx tsc --noEmit
+npx sanity schema validate
+
+Do not weaken tests or hooks to make them pass.
+
+# Browser verification
+
+Render and inspect:
+
+/
+ /rip/everything-js/
+ /rip/kindness-chain/
+ /rip/pdf-viewer-sdk/
+
+at:
+
+1440 × 900
+1280 × 800
+390 × 844
+
+Also check the relevant requirements from:
+
+docs/visual-enhancement/07-VERIFICATION-CHECKLIST.md
+
+Do not approve visual work only by reading CSS/source.
+
+Actually inspect the rendered pages.
+
+Pay particular attention to:
+
+- HTML text readability over physical materials
+- title safe zones
+- duplicate old/new fence imagery
+- stone texture scale
+- repeated texture crops
+- grave base grounding
+- terrain alpha fringes
+- marker/tag at 1280
+- mausoleum
+- long epitaphs
+- Kindness Chain
+- PDF Viewer SDK
+- mobile overflow
+- 390px document width
+- focus outlines
+- reduced motion
+- image failure fallback
+- selected responsive image sources
+- no desktop environment download on mobile
+- layout shift
+
+# Performance acceptance
+
+Follow docs/visual-enhancement/05-PERFORMANCE.md.
+
+Prefer:
+
+- responsive AVIF/WebP derivatives
+- explicit dimensions
+- correct picture source selection
+- bounded decorative layers
+- existing Astro image pipeline where appropriate
+- low visual strength for repeated textures
+
+Do not add:
+
+- React
+- Tailwind
+- GSAP
+- Three.js
+- canvas
+- animation frameworks
+- runtime image services
+
+Do not introduce unnecessary dependencies.
+
+# Final visual review
+
+After the first successful implementation and verification pass, perform
+one additional visual refinement pass based on rendered screenshots.
+
+Do not introduce new concepts.
+
+Correct only things such as:
+
+- asset crop
+- texture strength
+- stone grounding
+- alpha edges
+- contrast
+- lighting consistency
+- mobile composition
+- duplicated procedural scenery
+
+Then rerun affected verification.
+
+# Remote GitHub actions
+
+If the existing environment already has authenticated GitHub access and
+remote operations are permitted:
+
+- push visual-materials
+- open a PR against main
+
+Do not merge it.
+
+If authenticated GitHub/network access is not already available, do not
+stop the implementation to ask me for credentials.
+
+Complete all local work and report that push/PR creation is the only
+blocked final step.
+
+Never expose, print or request secrets.
+
+# Completion response
+
+At the end print:
+
+1. final branch name
+2. commits created
+3. files changed
+4. visual changes implemented
+5. verification commands and results
+6. screenshot paths
+7. whether PR creation succeeded
+8. PR URL if available
+9. exactly three things you are least satisfied with
+
+Then stop.
+
+Do not merge.
+```
+
+```text
+# Additions
+
+Hard stop: Sunday 4 October, 15:00 CDT. Whatever is not committed and verified by then is cut; the untouched main stays the fallback. Cut materials (Phase 2) before environment (Phase 1).
+
+Image provenance is known and must be recorded exactly: the five sources were generated by the user with [TOOL NAME] from the prompts in docs/image-prompts.md (already on disk; commit it with the audit package and link it from README credits and the BUILD_LOG entry). Candidates per image: [N]. Rejected candidates: [REASONS, e.g. lettering in the sky, light from the right, visible tile seam]. Do not write "provenance not provided".
+
+@sanity/image-url is the one new dependency allowed, for the backdrop override only. Hand-built CDN URLs are also acceptable; pick whichever is simpler and credit it in README.
+
+Screenshots: scratch captures go to shots/ (already excluded from git). The final set that the README links replaces the files in docs/screenshots/ with the same names and is committed.
+
+The repository has git hooks that apply to every committer: no tool attribution or trailers in commit messages, no notes or env files staged, no Cyrillic, no files over 8 MB. If a source master is over 8 MB, re-encode it losslessly (oxipng or lossless WebP) before committing; never bypass a hook.
+
+Keep every screenshot you judge from by opening the PNG. If you cannot view images in this environment, say so in the final report and list the exact files for me to review instead of claiming visual approval.
+```
+
+#### Audit package and initial asset inspection
+
+- The previous analysis package, its clarification and `docs/image-prompts.md` are being committed first on the requested `visual-materials` branch. `CLAUDE.md` committed-file rules now explicitly include them and the supplied scene sources. The application implementation follows in later commits.
+- The five supplied PNGs are present. Source dimensions are 1672x941 wide environment, 1122x1402 mobile environment, 1254x1254 limestone, 1254x1254 ground and 1254x1254 RGBA terrain. Dimensions differ from suggestions but are usable candidates. All files are below the 8 MB hook limit. Each source was opened visually.
+- Image prompts are in [docs/image-prompts.md](image-prompts.md). The user states that they generated the five sources. The text uses placeholders for the tool, candidate count and actual rejection outcomes; the prompt file has only requested rejection criteria. These details are not recoverable from the PNG metadata, which contains no text metadata. No tool name, actual candidate count or actual rejected candidate is asserted here.
+- Terrain image A05 has visible red/light color contamination around several grass edges in the supplied source. It needs technical alpha cleanup or must be cut from the final visual pass; do not accept the fringe.
+- An initial `git switch -c visual-materials` was blocked by sandbox write restrictions on `.git`. Repeated the exact branch creation with the required sandbox escalation; it succeeded. No branch reset, stash or force operation was used.
+
+#### Dense grid correction
+
+`web/src/styles/scene.css` contains `grid-auto-flow: row dense`. The earlier R2 build-log claim that dense packing is absent was incorrect. Dense packing may move a later plot into an earlier visual gap created by spans or unequal available cells, while the DOM and `getProjects()` date ordering stay unchanged. This material pass will preserve the rule and verify visual placement without silently altering packing.
+
+#### Decisions and limits
+
+- The supplied A01/A02 have compatible cool dusk sky and warm horizon. A01 is the visual anchor. The current task authorizes integration of A01-A05, a bounded Sanity backdrop override and memorial presentation variables, while explicitly skipping new environmental motion and candle work.
+- The additional user instruction sets a Sunday 4 October 15:00 CDT hard stop and cuts Phase 2 before Phase 1 if necessary. The unchanged `main` remains the fallback.
