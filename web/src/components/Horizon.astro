@@ -1,0 +1,78 @@
+---
+/**
+ * The skyline every page stands in: far hills with a small chapel, a tree line, an iron fence.
+ * `gate` is the home page, with the double gate open in the middle. `memorial` is the quiet version above a
+ * single grave: hills and fence, no gate. `strip` is the short band on other pages: only the hills, stretched;
+ * its fence is a repeating picket in CSS, so the pickets keep their size on any screen.
+ */
+interface Props {
+  variant: 'gate' | 'strip' | 'memorial'
+}
+
+const {variant} = Astro.props
+
+// Fence pickets every 22 units across the whole width, leaving room for the gate posts in the middle.
+const pickets: number[] = []
+for (let x = 6; x < 1600; x += 22) {
+  if (variant === 'gate' && x > 700 && x < 900) continue
+  pickets.push(x)
+}
+const gateBars = Array.from({length: 8}, (_, i) => 714 + i * 10.5)
+---
+
+<svg
+  class={`horizon horizon--${variant}`}
+  viewBox={variant === 'strip' ? '0 250 1600 250' : '0 0 1600 500'}
+  preserveAspectRatio={variant === 'strip' ? 'none' : 'xMidYMax slice'}
+  aria-hidden="true"
+  focusable="false"
+>
+  <g class="horizon__far">
+    <path
+      d="M0 330 C140 300 240 286 380 300 C520 314 600 276 720 262 C820 252 900 270 1010 286 C1140 304 1250 276 1380 268 C1480 262 1550 280 1600 290 V500 H0 Z"
+    ></path>
+    {
+      variant !== 'strip' && (
+        <g class="horizon__chapel">
+          <path d="M1196 286 V236 L1222 214 L1248 236 V286 Z" />
+          <path d="M1218 214 V186 H1226 V214 Z" />
+          <path d="M1214 194 H1230 V200 H1214 Z" />
+          <path d="M1248 286 V250 H1290 V286 Z" />
+          <path d="M1246 252 L1269 236 L1292 252 Z" />
+        </g>
+      )
+    }
+  </g>
+  {variant !== 'strip' && <g class="horizon__trees">
+    <path
+      d="M0 372 C30 340 52 336 70 352 C82 316 112 306 132 330 C150 300 186 298 200 334 C226 318 256 326 266 350 C300 344 330 350 352 366 L360 380 H0 Z"
+    ></path>
+    <path
+      d="M1240 368 C1262 330 1292 318 1314 342 C1330 300 1366 292 1384 326 C1404 296 1446 300 1458 338 C1484 322 1520 328 1534 352 C1560 344 1588 350 1600 360 V384 H1240 Z"
+    ></path>
+    <path d="M430 372 L452 296 L474 372 Z M462 374 L488 278 L514 374 Z"></path>
+    <path d="M1080 374 L1102 304 L1124 374 Z M1112 376 L1134 318 L1156 376 Z"></path>
+  </g>}
+  {variant !== 'strip' && <g class="horizon__fence">
+    <rect x="0" y="420" width="1600" height="6"></rect>
+    <rect x="0" y="472" width="1600" height="6"></rect>
+    {pickets.map((x) => <path d={`M${x} 488 V418 L${x + 3} 410 L${x + 6} 418 V488 Z`} />)}
+    {
+      variant === 'gate' && (
+        <g class="horizon__gate">
+          <rect x="694" y="352" width="18" height="140" />
+          <rect x="888" y="352" width="18" height="140" />
+          <path d="M690 352 H716 L703 336 Z M884 352 H910 L897 336 Z" />
+          <path d="M712 404 C760 372 790 366 800 364 C810 366 840 372 888 404 V410 C840 380 810 374 800 372 C790 374 760 380 712 410 Z" />
+          {gateBars.map((x) => (
+            <rect x={x} y={402 - Math.min(x - 712, 790 - x) * 0.32} width="3.5" height="88" />
+          ))}
+          {gateBars.map((x) => (
+            <rect x={1600 - x - 3.5} y={402 - Math.min(x - 712, 790 - x) * 0.32} width="3.5" height="88" />
+          ))}
+        </g>
+      )
+    }
+  </g>}
+  {variant !== 'strip' && <path class="horizon__ground" d="M0 486 H1600 V500 H0 Z"></path>}
+</svg>
