@@ -23,7 +23,9 @@ const [wide960, wide1440, mobile480, mobile780] = configured
 
 // The builder respects Sanity crop and hotspot. This remains optional: the local pair is complete by itself.
 const builder = configured ? createImageUrlBuilder(sanityClient).image(backdrop!) : null
+const overrideWide960 = builder?.width(960).height(540).fit('crop').auto('format').quality(76).url()
 const overrideWide = builder?.width(1440).height(810).fit('crop').auto('format').quality(76).url()
+const overrideMobile480 = builder?.width(480).height(600).fit('crop').auto('format').quality(76).url()
 const overrideMobile = builder?.width(780).height(975).fit('crop').auto('format').quality(76).url()
 ---
 
@@ -31,8 +33,17 @@ const overrideMobile = builder?.width(780).height(975).fit('crop').auto('format'
   {
     configured ? (
       <>
-        <source media="(max-width: 34rem)" srcset={overrideMobile} />
-        <img src={overrideWide} width="1440" height="810" alt="" decoding="async" fetchpriority={variant === 'gate' ? 'high' : 'auto'} />
+        <source media="(max-width: 34rem)" srcset={`${overrideMobile480} 480w, ${overrideMobile} 780w`} sizes="100vw" />
+        <img
+          src={overrideWide}
+          srcset={`${overrideWide960} 960w, ${overrideWide} 1440w`}
+          sizes="100vw"
+          width="1440"
+          height="810"
+          alt=""
+          decoding="async"
+          fetchpriority={variant === 'gate' ? 'high' : 'auto'}
+        />
       </>
     ) : (
       <>
