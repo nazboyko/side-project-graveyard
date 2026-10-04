@@ -873,3 +873,98 @@ Mobile, production build served locally.
 
 Performance / accessibility / best practices / SEO. Home page HTML: 12.6 KB before, 50.6 KB after (budget 120 KB).
 LCP went from 0.9 to 1.5 seconds: the title is now set in a web font.
+
+### R3 — memorial-page (2026-10-03, 22:18–22:30 CDT, about 12 min)
+
+#### Prompts
+
+The Phase R prompt above, and my reply at the review gate of the scene branch:
+
+```
+please continue! merge it and continue
+```
+
+Before starting, the model found that I had edited `docs/DESIGN_BRIEF.md` while reviewing: a new section 15, "The
+photographic set", and a new branch `real-stones` between this one and `relics-and-polish`. My edit is committed
+as its own commit at the start of this branch. The image folders it names exist and are empty, so `real-stones`
+waits for my files, as the brief says.
+
+#### What came out
+
+- The grave page, rebuilt around one stone. A 40vh sky band with the far hills and the fence (no gate), a wooden
+  signpost back to the graveyard, a status marker for the retired and the undead, and the memorial-size stone
+  standing on the ground in front of the fence.
+- `Stone.astro` now has two sizes. The memorial size is the same markup and the same `describeMonument()` output:
+  same shape, weathering, motif and inscription, larger, with the full dates in `<time>` elements and the
+  lifespan. A `front` slot holds the candles.
+- The candle ceremony (`Candle.astro`, `Candles.astro`): a real button with the same storage and the same honest
+  note. Each press adds a candle at the foot of the stone, up to seven drawn; the count line says the real number.
+  The newest candle sparks, grows, and spreads a halo over 600 ms, then the lower face of the stone and the ground
+  warm up. Under reduced motion the state changes at once and nothing flickers. The script is 0.9 KB.
+- `Lifeline.astro`: one engraved rule, born on the left, died on the right, the lifespan above. For the undead
+  the right end is open and the label says "still twitching".
+- The autopsy as a coroner's sheet: parchment pinned to a board, stamped labels, the cause as an inked stamp,
+  "Stack recovered" as archival tags whose colour lives only in a swatch, "Last words" on a brass plate with
+  "final commit · <date>" under it ("last seen · 2022–" for the undead).
+- Figures as brass medallions when a grave has them (five graves do), the obituary with a two-line drop cap, the
+  lesson carved on a low slab, "Visit the ruins" as a direction sign with the host name, and the neighbours as
+  two signposts, each with that grave's outline drawn from the same shape and weathering.
+- The layout's `home` flag became `strip`: the home page and grave pages draw their own sky.
+
+#### Verification
+
+- `npx astro check` 0 errors in 29 files; `npm test` 61 passed; `npm run build` 42 pages.
+- Three look-and-fix rounds at 1440 and 390 pixels on Everything.js, Kindness Chain, PDF Viewer SDK, Pocket
+  Ledger and Sunday Letter, every image opened.
+- In the browser on Night Porter: three presses gave three lit candles, "3 candles lit here", a stored count of
+  3, the newest candle running `ignite` and `halo`, and the warm overlay at full opacity.
+- The brief's acceptance points for this page, checked on the images: Everything.js fills its page, Kindness
+  Chain reads as honoured (brass status plate, brass name plate, laurel, flowers, two medallions), PDF Viewer
+  SDK's page is a very small stone on mostly empty ground, and the stone and the candle button are in the first
+  screen at 1440 × 900 on every grave.
+
+#### Drawings that needed a redo, and why
+
+- **The short stones stood in the sky.** Round 2: PDF Viewer SDK's marker sat above the fence, and its candle
+  button sat on the pickets. The stand that anchors a stone to the ground also held the candle controls, so the
+  controls, not the stone, were pinned to the ground line. Moving the controls out of the stand fixed every short
+  grave at once.
+- **"Everything.js" broke into "Everything." and "js".** The name was too large for the mausoleum's doorway and
+  the stone allowed breaks anywhere. The mausoleum name is smaller on a grave page, and names now break only when
+  a word cannot fit at all.
+- **The marker and its tag wrapped on a phone,** leaving the stone above the tag and away from its ground. They
+  now share one row at any width.
+- **The older slabs behind the undead grave** grew with the stone and looked like two boxes. On a grave page they
+  are now about half its height and less than half its width.
+
+#### What failed or needed a second try
+
+- Lighthouse gave the Kindness Chain page 91 in SEO: a link whose whole text is "Go" counts as generic link text.
+  It is the tool's name. Every stack link now carries a visually hidden "Built with" in front of the name; the
+  page is back to 100. The old chips had the same issue, it just never showed on a page with Go in its stack.
+- One commit was refused by the commit-guard hook at 94 seconds.
+
+#### What I cut from the brief and why
+
+- Nothing from this branch's list.
+
+#### Decisions the model made on its own
+
+- The memorial stone does not repeat the cause title: the coroner's sheet says it two lines further down — kept.
+- The undead marker above the stone sits on a small board, so its light text never lands on the warm part of
+  the sky — kept.
+- A marker's outline on a neighbour sign is 1.4rem high instead of 2.5rem: a low stone drawn tall would not be
+  the same object — kept.
+- The commit with my brief edit came first and on its own, so it can be read separately from the code — kept.
+
+#### Lighthouse
+
+Mobile, production build served locally. Performance / accessibility / best practices / SEO.
+
+| Page | Before this branch | After | CLS after |
+|---|---|---|---|
+| `/` | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 | 0.001 |
+| `/rip/everything-js/` | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 | 0.001 |
+| `/rip/kindness-chain/` | not measured | 100 / 100 / 100 / 100 (91 SEO before the link fix) | 0.000 |
+
+Grave page HTML: 16.2 KB.
