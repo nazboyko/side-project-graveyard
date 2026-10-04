@@ -14,9 +14,19 @@ if (!projectId || !dataset) {
   throw new Error('Set PUBLIC_SANITY_PROJECT_ID and PUBLIC_SANITY_DATASET in web/.env or the environment.')
 }
 
+/**
+ * SITE_URL is typed by hand into a dashboard and a .env file, sometimes without the scheme.
+ * @param {string | undefined} url
+ */
+function withScheme(url) {
+  if (!url) return undefined
+  return /^https?:\/\//.test(url) ? url : `https://${url}`
+}
+
 export default defineConfig({
   output: 'static',
-  site: env.SITE_URL || 'http://localhost:4321',
+  // Canonical and Open Graph URLs always point at production, also from a local build.
+  site: withScheme(env.SITE_URL) || 'https://side-project-graveyard.boyko-nazar.workers.dev',
   integrations: [
     sanity({
       projectId,
