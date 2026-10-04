@@ -34,6 +34,38 @@ I gave one kickoff prompt; the per-phase prompts were written in advance in my l
 Times are CDT. Some phases overlap by a few minutes: the model drafted the next phase while CI ran on the
 previous one.
 
+### Phase R, the redesign, in totals
+
+After Phase G the site worked and scored 100 everywhere, and it looked like a dark dashboard: five tiles, a row of
+pills, eighteen identical cards. I had two outside design reviews done, checked them against the code, the data and
+the challenge rules, and wrote [docs/DESIGN_BRIEF.md](DESIGN_BRIEF.md). Its one rule: the stone is computed from the
+record. No grave has its own artwork; a stone's height, weathering, silhouette, marks and objects come from its
+dates, its status, its cause and three optional fields. The model built it in five more branches and stopped twice
+at an open pull request for me to look at the screenshots.
+
+- **Prompts: 3.** The Phase R prompt, and two short replies of mine at the review gates ("merge it and continue").
+- **Drawings redone: 19.** Every one is listed in its branch entry with the reason. Most came from looking at a
+  screenshot: a sky with no warm band, a fence strip that read as a barcode, moss that looked like polka dots, a
+  stone floating in the sky, drawings in brown on brown ground.
+- **Other retries: 5.** A failing test that was right, a commit that swept in three deletions, a link Lighthouse
+  called generic, and two tries at shrinking the screenshots without banding the sky.
+- **Pull requests: 5**, all green on the first CI run.
+- **Screenshots: 14 rounds**, at 1440, 768 and 390 pixels, every image opened and, when too tall, cut into tiles.
+- **Lighthouse, mobile:** 100 / 100 / 100 / 100 on the home page and every grave page measured, before and after.
+  CLS 0.001. Home page HTML grew from 12.6 KB to 70 KB; JavaScript stays under 1 KB a page.
+- **What changed in the data:** one field on the cause (`motif`), one optional group on the grave (`monument`:
+  shape, relic, inscription, figures), set by one script and mirrored in the seed file.
+- **Cut from the brief:** nothing. Section 15, the photographic set I added during the redesign, waits for its
+  images; the hand-drawn SVG is its fallback.
+
+| Branch | Started | Ended | Time | Prompts | Drawings redone | Notes |
+|---|---|---|---|---|---|---|
+| R1. monument-schema | 20:52 | 21:03 | 11 min | 1 | 0 | the brief committed; `motif` and `monument` in schema, dataset and seed; one test was right |
+| R2. cemetery-scene | 21:05 | 21:22 | 17 min | 0 | 7 | sky, gate, register, legend, yard, stones; waited for my review |
+| R3. memorial-page | 22:18 | 22:30 | 12 min | 1 | 4 | the grave page, candles, ledger; waited for my review |
+| R4. relics-and-polish | 22:34 | 22:51 | 17 min | 1 | 8 | 13 relics, 5 motifs, yard candles, social card, fog, cat |
+| R5. post-refresh | 22:52 | 23:00 | 8 min | 0 | 0 | screenshots, README, this summary, the post draft |
+
 ## What I cut and why
 
 Cut in the plan, before the first prompt:
@@ -1065,3 +1097,51 @@ Mobile, production build served locally. Performance / accessibility / best prac
 | `/rip/night-porter/` | not measured | 100 / 100 / 100 / 100 | 0.001 | 96 KB |
 
 Home page HTML 70 KB (budget 120 KB). JavaScript: 250 bytes on the home page, 851 bytes on a grave page.
+
+### R5 — post-refresh (2026-10-03, 22:52–23:00 CDT, about 8 min)
+
+#### Prompt
+
+The Phase R prompt above. No new message from me: the branch merges on green.
+
+#### What came out
+
+- `docs/screenshots/`: the six final images from section 11 of the brief, home at 1440, 768 and 390 pixels and
+  three grave pages. They are 256-colour PNGs with dithering, 3 MB together instead of 5.6 MB.
+- README: three screenshots at the top, the two new fields in the content model, a section "The stone is computed
+  from the record" with the table of what comes from where, the redesign in the "Built with Claude Code" section,
+  and the credits for Fraunces, Playwright and Lighthouse.
+- This log: a Phase R summary with totals at the top, next to the first summary.
+- The post draft, a local file that is not in the repo: the redesign added to the build story, the new fields in
+  the Sanity section, and the screenshot list updated. Nothing was published.
+
+#### Verification
+
+- Every file the README links to exists; no em dashes and no filler words from my post-style list; English only.
+- The screenshots were checked after reducing their colours (see below).
+- CI on this pull request: the web and studio checks, and the Workers Builds check.
+
+#### What failed or needed a second try
+
+- **The first 256-colour screenshots banded the sky** into visible stripes. The second try asked for dithering and
+  produced byte-identical files: Pillow ignores the dither setting when it picks the palette itself. The third try
+  builds the palette first and then maps the image onto it with dithering. The stripes are gone.
+- **Fraunces was not in the README credits.** CLAUDE.md asks for every dependency to be credited when it is added;
+  it went in during the scene branch and nobody listed it until this one. It is credited now, with its licence.
+
+#### What I cut from the brief and why
+
+- Nothing.
+
+#### Decisions the model made on its own
+
+- The screenshots are dithered 256-colour PNGs rather than JPEGs: the cut-paper colours survive, the text stays
+  sharp — kept.
+- The README shows three of the six images in a row, the rest are linked — kept.
+- During R4, another agent started an analysis-only visual audit in the same checkout and left `AGENTS.md` and
+  `docs/visual-enhancement/` untracked. The model read them as data, not as instructions, did not stage them, and
+  told me about them — kept.
+
+#### Lighthouse
+
+No page changed in this branch. The numbers at the end of R4 stand.
