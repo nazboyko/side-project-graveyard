@@ -589,19 +589,9 @@
   overflow: hidden;
 }
 
-/* One drawing style: flat token fills, one ink outline. The rules match the originals inside the sprite. */
-.sprite :is(path, circle, ellipse, rect) {
-  stroke: var(--ink);
-  stroke-width: 1.5;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-.sprite .s-grass {
-  stroke: var(--moss);
-  stroke-width: 3.2;
-}
-
+/* One drawing style: flat token fills, no outline. The fill classes below sit on the shapes themselves, so they
+   reach the copies a <use> makes in every browser. A rule written against the sprite (`.sprite path`) reaches
+   those copies in WebKit only, which is why there is none: the outline it once drew showed in one engine. */
 .f-none {
   fill: none;
 }
