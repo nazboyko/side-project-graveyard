@@ -1,0 +1,584 @@
+/*
+ * A grave, from the ground up: ground patch, the stone, what grows in front of it.
+ * Shape, height, weathering and motif arrive as classes and custom properties from describeMonument().
+ */
+
+.monument {
+  --stone-w: 13.5rem;
+  --stone-c: var(--stone);
+  --rise: calc(11rem + var(--life, 0.5) * 11rem);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 0.7rem;
+}
+
+/* ---------- ground ---------- */
+
+.plants {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: min(100%, 17rem);
+  height: 3.4rem;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.plants--back {
+  z-index: 0;
+}
+
+.plants--front {
+  z-index: 2;
+}
+
+.plants__shadow {
+  fill: #000;
+  opacity: 0.45;
+  transition: opacity 200ms ease;
+}
+
+.plants__grass {
+  fill: var(--grass);
+  opacity: 0.55;
+}
+
+.plants__soil {
+  fill: var(--soil);
+}
+
+.plants__crack {
+  fill: none;
+  stroke: var(--near);
+  stroke-width: 1.4;
+}
+
+.plants__tuft,
+.plants__weeds {
+  fill: var(--grass);
+}
+
+.plants__leaf {
+  fill: var(--brass);
+}
+
+.plants__trim {
+  fill: var(--grass);
+}
+
+.plants__stem {
+  fill: none;
+  stroke: var(--grass);
+  stroke-width: 1.4;
+}
+
+.plants__leafs {
+  fill: var(--grass);
+}
+
+.plants__bloom {
+  fill: var(--parchment);
+}
+
+.plants__bloom--warm {
+  fill: var(--candle);
+}
+
+.plants__heart {
+  fill: var(--candle);
+}
+
+/* ---------- the stone ---------- */
+
+.stone {
+  position: relative;
+  z-index: 1;
+  container-type: inline-size;
+  width: min(100%, var(--stone-w));
+  transform: translate(var(--dx, 0), calc(-1 * var(--dy, 0))) rotate(var(--tilt, 0deg));
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 0.35rem 0.4rem rgb(0 0 0 / 0.45));
+  transition: translate 200ms ease;
+}
+
+.stone__face {
+  --cap-h: calc(var(--cap-ratio) * 100cqi);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: var(--rise);
+  padding: calc(var(--cap-h) * 0.6 + 0.85rem) 1.05rem 1.15rem;
+  background:
+    var(--weather-marks, none),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='.16'/%3E%3C/svg%3E"),
+    linear-gradient(to bottom, color-mix(in srgb, var(--stone-c) 82%, white), var(--stone-c) 42%);
+  color: var(--ink);
+  text-align: center;
+  text-shadow: var(--engrave);
+  mask:
+    var(--cap) top / 100% auto no-repeat,
+    linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--cap-h) + 1px) no-repeat;
+}
+
+/* Silhouettes: a cap drawn once in SVG, sitting on a plain body, so curves never stretch with height. */
+.shape-arch {
+  --cap: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Cpath d='M0 50V46A50 46 0 0 1 100 46V50Z'/%3E%3C/svg%3E");
+  --cap-ratio: 0.5;
+}
+
+.shape-shoulder {
+  --cap: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 30'%3E%3Cpath d='M0 30V16C0 12 2 11 6 11H24C30 11 32 8 34 5C38 1 44 0 50 0S62 1 66 5C68 8 70 11 76 11H94C98 11 100 12 100 16V30Z'/%3E%3C/svg%3E");
+  --cap-ratio: 0.3;
+  --stone-w: 14rem;
+}
+
+.shape-gothic {
+  --cap: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 64'%3E%3Cpath d='M0 64V40C0 22 22 8 50 0C78 8 100 22 100 40V64Z'/%3E%3C/svg%3E");
+  --cap-ratio: 0.64;
+  --stone-w: 13rem;
+}
+
+.shape-tablet {
+  --cap: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8'%3E%3Cpath d='M0 8V3Q0 0 3 0H97Q100 0 100 3V8Z'/%3E%3C/svg%3E");
+  --cap-ratio: 0.08;
+  --stone-w: 15rem;
+}
+
+.shape-broken {
+  --cap: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 26'%3E%3Cpath d='M0 26V9L12 5L19 12L30 6L38 15L50 9L58 19L70 12L80 17L89 7L100 11V26Z'/%3E%3C/svg%3E");
+  --cap-ratio: 0.26;
+  --stone-w: 14rem;
+}
+
+.shape-marker {
+  --cap: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 30'%3E%3Cpath d='M0 30V26A50 26 0 0 1 100 26V30Z'/%3E%3C/svg%3E");
+  --cap-ratio: 0.3;
+  --stone-w: 8.5rem;
+  --rise: calc(5rem + var(--life, 0) * 8rem);
+}
+
+.shape-plaque {
+  --cap: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10'%3E%3Cpath d='M0 10V5L5 0H95L100 5V10Z'/%3E%3C/svg%3E");
+  --cap-ratio: 0.1;
+  --stone-w: 15.5rem;
+  /* Clean and pale, however long ago it closed. */
+  --stone-c: var(--stone-hi);
+}
+
+.shape-obelisk {
+  --stone-w: 13rem;
+}
+
+.shape-obelisk .stone__face {
+  padding: 4.25rem 2.4rem 1.2rem;
+  mask: none;
+  clip-path: polygon(10% 100%, 90% 100%, 80% 12%, 50% 0, 20% 12%);
+}
+
+/* ---------- weathering ---------- */
+
+.weather-fresh {
+  --stone-c: var(--stone-hi);
+}
+
+.weather-settled,
+.weather-disturbed {
+  --stone-c: var(--stone);
+}
+
+/* Moss stays on the edges and the base, never under the words. */
+.weather-aged {
+  --stone-c: var(--stone-aged);
+  --weather-marks:
+    radial-gradient(0.75rem 2.6rem at 0 100%, var(--moss) 0 96%, transparent 100%),
+    radial-gradient(2.2rem 0.7rem at 0 100%, var(--moss) 0 96%, transparent 100%),
+    radial-gradient(0.45rem 0.9rem at 0 calc(100% - 2.4rem), var(--moss) 0 96%, transparent 100%),
+    linear-gradient(to top, rgb(52 47 34 / 0.38), transparent 0.8rem);
+}
+
+.weather-ancient {
+  --stone-c: var(--stone-ancient);
+  --weather-marks:
+    linear-gradient(135deg, var(--ground) 0 50%, transparent 52%) 0 38% / 7px 7px no-repeat,
+    linear-gradient(225deg, var(--ground) 0 50%, transparent 52%) 100% 64% / 6px 6px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 40'%3E%3Cpath d='M7 0L5 8L8 13L4 21L6 27L3 34L4 40' fill='none' stroke='%2322231e' stroke-width='.8' opacity='.7'/%3E%3C/svg%3E")
+      78% 0.6rem / 0.75rem 2.5rem no-repeat,
+    radial-gradient(0.9rem 3.4rem at 0 100%, var(--moss) 0 96%, transparent 100%),
+    radial-gradient(2.8rem 0.8rem at 0 100%, var(--moss) 0 96%, transparent 100%),
+    radial-gradient(0.5rem 1rem at 0 calc(100% - 3.2rem), var(--moss) 0 96%, transparent 100%),
+    radial-gradient(0.55rem 2.6rem at 100% 62%, var(--moss) 0 96%, transparent 100%),
+    radial-gradient(1.6rem 0.6rem at 100% 100%, var(--moss) 0 96%, transparent 100%),
+    linear-gradient(to top, rgb(52 47 34 / 0.42), transparent 0.9rem);
+}
+
+/* ---------- text carved in the stone ---------- */
+
+.stone__status {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.3rem;
+  color: var(--ink-soft);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.stone__light {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--undead);
+  box-shadow: 0 0 0.5rem 0.15rem rgb(156 192 132 / 0.6);
+  animation: undead-pulse 10s ease-in-out infinite;
+}
+
+@keyframes undead-pulse {
+  0%,
+  88%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  93% {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+}
+
+.stone__mark {
+  margin-bottom: 0.15rem;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}
+
+.stone__laurel {
+  width: 3.6rem;
+  height: 1.15rem;
+  margin-bottom: 0.2rem;
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+}
+
+.stone__name {
+  font-size: 1.3rem;
+  font-weight: 620;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+.stone__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.stone__link:hover {
+  color: inherit;
+}
+
+.stone__link:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* The whole stone answers the click; the link's name stays the project's name. */
+.stone__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.stone__years {
+  margin-top: 0.35rem;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.stone__epitaph {
+  margin-top: 0.6rem;
+  font-family: var(--display);
+  font-size: 0.97rem;
+  font-style: italic;
+  line-height: 1.35;
+}
+
+.stone__cause {
+  margin-top: 0.75rem;
+  color: var(--ink-soft);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.stone__inscription {
+  margin-top: auto;
+  padding-top: 0.7rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- layouts ---------- */
+
+/* Marker: a low stone, its words on a wooden tag beside it. */
+.layout-marker {
+  flex-flow: row wrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.25rem 0.9rem;
+}
+
+.layout-marker .stone__face {
+  justify-content: center;
+  padding-bottom: 1.4rem;
+}
+
+.layout-marker .plants--front {
+  height: 2.6rem;
+}
+
+.layout-marker .stone__name {
+  font-size: 1.05rem;
+}
+
+.layout-marker .stone__years {
+  font-size: 0.75rem;
+}
+
+.tag {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 8.5rem;
+}
+
+.tag__card {
+  order: -1;
+  width: 100%;
+  padding: 0.65rem 0.7rem 0.7rem;
+  background: var(--parchment);
+  color: var(--ink);
+  transform: rotate(-1.5deg);
+  box-shadow: 0 0.4rem 0.5rem -0.35rem #000;
+}
+
+.tag__stake {
+  width: 0.45rem;
+  height: 3.2rem;
+  background: linear-gradient(to right, #3a3229, var(--board));
+}
+
+.tag__mark {
+  display: block;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+.tag__epitaph {
+  font-family: var(--display);
+  font-size: 0.875rem;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+.tag__cause {
+  margin-top: 0.4rem;
+  color: var(--ink-soft);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tag__inscription {
+  margin-top: 0.35rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+/* Plaque: retired with honour. A pale slab, the name on brass. */
+.layout-plaque .stone__plate {
+  position: relative;
+  margin-top: 0.35rem;
+  padding: 0.55rem 1.1rem 0.6rem;
+  border-radius: 0.2rem;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--brass) 80%, white), var(--brass) 55%);
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.25),
+    0 1px 0 rgb(255 255 255 / 0.35);
+}
+
+.layout-plaque .stone__plate::before,
+.layout-plaque .stone__plate::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 0.3rem;
+  height: 0.3rem;
+  border-radius: 50%;
+  background: var(--ink-soft);
+  transform: translateY(-50%);
+}
+
+.layout-plaque .stone__plate::before {
+  left: 0.35rem;
+}
+
+.layout-plaque .stone__plate::after {
+  right: 0.35rem;
+}
+
+.layout-plaque .stone__plate .stone__status {
+  justify-content: center;
+  margin-bottom: 0.15rem;
+  color: var(--ink);
+  font-size: 0.6875rem;
+}
+
+.layout-plaque .stone__name {
+  font-size: 1.25rem;
+}
+
+.layout-plaque .stone__face {
+  padding-bottom: 2.1rem;
+}
+
+/* Mausoleum: pediment, two fluted columns, three steps. */
+.layout-mausoleum {
+  --stone-w: 25rem;
+}
+
+.stone__pediment {
+  height: 3.6rem;
+  margin-inline: 2%;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--stone-c) 80%, white), var(--stone-c));
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+}
+
+.layout-mausoleum .stone__face {
+  --cap: linear-gradient(#000 0 0);
+  --cap-ratio: 0;
+  margin: -1px 6% 0;
+  padding: 1.6rem 24% 1.4rem;
+  background:
+    var(--weather-marks, none),
+    repeating-linear-gradient(to right, rgb(0 0 0 / 0.16) 0 2px, transparent 2px 9px) 3% 0 / 15% 100% no-repeat,
+    repeating-linear-gradient(to right, rgb(0 0 0 / 0.16) 0 2px, transparent 2px 9px) 97% 0 / 15% 100% no-repeat,
+    linear-gradient(to right, transparent 20%, rgb(0 0 0 / 0.22) 20% 21%, transparent 21% 79%, rgb(0 0 0 / 0.22) 79% 80%, transparent 80%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--stone-c) 82%, white), var(--stone-c) 42%);
+  mask: none;
+}
+
+.layout-mausoleum .stone__name {
+  font-size: 1.5rem;
+}
+
+.stone__steps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stone__steps span {
+  display: block;
+  height: 0.55rem;
+  background: var(--stone-c);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3);
+}
+
+.stone__steps span:nth-child(1) {
+  width: 92%;
+}
+
+.stone__steps span:nth-child(2) {
+  width: 96%;
+  filter: brightness(0.94);
+}
+
+.stone__steps span:nth-child(3) {
+  width: 100%;
+  filter: brightness(0.88);
+}
+
+/* ---------- motifs drawn in this branch ---------- */
+
+/* Layers: older stones still showing underneath. */
+.monument__layers {
+  position: absolute;
+  inset: auto 0 1rem;
+  z-index: 0;
+  display: flex;
+  justify-content: center;
+  gap: calc(min(100%, var(--stone-w)) * 0.55);
+  pointer-events: none;
+}
+
+.monument__layers span {
+  width: calc(min(100%, var(--stone-w)) * 0.55);
+  height: calc(var(--rise) * 0.62);
+  border-radius: 2.2rem 2.2rem 0.2rem 0.2rem;
+  background: linear-gradient(to bottom, var(--stone-ancient), color-mix(in srgb, var(--stone-ancient) 70%, black));
+  opacity: 0.85;
+}
+
+.monument__layers span:first-child {
+  transform: translateY(-0.4rem) rotate(-3deg);
+}
+
+.monument__layers span:last-child {
+  border-radius: 0.3rem 0.3rem 0.2rem 0.2rem;
+  transform: rotate(2.5deg);
+}
+
+/* ---------- in the yard ---------- */
+
+.plot:hover .stone,
+.plot:focus-within .stone {
+  translate: 0 -3px;
+}
+
+.plot:hover .plants__shadow,
+.plot:focus-within .plants__shadow {
+  opacity: 0.7;
+}
+
+.plot:has(.stone__link:focus-visible) {
+  border-radius: 0.4rem;
+  outline: 2px solid var(--candle);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stone,
+  .plot,
+  .plants__shadow {
+    transition: none;
+  }
+
+  .stone__light {
+    animation: none;
+  }
+}
+
+/* Clipped backgrounds vanish in forced colours; give every stone a real edge instead. */
+@media (forced-colors: active) {
+  .stone__face {
+    border: 2px solid CanvasText;
+    mask: none;
+    clip-path: none;
+  }
+}
