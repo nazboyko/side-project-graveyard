@@ -1,0 +1,11 @@
+// The site is a Cloudflare Worker with static assets only: no Worker script, just the files Astro builds.
+// Workers Builds runs `npm run build`, then `npx wrangler deploy`, with this folder as the root directory.
+{
+  "name": "side-project-graveyard",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Unknown paths get dist/404.html with a 404 status.
+    "not_found_handling": "404-page"
+  }
+}
