@@ -671,3 +671,101 @@ Do not publish anything. Append Phase G to docs/BUILD_LOG.md.
 ### Commands I ran by hand
 
 - None yet. Screenshots, the transcript export and publishing the post are still mine to do.
+
+## Phase R — The cemetery redesign (added on the evening of 2026-10-03)
+
+The site worked and scored 100 everywhere, and it looked like a dark dashboard. I had two outside design reviews
+done from screenshots, checked them against the code, the dataset and the challenge rules, and wrote the result up
+as [`docs/DESIGN_BRIEF.md`](DESIGN_BRIEF.md). This phase builds that brief in five branches. I review the two
+visual branches myself before they merge.
+
+The prompt, the same for all five branches, so it is written out once here and each branch entry below points to it:
+
+```
+New phase, before I publish: Phase R, the cemetery redesign. The site works but looks like a dark dashboard. Read docs/DESIGN_BRIEF.md in full before anything else; it is the specification for this phase and it will be committed. PLAN.md section 5b has the timeline.
+
+Run it in autonomous mode as five branches, in this order, exactly as section 14 of the brief lists them: monument-schema, cemetery-scene, memorial-page, relics-and-polish, post-refresh. Two changes to the usual loop for this phase:
+
+1. Visual verification is mandatory. Follow section 11 of the brief: build, preview, take the screenshots with `npx playwright screenshot --channel chrome ...` into shots/ (already in .git/info/exclude), open the PNG files and judge them against section 12. At least three look-and-fix rounds per visual branch. If you cannot take or open screenshots, stop and tell me; do not ship unseen.
+
+2. Review gates. For cemetery-scene and memorial-page: when CI is green on the PR, do NOT merge. Print the PR URL and the screenshot file paths, say in three lines what you are least happy with, and wait for my "merge" or my notes. monument-schema, relics-and-polish and post-refresh merge on green as usual; relics-and-polish still prints its screenshot paths.
+
+First commit of monument-schema: add docs/DESIGN_BRIEF.md, and update CLAUDE.md. "What is committed" gains docs/DESIGN_BRIEF.md and docs/screenshots/. The stack line changes from "One global CSS file" to "one stylesheet bundle: styles/global.css importing tokens, base, scene, stone and grave partials", and allows one self-hosted font package (@fontsource-variable/fraunces, credited in README).
+
+Rules that still hold: no per-project visual rules in code, everything a grave shows comes from its Sanity fields or is derived from them (brief section 2); nothing invented about the five real repositories; keeper's voice for every new label and validation message; commit rules, stage review, hooks. Record in docs/BUILD_LOG.md, per branch: this prompt verbatim, which drawings needed a redo and why, what you cut from the brief and why, and the Lighthouse numbers before and after.
+
+Hard stop for design work is Sunday 15:00 CDT; use the cut order in section 14 of the brief if you are behind. Start with monument-schema now.
+```
+
+The prompt asks for itself "per branch". Five copies of the same 20 lines would bury the entries, so the model wrote
+it out once and kept every later message of mine verbatim in the branch where it arrived.
+
+Lighthouse before Phase R (mobile, production build served locally, the same pages every branch is measured on):
+
+| Page | Performance | Accessibility | Best practices | SEO | CLS | LCP | Transfer |
+|---|---|---|---|---|---|---|---|
+| `/` | 100 | 100 | 100 | 100 | 0.000 | 0.9 s | 7 KB |
+| `/rip/everything-js/` | 100 | 100 | 100 | 100 | 0.000 | 0.9 s | 6 KB |
+
+Home page HTML before: 12.6 KB.
+
+### R1 — monument-schema (2026-10-03, 20:52–21:03 CDT, about 11 min)
+
+#### Prompt
+
+The Phase R prompt above.
+
+#### What came out
+
+- `docs/DESIGN_BRIEF.md` committed. `CLAUDE.md` now lists it and `docs/screenshots/` as committed, and allows one
+  stylesheet bundle and one self-hosted font package.
+- Schema: `cause.motif`, a required radio list of eight marks ("Every cause leaves a mark on the stone. Pick
+  one."), and `project.monument` in a new "Monument" field group: `shape` (9 options), `relic` (13 options),
+  `inscription` (28 characters, "The mason charges by the letter. 28 at most."), and `figures` (at most 3, "Three
+  figures at most. A grave is not a dashboard."). Every monument field is optional.
+- `studio/scripts/set-monuments.ts`: one transaction that sets the brief's values on 8 causes and 17 graves.
+  LinkedIn Radar has no monument values in the brief and is left alone. Run twice: 25 documents patched both times,
+  same result.
+- `studio/seed/graveyard.ndjson` carries the same values, generated from the script's own lists. After the run,
+  the dataset and the seed file were compared document by document: 0 differences.
+- `web/src/lib/sanity.ts` fetches `cause.motif` and `monument{shape, relic, inscription, figures}`.
+- `web/src/lib/monument.ts`: `describeMonument(project, now)` turns a record into a monument: layout, shape, a
+  0–1 life scale, weathering, motif, relic, inscription, tilt and offsets. It knows no grave by name. 17 tests in
+  `monument.test.ts`, three of them on the seed file itself.
+- Nothing on the site changes yet.
+
+Verification: studio `npx tsc --noEmit` exit 0, `npx sanity schema validate` 0 errors, `npx sanity documents
+validate` 41 valid on the seed file and 41 valid on the live dataset; web `npm test` 45 passed, `npx astro check`
+0 errors, `npm run build` 42 pages.
+
+The brief's numbers for the current dataset hold, and a test now says so: 4 ancient, 6 aged, 2 settled, 5 fresh, 1
+disturbed; 2 markers, 3 plaques, 1 mausoleum, 1 obelisk, 1 broken, 10 ordinary stones. Every contrast ratio the
+brief claims was recomputed from its token values and matches to the first decimal.
+
+#### What failed or needed a second try
+
+- A test failed on the first run: "leans an overgrown stone further". The code multiplied a hashed number by a
+  larger factor, so an overgrown stone whose hash landed near zero leaned less than an ordinary one. The test was
+  right. The code now gives every overgrown stone between 1.4 and 2.4 degrees, and the test checks every stone,
+  not the largest.
+- The comparison between the dataset and the seed file first reported 11 differences. All of them were key order:
+  the API returns object keys sorted. Compared with sorted keys: 0.
+- Two commits were refused by the commit-guard hook, at 86 and 107 seconds. The model had checked the clock
+  and then done more work before committing.
+
+#### What I cut from the brief and why
+
+- Nothing in this branch.
+
+#### Decisions the model made on its own
+
+- Unknown values are ignored, not errors: a `shape` of "pyramid" or a `motif` of "fireworks" give an ordinary
+  stone, so a typo in the Studio cannot break the build — kept.
+- An undead grave is undead even if someone gives it a death date: the status wins — kept.
+- Inscriptions are trimmed; one made only of spaces counts as empty — kept.
+- `figures` items get the type name `figure` and keys `figure-1`, `figure-2`, so a re-run never adds duplicates — kept.
+- The hosted Studio is redeployed after the merge, from `main` — kept.
+
+#### Lighthouse
+
+Before and after are the same build output: nothing visible changed. Numbers above.
