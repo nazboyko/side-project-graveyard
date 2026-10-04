@@ -113,16 +113,45 @@
   align-items: center;
   min-height: var(--rise);
   padding: calc(var(--cap-h) * 0.6 + 0.85rem) 1.05rem 1.15rem;
-  background:
+  background-color: var(--stone-c);
+  background-image:
     var(--weather-marks, none),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='.16'/%3E%3C/svg%3E"),
-    linear-gradient(to bottom, color-mix(in srgb, var(--stone-c) 82%, white), var(--stone-c) 42%);
+    linear-gradient(to bottom, color-mix(in srgb, var(--stone-c) 72%, transparent), color-mix(in srgb, var(--stone-c) 78%, transparent)),
+    var(--stone-texture, none);
+  background-size: auto, auto, 24rem 24rem;
+  background-position: center, center, var(--grain-x, 0) var(--grain-y, 0);
+  box-shadow:
+    inset 0.15rem 0.15rem 0.2rem rgb(255 255 255 / 0.25),
+    inset -0.3rem 0 0.35rem rgb(33 32 27 / 0.3),
+    inset 0 -0.4rem 0.5rem rgb(36 34 27 / 0.28);
   color: var(--ink);
   text-align: center;
   text-shadow: var(--engrave);
   mask:
     var(--cap) top / 100% auto no-repeat,
     linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--cap-h) + 1px) no-repeat;
+}
+
+/* One shared cutout grounds the oldest stones without repeating a grass border down the yard. */
+.monument.weather-ancient:not(.layout-marker):not(.layout-plaque)::after,
+.monument.weather-aged.shape-broken::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -0.1rem;
+  z-index: 1;
+  width: min(100%, 18rem);
+  height: 9rem;
+  background: var(--terrain-image, none) center bottom / contain no-repeat;
+  opacity: 0.78;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.monument--memorial.weather-ancient:not(.layout-marker):not(.layout-plaque)::after,
+.monument--memorial.weather-aged.shape-broken::after {
+  width: min(90vw, 27rem);
+  height: 13rem;
 }
 
 /* Silhouettes: a cap drawn once in SVG, sitting on a plain body, so curves never stretch with height. */
@@ -468,7 +497,11 @@
 .stone__pediment {
   height: 3.6rem;
   margin-inline: 2%;
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--stone-c) 80%, white), var(--stone-c));
+  background-color: var(--stone-c);
+  background-image:
+    linear-gradient(to bottom, color-mix(in srgb, var(--stone-c) 65%, transparent), color-mix(in srgb, var(--stone-c) 80%, transparent)),
+    var(--stone-texture, none);
+  background-size: auto, 24rem 24rem;
   clip-path: polygon(0 100%, 50% 0, 100% 100%);
 }
 
@@ -482,7 +515,9 @@
     repeating-linear-gradient(to right, rgb(0 0 0 / 0.16) 0 2px, transparent 2px 9px) 3% 0 / 15% 100% no-repeat,
     repeating-linear-gradient(to right, rgb(0 0 0 / 0.16) 0 2px, transparent 2px 9px) 97% 0 / 15% 100% no-repeat,
     linear-gradient(to right, transparent 20%, rgb(0 0 0 / 0.22) 20% 21%, transparent 21% 79%, rgb(0 0 0 / 0.22) 79% 80%, transparent 80%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--stone-c) 82%, white), var(--stone-c) 42%);
+    linear-gradient(to bottom, color-mix(in srgb, var(--stone-c) 72%, transparent), color-mix(in srgb, var(--stone-c) 78%, transparent)),
+    var(--stone-texture, none) var(--grain-x, 0) var(--grain-y, 0) / 24rem 24rem repeat,
+    var(--stone-c);
   mask: none;
 }
 
