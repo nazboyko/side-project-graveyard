@@ -7,16 +7,54 @@ Tool: Claude Code (desktop app), one autonomous session for the whole build, one
 The steps only a human can do (hosting dashboard, webhook) were done by hand from a checklist the model printed.
 I gave one kickoff prompt; the per-phase prompts were written in advance in my local plan and the model read them from there.
 
-| Phase | Started | Ended | Prompts | Retries | Notes |
-|---|---|---|---|---|---|
-| 0. Setup + skills | 12:10 | 12:27 | 2 | 0 | kickoff + Phase 0; four wrong assumptions caught before they failed |
-| A. Schema + Studio | 12:21 | 12:31 | 1 | 0 | Studio desk not seen by the model: it stops at the login screen |
-| B. Seed content | 12:32 | 12:40 | 1 | 0 | one of the six real repos is private and was skipped |
-| C. Astro + queries | 12:33 | 12:46 | 1 | 3 | peer dependencies, TypeScript 7, `process` types |
-| D. Pages + UI | 12:48 | 13:01 | 1 | 3 | glued link names, stats row on a phone, `hidden` vs `display: flex` |
-| E. Deploy + webhook | 13:06 | 20:23 | 3 | 2 | plan said Pages, dashboard gave a Worker; 7 hours of the gap were me; publish to live in under 60 s |
-| F. Polish | 20:20 | 20:35 | 1 | 0 | four fixes picked from the review; Lighthouse still 100 |
-| G. README + post | | | | | |
+## Totals
+
+- **Prompts: 11.** One kickoff typed by me, eight phase prompts the model read from my plan (0 and A to G), and
+  two replies of mine in Phase E. On top of that I answered three questions the model asked, each with a click.
+- **Retries: 8.** Things that had to be done a second time. None in phases 0, A, B, F and G; three each in C
+  and D; two in E.
+- **Pull requests: 8**, one per phase. The first seven went green on their first CI run and were merged by the
+  model. The eighth carries this sentence, so its result is not in here.
+- **Time: about 95 minutes of work** on Saturday 3 October 2026, spread over a day because I was away for seven
+  hours in the middle of Phase E. Phases 0 to D, from a bare Studio scaffold to 42 built pages, took 52 minutes.
+- **What exists at the end:** 4 schema types, 41 seed documents, 18 graves, 42 pages, 28 unit tests, Lighthouse
+  100 in all four categories, and a publish that reaches the live site in under a minute.
+
+| Phase | Started | Ended | Time | Prompts | Retries | Notes |
+|---|---|---|---|---|---|---|
+| 0. Setup + skills | 12:10 | 12:27 | 17 min | 2 | 0 | kickoff + Phase 0; four wrong assumptions caught before they failed |
+| A. Schema + Studio | 12:21 | 12:31 | 10 min | 1 | 0 | Studio desk not seen by the model: it stops at the login screen |
+| B. Seed content | 12:32 | 12:40 | 8 min | 1 | 0 | one of the six real repos is private and was skipped |
+| C. Astro + queries | 12:33 | 12:46 | 13 min | 1 | 3 | peer dependencies, TypeScript 7, `process` types |
+| D. Pages + UI | 12:48 | 13:01 | 13 min | 1 | 3 | glued link names, stats row on a phone, `hidden` vs `display: flex` |
+| E. Deploy + webhook | 13:06 | 20:23 | 20 min | 3 | 2 | plan said Pages, dashboard gave a Worker; 7 hours of the gap were me; publish to live in under 60 s |
+| F. Polish | 20:20 | 20:28 | 8 min | 1 | 0 | four fixes picked from the review; Lighthouse still 100 |
+| G. README + post | 20:29 | 20:34 | 5 min | 1 | 0 | README, this tidy-up, the post draft; both drafted during earlier waits |
+
+Times are CDT. Some phases overlap by a few minutes: the model drafted the next phase while CI ran on the
+previous one.
+
+## What I cut and why
+
+Cut in the plan, before the first prompt:
+
+- **Visitors burying their own projects.** A form needs accounts or moderation. Neither fits a weekend.
+- **Comments, accounts, search, RSS, translations.** None of them makes a grave better.
+- **Images in Sanity.** The stones are CSS and the only image is the social card.
+- **The Studio embedded in the Astro site.** It needs server output, and this site is static files.
+- **Visual Editing, the App SDK and Workflows.** The challenge lists the last two as a bonus. I wanted one path
+  finished.
+
+Cut during the build:
+
+- **A candle count shared between visitors.** It needs a write path into the dataset. The count stays in the
+  browser and the page says so.
+- **The sixth real grave.** That repository is private, and the rule was public repositories only.
+- **Web fonts, hover transitions, any motion besides the candle flame.**
+- **A cause index page and a designed stack page.** A stack page is a heading and a grid.
+- **The setup wizard script.** One printed checklist did the job for a single run.
+- **Keeping React off disk.** The Sanity integration lists it as a peer, and the attempt to skip peers broke
+  another package. It is installed and never imported.
 
 ---
 
@@ -507,7 +545,7 @@ Change the uncommitted site URL in web/astro.config.mjs from the pages.dev fallb
 - Afterwards the dataset and the live footer both read the original line again.
 - In a browser on the live site: the candle lights, the console is clean, nothing overflows at 375 pixels.
 
-## Phase F — Polish (2026-10-03, 20:20–20:35 CDT, about 15 min)
+## Phase F — Polish (2026-10-03, 20:20–20:28 CDT, about 8 min)
 
 Carried over from Phase E: its pull request went green on the first run of all three checks (web 36s, studio 1m7s,
 and Cloudflare's own Workers Builds check on the branch) and was merged at 20:19. The chain test that had to wait
@@ -588,3 +626,48 @@ The model picked findings 1 to 4 and left 5 to 7.
 ### Commands I ran by hand
 
 - None.
+
+## Phase G — README + BUILD_LOG + post (2026-10-03, 20:29–20:34 CDT, about 5 min, plus drafting during earlier waits)
+
+Carried over from Phase F: its pull request went green on the first run of all three checks (web 33s, studio 40s,
+Workers Builds) and was merged at 20:29. The live site picked up the new order of the graves from that build.
+
+### Prompt
+
+```
+1. Write README.md in my voice (first person, plain, no marketing): what it is (3 sentences), live URL, Studio URL, content model (table of the 4 types and why references instead of strings), how a publish becomes a deploy (webhook → deploy hook → Astro build), run locally (studio/ and web/, env vars, seed import command), credits (astro, @sanity/astro, astro-portabletext, fonts if any), license MIT, and a "Built with Claude Code" section that links to docs/BUILD_LOG.md and lists the skills used generically (voice guide, accessibility checklist, review checklists, post-style rules) without naming other projects.
+2. Tidy docs/BUILD_LOG.md without changing facts: keep every prompt verbatim, keep every failure; add a short header with totals: number of prompts, number of retries, time spent per phase (I will give you the times), and a "What I cut and why" section from PLAN.md.
+3. Draft the DEV post into docs/POST_DRAFT.md using the Path Two template sections (What I Built / Demo / Code / My Build Process / Sanity Project Details / Agent Session) and the submission-writer + stop-slop skills. My Build Process is the longest section: pull 5–7 real prompt/failure pairs from BUILD_LOG, one number or decision per paragraph. Sanity Project Details: project ID <ID>, dataset production (public), Studio URL. Agent Session: say the Claude Code transcript is attached. Tags: devchallenge, sanitychallenge, astro, webdev. Title options: 3, under 70 chars, no clickbait.
+Do not publish anything. Append Phase G to docs/BUILD_LOG.md.
+```
+
+### What came out
+
+- `README.md`: what the site is, the live and Studio addresses, the content model and why it uses references,
+  how a publish becomes a deploy (with the measured 30 to 60 seconds), how to run both halves locally, what is
+  real and what is invented, how the session was run, credits, license.
+- This log, tidied: a totals section, a time column in the phase table, and "What I cut and why". No prompt and
+  no failure was changed. Two times were corrected to what the clock said (the end of Phase E and of Phase F).
+- The post draft, in a local file that is not in the repo: the six sections of the Path Two template, six
+  prompt-and-failure pairs taken from this log, three title options, the tags, and a list of the screenshots I
+  still have to take. Nothing was published. Publishing is mine.
+- Verification: every file path the README points to exists; the README has no em dashes and none of the filler
+  words on my post-style list; the public GROQ query quoted in the post was run against the dataset and returned
+  eight causes with their counts; the English-only and no-other-projects checks pass.
+
+### What failed or needed a second try
+
+- Nothing failed in this phase. The README's deploy section had already been rewritten once in Phase E, when
+  Pages turned out to be a Worker.
+
+### Decisions the model made on its own
+
+- The times in the totals come from the clock during the session, because I was not there to give them — kept.
+- "Retries" counts things that had to be done twice. Wrong assumptions that were caught before anything ran are
+  listed in each phase but not counted — kept.
+- The README says which graves are real and that candles stay in the browser — kept.
+- The post draft tells me which screenshots are missing instead of pretending they exist — kept.
+
+### Commands I ran by hand
+
+- None yet. Screenshots, the transcript export and publishing the post are still mine to do.
