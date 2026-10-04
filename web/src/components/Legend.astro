@@ -1,0 +1,64 @@
+---
+/**
+ * The causes of death as a carved board. Each row is a link to the cause's page. Hovering or focusing a row
+ * dims every other grave in the same `.yard`, with CSS only; the rules are generated from the cause list.
+ */
+import type {Cause} from '../lib/sanity'
+
+interface Props {
+  causes: Cause[]
+  /** Total number of graves, for the "All graves" row. */
+  total: number
+  /** Slug of the cause being shown. Empty on the home page. */
+  current?: string
+}
+
+const {causes, total, current} = Astro.props
+const SLUG = /^[a-z0-9-]+$/
+
+const dimming = causes
+  .filter(({slug}) => SLUG.test(slug))
+  .map(
+    ({slug}) =>
+      `.yard:has([data-cause-link="${slug}"]:is(:hover, :focus-visible)) ` +
+      `.plot:not([data-cause="${slug}"]):not(:focus-within) { opacity: 0.45; filter: saturate(0.6); }`,
+  )
+  .join('\n')
+---
+
+<nav class="legend" aria-labelledby="legend-heading">
+  <h2 id="legend-heading" class="legend__title">Cause of death</h2>
+  <ul class="legend__rows">
+    <li>
+      <a class="legend__row" href="/" aria-current={current ? undefined : 'page'}>
+        <span class="legend__mark" aria-hidden="true"></span>
+        <span class="legend__name">All graves</span>
+        <span class="legend__leader" aria-hidden="true"></span>
+        <span class="legend__count">{total}</span>
+      </a>
+    </li>
+    {
+      causes.map((cause) => (
+        <li>
+          <a
+            class="legend__row"
+            href={`/cause/${cause.slug}/`}
+            data-cause-link={cause.slug}
+            aria-current={cause.slug === current ? 'page' : undefined}
+          >
+            <span class="legend__mark" aria-hidden="true">
+              {cause.icon}
+            </span>
+            <span class="legend__name">{cause.title}</span>{' '}
+            <span class="legend__leader" aria-hidden="true" />
+            <span class="legend__count">
+              {cause.count}
+              <span class="visually-hidden">{cause.count === 1 ? ' grave' : ' graves'}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+<style is:global set:html={dimming}></style>

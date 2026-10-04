@@ -1,0 +1,64 @@
+---
+/** The numbers on the gate, as a parchment sheet pinned to a board. Every value is computed from the graves. */
+import type {Stats} from '../lib/sanity'
+import {formatLifespan} from '../lib/stats'
+
+interface Props {
+  stats: Stats
+  total: number
+}
+
+const {stats, total} = Astro.props
+---
+
+<section class="register" aria-labelledby="register-heading">
+  <div class="register__sheet">
+    <h2 id="register-heading" class="register__title">The register</h2>
+    <dl class="register__rows">
+      <div>
+        <dt>Graves</dt>
+        <dd>{total}</dd>
+      </div>
+      <div>
+        <dt>Buried</dt>
+        <dd>{stats.buried}</dd>
+      </div>
+      <div>
+        <dt>Retired with honour</dt>
+        <dd>{stats.retired}</dd>
+      </div>
+      <div>
+        <dt>Undead</dt>
+        <dd>{stats.undead}</dd>
+      </div>
+      {
+        stats.averageLifespanDays !== null && (
+          <div class="register__key">
+            <dt>Average life</dt>
+            <dd>{formatLifespan(stats.averageLifespanDays)}</dd>
+          </div>
+        )
+      }
+      {
+        stats.mostCommonCause && (
+          <div>
+            <dt>Most common cause</dt>
+            <dd>
+              <a href={`/cause/${stats.mostCommonCause.slug}/`}>{stats.mostCommonCause.title}</a>
+            </dd>
+          </div>
+        )
+      }
+      {
+        stats.shortest && (
+          <div>
+            <dt>Shortest life</dt>
+            <dd>
+              <a href={`/rip/${stats.shortest.slug}/`}>{stats.shortest.name}</a>
+            </dd>
+          </div>
+        )
+      }
+    </dl>
+  </div>
+</section>

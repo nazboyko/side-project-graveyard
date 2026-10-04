@@ -116,17 +116,3 @@ export function formatYears(bornAt: string, diedAt?: string | null): string {
   const died = new Date(utcDay(diedAt)).getUTCFullYear()
   return born === died ? `${born}` : `${born}–${died}`
 }
-
-const MAX_TILT_DEG = 0.6
-
-/** A stable lean for each stone, between -0.6 and 0.6 degrees, from a hash of its slug. */
-export function slugTilt(slug: string): number {
-  // FNV-1a, 32 bit
-  let hash = 0x811c9dc5
-  for (let i = 0; i < slug.length; i++) {
-    hash ^= slug.charCodeAt(i)
-    hash = Math.imul(hash, 0x01000193)
-  }
-  const unit = (hash >>> 0) / 0xffffffff
-  return Math.round((unit * 2 - 1) * MAX_TILT_DEG * 100) / 100
-}

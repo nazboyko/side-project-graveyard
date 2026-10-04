@@ -8,7 +8,6 @@ import {
   longestLived,
   mostCommonCause,
   shortestLived,
-  slugTilt,
   type Lived,
 } from './stats'
 
@@ -158,23 +157,5 @@ describe('formatYears', () => {
   it('leaves the end open for the undead', () => {
     expect(formatYears('2022-03-01', null)).toBe('2022–')
     expect(formatYears('2022-03-01')).toBe('2022–')
-  })
-})
-
-describe('slugTilt', () => {
-  it('is deterministic', () => {
-    expect(slugTilt('lantern-cms')).toBe(slugTilt('lantern-cms'))
-  })
-
-  it('stays within 0.6 degrees either way', () => {
-    const slugs = ['lantern-cms', 'one-more-list', 'everything-js', 'nine-tokens', 'a', '', 'pdf-viewer-sdk']
-    for (const slug of slugs) {
-      expect(Math.abs(slugTilt(slug))).toBeLessThanOrEqual(0.6)
-    }
-  })
-
-  it('leans different stones different ways', () => {
-    const tilts = new Set(['lantern-cms', 'one-more-list', 'everything-js', 'nine-tokens', 'umbrella'].map(slugTilt))
-    expect(tilts.size).toBeGreaterThan(1)
   })
 })

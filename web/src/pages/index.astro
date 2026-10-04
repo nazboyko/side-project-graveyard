@@ -1,83 +1,43 @@
 ---
 import {PortableText} from 'astro-portabletext'
-import CauseFilter from '../components/CauseFilter.astro'
-import Graveyard from '../components/Graveyard.astro'
+import Horizon from '../components/Horizon.astro'
+import Legend from '../components/Legend.astro'
+import Register from '../components/Register.astro'
+import Yard from '../components/Yard.astro'
 import Layout from '../layouts/Layout.astro'
 import {getCauses, getProjects, getSettings, getStats} from '../lib/sanity'
-import {formatLifespan} from '../lib/stats'
 
 const [settings, projects, causes] = await Promise.all([getSettings(), getProjects(), getCauses()])
 const stats = getStats(projects)
+const count = projects.length === 1 ? '1 grave' : `${projects.length} graves`
 
 const description = `${settings.tagline} ${projects.length} side projects, each with an epitaph, a cause of death, and the one thing it taught its author.`
 ---
 
 <Layout description={description} home>
-  <section class="gate">
-    <h1>{settings.title}</h1>
-    <p class="gate__tagline">{settings.tagline}</p>
-    {
-      settings.intro && (
-        <div class="gate__intro prose">
-          <PortableText value={settings.intro} />
-        </div>
-      )
-    }
+  <section class="gate" aria-labelledby="site-title">
+    <Horizon variant="gate" />
+    <div class="gate__text">
+      <h1 id="site-title">{settings.title}</h1>
+      <p class="gate__tagline">{settings.tagline}</p>
+      <p class="gate__count">{count}. Enter quietly.</p>
+    </div>
   </section>
 
-  <section class="section" aria-labelledby="register-heading">
-    <h2 id="register-heading">The register</h2>
-    <dl class="stats">
-      <div>
-        <dt class="label">Buried</dt>
-        <dd>{stats.buried}</dd>
-      </div>
-      <div>
-        <dt class="label">Retired with honour</dt>
-        <dd>{stats.retired}</dd>
-      </div>
-      {
-        stats.averageLifespanDays !== null && (
-          <div class="stats__key">
-            <dt class="label">Average lifespan</dt>
-            <dd>{formatLifespan(stats.averageLifespanDays)}</dd>
-          </div>
-        )
-      }
-      {
-        stats.mostCommonCause && (
-          <div>
-            <dt class="label">Most common cause of death</dt>
-            <dd class="stats__name">
-              <a href={`/cause/${stats.mostCommonCause.slug}/`}>{stats.mostCommonCause.title}</a>
-              <small>
-                {stats.mostCommonCause.count} of {projects.length} graves
-              </small>
-            </dd>
-          </div>
-        )
-      }
-      {
-        stats.shortest && (
-          <div>
-            <dt class="label">Shortest life</dt>
-            <dd class="stats__name">
-              <a href={`/rip/${stats.shortest.slug}/`}>{stats.shortest.name}</a>
-              <small>lived {formatLifespan(stats.shortest.days)}</small>
-            </dd>
-          </div>
-        )
-      }
-    </dl>
-  </section>
+  <div class="yard">
+    <div class="approach">
+      <section class="keeper-note" aria-labelledby="note-heading">
+        <h2 id="note-heading" class="keeper-note__title">The keeper's note</h2>
+        {settings.intro && <div class="prose"><PortableText value={settings.intro} /></div>}
+      </section>
+      <Register stats={stats} total={projects.length} />
+      <Legend causes={causes} total={projects.length} />
+    </div>
 
-  <CauseFilter causes={causes} total={projects.length} />
-
-  <section class="section" aria-labelledby="graves-heading">
-    <h2 id="graves-heading">The graves</h2>
-    <p class="section-note">
-      {projects.length} stones. The oldest are nearest the gate. The undead wait at the back.
-    </p>
-    <Graveyard projects={projects} />
-  </section>
+    <section class="graves" aria-labelledby="graves-heading">
+      <h2 id="graves-heading" class="visually-hidden">The graves</h2>
+      <p class="graves__note">The oldest are nearest the gate. The undead wait at the back.</p>
+      <Yard projects={projects} />
+    </section>
+  </div>
 </Layout>

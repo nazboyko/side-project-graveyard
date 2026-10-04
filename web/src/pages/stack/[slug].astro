@@ -1,6 +1,6 @@
 ---
 import type {GetStaticPaths, InferGetStaticPropsType} from 'astro'
-import Graveyard from '../../components/Graveyard.astro'
+import Yard from '../../components/Yard.astro'
 import Layout from '../../layouts/Layout.astro'
 import {getProjects, getTechs} from '../../lib/sanity'
 
@@ -36,8 +36,8 @@ const description =
     <p>{description}</p>
   </header>
 
-  <section class="section" aria-labelledby="graves-heading">
-    <h2 id="graves-heading">{graves.length === 1 ? '1 grave' : `${graves.length} graves`}</h2>
-    <Graveyard projects={graves} />
+  <section class="graves" aria-labelledby="graves-heading">
+    <h2 id="graves-heading" class="graves__count">{graves.length === 1 ? '1 grave' : `${graves.length} graves`}</h2>
+    <Yard projects={graves} />
   </section>
 </Layout>

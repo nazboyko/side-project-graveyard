@@ -1,0 +1,41 @@
+---
+/**
+ * The yard: plots on uneven ground along a path from the gate. Order is the order of the list it is given.
+ * Each plot carries its monument as custom properties; the stylesheet does the rest.
+ */
+import type {Project} from '../lib/sanity'
+import {describeMonument} from '../lib/monument'
+import Stone from './Stone.astro'
+
+interface Props {
+  projects: Project[]
+}
+
+const {projects} = Astro.props
+// Weathering is measured at build time; every publish rebuilds the site.
+const now = new Date()
+const plots = projects.map((project) => ({project, monument: describeMonument(project, now)}))
+---
+
+{
+  plots.length > 0 ? (
+    <div class="yard__ground">
+      <svg class="yard__path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path d="M44 0 C40 14 64 20 62 34 C60 48 30 52 34 66 C38 80 64 84 58 100 H42 C46 86 22 80 20 66 C18 50 48 46 48 34 C48 22 26 16 30 0 Z" />
+      </svg>
+      <ul class="yard__plots">
+        {plots.map(({project, monument}) => (
+          <li
+            class:list={['plot', `plot--${monument.layout}`, monument.motif && `plot--${monument.motif}`]}
+            data-cause={project.cause.slug}
+            style={`--life:${monument.life};--tilt:${monument.tilt}deg;--dx:${monument.dx}rem;--dy:${monument.dy}rem`}
+          >
+            <Stone project={project} monument={monument} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : (
+    <p class="empty">No graves here yet. The ground is still soft.</p>
+  )
+}
