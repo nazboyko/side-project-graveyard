@@ -1,0 +1,43 @@
+/* Last light: a small graveyard a few minutes after sunset. Contrast pairs are checked in tokens.test.ts. */
+
+:root {
+  color-scheme: dark;
+
+  --sky-top: #1d2636;
+  --sky-mid: #435061;
+  --sky-low: #c98f5a;
+  --far: #2c3644;
+  --near: #161c19;
+  --ground: #191f1a;
+  --ground-2: #222a21;
+  --soil: #4a3f33;
+  --grass: #56653f;
+  --moss: #6f7d52;
+  --stone-hi: #bdb9aa;
+  --stone: #aaa697;
+  --stone-aged: #9d9c8c;
+  --stone-ancient: #949585;
+  /* Text carved in stone, brass and parchment. */
+  --ink: #22231e;
+  --ink-soft: #2a2b25;
+  /* Text on the ground and the upper sky. */
+  --text: #ece7da;
+  --muted: #b6b8a8;
+  --candle: #f0b24f;
+  --candle-hot: #ffe1a0;
+  --brass: #b9975a;
+  --parchment: #d9d0b9;
+  --board: #2b261f;
+  --undead: #9cc084;
+
+  --display: 'Fraunces Variable', 'Iowan Old Style', Palatino, Georgia, serif;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --engrave: 0 1px 0 rgb(255 255 255 / 0.22), 0 -1px 0 rgb(0 0 0 / 0.25);
+
+  --page: 68rem;
+  --yard: 76rem;
+  --measure: 40rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+}
