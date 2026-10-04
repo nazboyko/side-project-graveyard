@@ -1,0 +1,26 @@
+---
+/** The relic and motif drawings a page needs, defined once and placed with <use> by Art.astro. */
+import {MOTIF_ART, RELIC_ART} from '../lib/drawings'
+import type {Motif, Relic} from '../lib/monument'
+
+interface Props {
+  relics: (Relic | null)[]
+  motifs: (Motif | null)[]
+}
+
+const {relics, motifs} = Astro.props
+const symbols = [
+  ...[...new Set(relics)].flatMap((relic) => (relic ? [[`relic-${relic}`, RELIC_ART[relic]]] : [])),
+  ...[...new Set(motifs)].flatMap((motif) => (motif && MOTIF_ART[motif] ? [[`motif-${motif}`, MOTIF_ART[motif]]] : [])),
+]
+---
+
+{
+  symbols.length > 0 && (
+    <svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false">
+      {symbols.map(([id, art]) => (
+        <symbol id={id} viewBox="0 0 48 48" set:html={art} />
+      ))}
+    </svg>
+  )
+}
