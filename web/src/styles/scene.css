@@ -35,6 +35,11 @@
   pointer-events: none;
 }
 
+/* Set by the component when the image fails: the whole layer goes, its ground fade included. */
+.scene-picture[hidden] {
+  display: none;
+}
+
 .scene-picture img {
   display: block;
   width: 100%;
@@ -52,6 +57,28 @@
   position: absolute;
   inset: 60% 0 0;
   background: linear-gradient(to bottom, transparent, var(--ground));
+}
+
+/* The title, tagline and count stand on the photograph's sky. A dusk-coloured veil over its upper half keeps them
+   readable on the rendered pixels (measured at 4.5:1 or better); it is gone by the fence. */
+.scene-picture--gate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--sky-top) 66%, transparent),
+    color-mix(in srgb, var(--sky-top) 62%, transparent) 30%,
+    transparent 56%
+  );
+}
+
+/* Forced colours repaint the page; the veil and the fade into the old ground colour would only smear the photo. */
+@media (forced-colors: active) {
+  .scene-picture::before,
+  .scene-picture::after {
+    display: none;
+  }
 }
 
 .horizon__far {
@@ -430,8 +457,21 @@
   isolation: isolate;
   padding-block: 1rem 2rem;
   background-color: var(--ground);
-  background-image: linear-gradient(rgb(25 31 26 / 0.8), rgb(25 31 26 / 0.8)), var(--ground-texture, none);
-  background-size: auto, 13rem 13rem;
+  /* The soil tile under a dark veil; the two gradients on top dissolve its edges into the page, so the yard
+     never reads as a textured rectangle. */
+  background-image:
+    linear-gradient(to right, var(--ground), transparent 3.5rem, transparent calc(100% - 3.5rem), var(--ground)),
+    linear-gradient(to bottom, var(--ground), transparent 4rem, transparent calc(100% - 4rem), var(--ground)),
+    linear-gradient(rgb(25 31 26 / 0.8), rgb(25 31 26 / 0.8)),
+    var(--ground-texture, none);
+  background-size: auto, auto, auto, 13rem 13rem;
+}
+
+/* Forced colours keep background images; without this the yard would be a dark slab on the system canvas. */
+@media (forced-colors: active) {
+  .yard__ground {
+    background-image: none;
+  }
 }
 
 .yard__path {

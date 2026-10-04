@@ -33,7 +33,13 @@ const overrideMobile = builder?.width(780).height(975).fit('crop').auto('format'
   {
     configured ? (
       <>
-        <source media="(max-width: 34rem)" srcset={`${overrideMobile480} 480w, ${overrideMobile} 780w`} sizes="100vw" />
+        <source
+          media="(max-width: 34rem)"
+          srcset={`${overrideMobile480} 480w, ${overrideMobile} 780w`}
+          sizes="100vw"
+          width="780"
+          height="975"
+        />
         <img
           src={overrideWide}
           srcset={`${overrideWide960} 960w, ${overrideWide} 1440w`}
@@ -47,13 +53,19 @@ const overrideMobile = builder?.width(780).height(975).fit('crop').auto('format'
       </>
     ) : (
       <>
-        <source media="(max-width: 34rem)" srcset={`${mobile480!.src} 480w, ${mobile780!.src} 780w`} sizes="100vw" />
+        <source
+          media="(max-width: 34rem)"
+          srcset={`${mobile480!.src} 480w, ${mobile780!.src} 780w`}
+          sizes="100vw"
+          width={mobile780!.attributes.width}
+          height={mobile780!.attributes.height}
+        />
         <img
           src={wide1440!.src}
           srcset={`${wide960!.src} 960w, ${wide1440!.src} 1440w`}
           sizes="100vw"
-          width="1672"
-          height="941"
+          width={wide1440!.attributes.width}
+          height={wide1440!.attributes.height}
           alt=""
           decoding="async"
           fetchpriority={variant === 'gate' ? 'high' : 'auto'}
@@ -64,10 +76,11 @@ const overrideMobile = builder?.width(780).height(975).fit('crop').auto('format'
 </picture>
 
 <script>
-  // A failed optional image exposes the existing painted skyline, without a broken-image glyph.
+  // A failed optional image takes its whole layer away, ground fade included, so the painted skyline behind it
+  // shows complete and without a broken-image glyph.
   for (const image of document.querySelectorAll<HTMLImageElement>('.scene-picture img')) {
     const hideFailure = () => {
-      if (image.naturalWidth === 0) image.style.visibility = 'hidden'
+      if (image.naturalWidth === 0) image.closest<HTMLElement>('.scene-picture')!.hidden = true
     }
     image.addEventListener('error', hideFailure)
     if (image.complete) hideFailure()
