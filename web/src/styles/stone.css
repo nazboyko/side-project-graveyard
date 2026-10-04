@@ -371,7 +371,7 @@
 
 .layout-marker .stone__face {
   justify-content: center;
-  padding-bottom: 1.4rem;
+  padding-bottom: 1.8rem;
 }
 
 .layout-marker .plants--front {
@@ -710,9 +710,13 @@
   filter: none;
 }
 
-/* A marker stands beside its tag; its relic leans on the stone's left corner instead of widening the row. */
+/* A marker stands beside its tag; its relic leans on the stone's left corner instead of widening the row, and
+   stays small enough to keep off the last carved line. */
 .layout-marker .art--relic {
   left: 0;
+  bottom: 0.1rem;
+  width: 2.2rem;
+  height: 2.2rem;
 }
 
 /* The cemetery cat: a dark silhouette with a faint rim, sitting on top of the stone, eyes catching the light. */

@@ -44,6 +44,14 @@
   inset-block-start: 55%;
 }
 
+/* In the wide source's crop the gate posts stand low in this sky. The fade is complete before them, so no pale
+   cap floats in the dark; the portrait source keeps its gate, which stands behind the stone. */
+@media (min-width: 34.01rem) {
+  .memorial__sky .scene-picture::after {
+    background: linear-gradient(to bottom, transparent 12%, var(--ground) 62%);
+  }
+}
+
 .memorial__stand {
   display: flex;
   flex-direction: column;
@@ -173,7 +181,7 @@
 }
 
 .monument--memorial.layout-marker .stone__face {
-  padding: 1.6rem 0.9rem 1.8rem;
+  padding: 1.6rem 0.9rem 2.2rem;
 }
 
 .monument--memorial .stone__mark {
@@ -204,10 +212,20 @@
 
 .monument--memorial.layout-marker {
   --span: min(44vw, var(--stone-w));
+  --tag-w: min(46vw, 11.5rem);
 }
 
 .monument--memorial.layout-marker .tag {
-  width: min(46vw, 11.5rem);
+  width: var(--tag-w);
+}
+
+/* The marker stands at the left of its row, not in the middle of it: the relic goes to the stone's own corner,
+   small enough to stay below the last carved line. */
+.monument--memorial.layout-marker .art--relic {
+  left: max(0rem, calc(50% - (var(--span) + 0.9rem + var(--tag-w)) / 2 - 0.9rem));
+  bottom: 0.3rem;
+  width: 2.6rem;
+  height: 2.6rem;
 }
 
 /* The older stones behind a rewrite stay smaller than the one in front, whatever its size. */
