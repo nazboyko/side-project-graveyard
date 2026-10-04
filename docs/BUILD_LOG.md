@@ -3,7 +3,8 @@
 How this site was prompted into existence. Written for the DEV × Sanity Challenge (Path Two), where the build
 process is judged as much as the result. Every prompt below is verbatim; every failure stays in.
 
-Tool: Claude Code (desktop app), one autonomous session for the whole build, one branch and one pull request per phase.
+Tools: Claude Code (desktop app), one session, for the build, the redesign, the review of the material pass and the
+end; Codex, a second agent, for the visual audit and the material pass. One branch and one pull request per phase.
 The steps only a human can do (hosting dashboard, webhook) were done by hand from a checklist the model printed.
 I gave one kickoff prompt; the per-phase prompts were written in advance in my local plan and the model read them from there.
 
@@ -65,6 +66,47 @@ at an open pull request for me to look at the screenshots.
 | R3. memorial-page | 22:18 | 22:30 | 12 min | 1 | 4 | the grave page, candles, ledger; waited for my review |
 | R4. relics-and-polish | 22:34 | 22:51 | 17 min | 1 | 8 | 13 relics, 5 motifs, yard candles, social card, fog, cat |
 | R5. post-refresh | 22:52 | 23:00 | 8 min | 0 | 0 | screenshots, README, this summary, the post draft |
+
+### The whole project, in totals
+
+Written at the end, on Sunday 4 October. Two tools worked on this repository. Claude Code built the site and the
+redesign, reviewed the material pass and closed the project. Codex, a second agent, wrote the visual audit in
+[docs/visual-enhancement](visual-enhancement/) and implemented the material pass. Each entry below says whose it is.
+
+- **Messages from me: 24.** 11 for the build (one typed kickoff, eight phase prompts read from my plan, two
+  replies), 3 for the redesign, 4 to Codex (the audit, its clarification, the material pass and an addition to
+  it), 2 around the review (stand by, resume) and 4 at the end (a question about Firefox, Firefox's paste warning
+  pasted back, a screenshot of its console, and the merge message). On top of that, three questions answered with
+  a click during the build.
+- **Pull requests: 15.** Eight for the build, five for the redesign, one for the material pass and its review
+  (#14 carries the work of both tools), and one for the final entry. CI did not fail once on the first fourteen.
+  The fifteenth carries this sentence.
+- **Drawings redone: 19**, all in the redesign. None was redrawn after it. The review moved the relic on the
+  smallest stones and removed an outline that only one browser engine drew.
+- **Retries:** 8 in the build, 5 in the redesign besides the drawings, 6 in Codex's audit and none in its
+  clarification, 3 in the material pass plus a cross-browser attempt it could not finish, 4 in the review (one of
+  them eight attempts to start Firefox), 3 at the end.
+- **Time.** Claude Code worked about four hours in all: 95 minutes on the build, 65 on the redesign, 66 on the
+  review and about 15 at the end, counting the pull request for this entry. Codex's working time is not recorded in this log; its commits ran from 23:40 on
+  Saturday to 00:18 on Sunday, and the audit was written before that, from the redesign's fourth branch on. First
+  prompt to the merge of #14: Saturday 12:10 to Sunday 10:28 CDT, with my seven-hour hosting detour in the middle
+  and eight and a half hours between the review and my merge message.
+- **Browsers.** Chrome and WebKit were checked by the model, Firefox by me, by hand, on the preview of #14. No
+  real phone.
+- **At the end:** 4 schema types, 41 seed documents, 18 graves (5 real, 13 invented), 42 pages, 70 unit tests,
+  four Studio scripts, and five generated images: about 12 MB of source, served as seven WebP files of 342 KB
+  together, of which a desktop home page loads 219 KB. Lighthouse mobile, median of three on the local production
+  build: performance 99, accessibility, best practices and SEO 100, on the home page and on a grave page. Before
+  the material pass it was 100 in all four. The live site matches the six screenshots in `docs/screenshots/`.
+
+| Stretch | Tool | When (CDT) | Working time | Messages | Pull requests |
+|---|---|---|---|---|---|
+| Build, phases 0 to G | Claude Code | Sat 12:10–20:34 | about 95 min | 11 | #1–#8 |
+| Redesign, R1 to R5 | Claude Code | Sat 20:52–23:00 | about 65 min | 3 | #9–#13 |
+| Visual audit and its clarification | Codex | Sat, from R4 on | not recorded | 2 | committed in #14 |
+| Material pass | Codex | Sat 23:40–Sun 00:18 | not recorded | 2 | #14 |
+| Review of the material pass | Claude Code | Sun 00:43–01:49 | 66 min | 2 | #14 |
+| Relic fix, merge, the end | Claude Code | Sun 10:24–10:35, then #15 | about 15 min | 4 | #15 |
 
 ## What I cut and why
 
@@ -3044,3 +3086,52 @@ merge. Before merging, one small fix on the branch: make the relics render the s
   checked on four stones side by side. A few stroke-only paths in `web/src/lib/drawings.ts` (stems, a flap line)
   are now invisible everywhere, as they always were in Chrome. They are left in the file.
 - The rest of this prompt, the merge and what follows it, is in the final entry below.
+
+### The end: merge, Studio, live check (Claude Code, 2026-10-04, 10:24–10:35 CDT, then its pull request)
+
+#### Prompt
+
+The merge message, quoted in full in the section above. It asked for the relic fix, the merge, a Studio deploy,
+the removal of the unused backdrop asset, a check of the live site against the committed screenshots, my Firefox
+check in this log, this entry, and the post draft.
+
+#### What was done
+
+- **Relics:** fixed, committed and pushed (see the section above). CI was green on the head commit (web, studio,
+  Workers Builds) before anything was merged.
+- **Merge:** `gh pr merge 14 --rebase --delete-branch` at 10:28:36.
+- **Studio:** `npx sanity deploy -y` deployed the Studio and its schema. The deployed schema, read back through the
+  API, has the field "Scene backdrop override". The model did not look at the field in the Studio itself: the
+  Studio stops at a login, and the model does not sign in to my accounts.
+- **The unused asset:** `studio/scripts/remove-backdrop-asset.ts` finds assets by the test's file name, lists them,
+  and deletes only with `-- delete` and only when no document points at them. Listed first, then deleted:
+  `image-b8198cce…-1672x941-png`, 1,995 KB. A second run found nothing and the CDN URL now answers 404. The source
+  stays in `web/src/assets/scene/`; Sanity names an asset by the SHA-1 of its content, so running
+  `set-backdrop.ts` again would bring back the same asset under the same ID.
+- **Live site:** the Workers build on `main` was live about a minute after the merge. curl showed the new
+  `<picture>` with both sources and their widths, all seven WebP files served as `image/webp` at the expected
+  sizes, a stylesheet with the veil, the loading gradient, the two-pixel cap overlap and no sprite outline rule,
+  and the memorial stone of Everything.js with the same values as its plot.
+- **Screenshots:** all six retaken from the live URL in Chrome, at the sizes of the committed ones. Each matches its
+  file in `docs/screenshots/` to within 4 of 255 levels per channel, which is text smoothing; no pixel differs by
+  more than 8. The committed screenshots stand. They come from Chrome, which always drew the relics flat, so the
+  relic fix does not show in them.
+
+#### What failed or needed a second try
+
+- **The commit guard refused one commit, at 64 seconds.** The model had put a wait loop and the commit in one
+  command, but the hook checks the command before any of it runs. The wait now goes in its own command.
+- **The first live screenshot loop wrote nothing.** In zsh an unquoted variable is not split into words, so the
+  address and the file name reached the screenshot tool as one argument. Rerun as six plain commands. It is the
+  same zsh trap as the `path` variable during the review.
+- **Looking for the field in the deployed Studio's files found no script links** in its HTML. The deployed schema,
+  read through the API, answered the question instead.
+
+#### Decisions the model made on its own
+
+- All six screenshots were compared, not only the home page and one grave.
+- The cleanup script lists before it deletes and never deletes an asset something points at. It is committed next
+  to the script that uploaded the asset, so the test can be repeated and undone.
+- The whole-project totals went to the top of this log, next to the two earlier summaries, and the line there that
+  said "one autonomous session for the whole build" now names both tools. It was true when it was written.
+- This entry has its own branch and pull request (#15), merged by the model after green CI, as every phase was.
