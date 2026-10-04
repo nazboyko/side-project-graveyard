@@ -2,10 +2,11 @@
 /**
  * One grave, drawn from its record. `plot` is the stone in the yard; `memorial` is the same stone, closer,
  * on its own page. Everything visual comes from describeMonument(); this file only arranges it.
+ * Anything passed in the `front` slot stands in front of the stone's base (the candles on a grave page).
  */
 import type {Project} from '../lib/sanity'
 import type {Monument} from '../lib/monument'
-import {formatLifespan, formatYears, lifespanDays} from '../lib/stats'
+import {formatDate, formatLifespan, formatYears, lifespanDays} from '../lib/stats'
 import Plants from './Plants.astro'
 
 interface Props {
@@ -16,14 +17,17 @@ interface Props {
 
 const {project, monument, size = 'plot'} = Astro.props
 const {layout, shape, weathering, motif} = monument
+const plot = size === 'plot'
 const days = lifespanDays(project.bornAt, project.diedAt)
 const undead = project.status === 'undead'
-const lived = undead
+const lived = undead ? 'still twitching' : `lived ${formatLifespan(days ?? 0)}`
+const years = undead
   ? `since ${formatYears(project.bornAt, project.bornAt)} · still twitching`
-  : `${formatYears(project.bornAt, project.diedAt)} · lived ${formatLifespan(days ?? 0)}`
+  : `${formatYears(project.bornAt, project.diedAt)} · ${lived}`
 const href = `/rip/${project.slug}/`
-const Name = size === 'plot' ? 'h3' : 'h1'
-const status = project.status === 'retired' ? 'Retired with honour' : undead ? 'Undead' : null
+const Name = plot ? 'h3' : 'h1'
+// On a grave page the status stands above the stone; in the yard it is carved on it.
+const status = !plot ? null : project.status === 'retired' ? 'Retired with honour' : undead ? 'Undead' : null
 // On a marker the stone is too small for the epitaph; it goes on a wooden tag beside it.
 const tagged = layout === 'marker'
 ---
@@ -70,16 +74,31 @@ const tagged = layout === 'marker'
       {project.cause.icon && !tagged && <span class="stone__mark" aria-hidden="true">{project.cause.icon}</span>}
       <div class="stone__plate">
         {layout === 'plaque' && status && <p class="stone__status">{status}</p>}
-        <Name class="stone__name">
-          {size === 'plot' ? <a class="stone__link" href={href}>{project.name}</a> : project.name}
-        </Name>
+        <Name class="stone__name">{plot ? <a class="stone__link" href={href}>{project.name}</a> : project.name}</Name>
       </div>
-      <p class="stone__years">{lived}</p>
+      {
+        plot ? (
+          <p class="stone__years">{years}</p>
+        ) : (
+          <>
+            <p class="stone__dates">
+              <time datetime={project.bornAt}>{formatDate(project.bornAt)}</time>
+              {project.diedAt && !undead && (
+                <>
+                  {' – '}
+                  <time datetime={project.diedAt}>{formatDate(project.diedAt)}</time>
+                </>
+              )}
+            </p>
+            <p class="stone__lived">{lived}</p>
+          </>
+        )
+      }
       {
         !tagged && (
           <>
             <p class="stone__epitaph">{project.epitaph}</p>
-            <p class="stone__cause">{project.cause.title}</p>
+            {plot && <p class="stone__cause">{project.cause.title}</p>}
             {monument.inscription && <p class="stone__inscription">{monument.inscription}</p>}
           </>
         )
@@ -96,6 +115,7 @@ const tagged = layout === 'marker'
     }
   </div>
   <Plants layer="front" weathering={weathering} motif={motif} layout={layout} />
+  <slot name="front" />
   {
     tagged && (
       <div class="tag">
@@ -107,7 +127,7 @@ const tagged = layout === 'marker'
             </span>
           )}
           <p class="tag__epitaph">{project.epitaph}</p>
-          <p class="tag__cause">{project.cause.title}</p>
+          {plot && <p class="tag__cause">{project.cause.title}</p>}
           {monument.inscription && <p class="tag__inscription">{monument.inscription}</p>}
         </div>
       </div>
